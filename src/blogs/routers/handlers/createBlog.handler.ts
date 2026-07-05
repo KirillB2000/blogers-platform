@@ -13,5 +13,5 @@ export const createBlogHandler = (req: Request<{}, {}, blogInputModel>, res: Res
 
     const createdNewBlog = blogsRepository.create(newBlog)
 
-    res.sendStatus(httpStatuses.Created).json(createdNewBlog)
+    res.status(httpStatuses.Created).json(createdNewBlog)
 }

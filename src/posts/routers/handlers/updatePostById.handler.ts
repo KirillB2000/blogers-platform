@@ -10,7 +10,7 @@ export const updatePostById = (
         const isUpdated = postsRepository.update(req.params.id, req.body)
 
         if (!isUpdated) {
-            res.sendStatus(httpStatuses.NotFound).json({message: 'Post not found', field: 'id'})
+            res.status(httpStatuses.NotFound).json({message: 'Post not found', field: 'id'})
         }
 
         res.sendStatus(httpStatuses.Created)

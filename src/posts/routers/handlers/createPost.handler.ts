@@ -4,6 +4,7 @@ import { postViewModel } from "../../types/postViewModel";
 import { blogsRepository } from "../../../blogs/repositories/blogs.repository";
 import { httpStatuses } from "../../../core/types/http-statuses";
 import { postsRepository } from "../../repositories/posts.repository";
+import { db } from "../../../db/db";
 
 export const createPost = (req: Request<{}, {}, postInputModel>, res: Response<postViewModel | {message: string, field: string}>) => {
     const blogByPostId = blogsRepository.findById(req.body.blogId)
@@ -21,5 +22,7 @@ export const createPost = (req: Request<{}, {}, postInputModel>, res: Response<p
         blogName: blogByPostId.name 
     }
 
-    postsRepository.create(newPost)
+    const createdPost = postsRepository.create(newPost)
+
+    res.status(httpStatuses.Created).json(createdPost)
 }
