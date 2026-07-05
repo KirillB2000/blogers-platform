@@ -18,5 +18,28 @@ export const postsRepository = {
         }
 
         return created
+    },
+
+    update(id: string, inputForUpdate: postInputModel): Boolean {
+        const index = db.posts.findIndex(p => p.id === id)
+
+        if (index === -1) {
+            return false
+        }
+
+        db.posts[index] = {...db.posts[index], ...inputForUpdate}
+        return true
+    },
+
+    delete(id: string): Boolean {
+        const postById = this.findById(id)
+
+        if (!postById) {
+            return false
+        }
+
+        db.posts = db.posts.filter(p => p.id != id)
+
+        return true
     }
 } 

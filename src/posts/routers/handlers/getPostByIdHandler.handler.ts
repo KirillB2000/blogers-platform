@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
-import { postsRepository } from "../repositories/posts.repository"
-import { httpStatuses } from "../../core/types/http-statuses"
+import { postsRepository } from "../../repositories/posts.repository"
+import { httpStatuses } from "../../../core/types/http-statuses"
 
 export const getPostByIdHandler = (req: Request, res: Response) => {
     const postId = req.params.id.toString()

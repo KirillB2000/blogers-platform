@@ -1,6 +1,6 @@
 import { db } from "../../db/db"
 import { blogViewModel } from "../types/blogViewModel"
-import { blogsInputModel } from "../dto/blogsInputModel"
+import { blogInputModel } from "../dto/blogInputModel"
 
 export const blogsRepository = {
     findAll (): blogViewModel[] {
@@ -11,15 +11,39 @@ export const blogsRepository = {
         return db.blogs.find(b => b.id === id) ?? null
     },
 
-    create(newPost: Omit<blogViewModel, 'id'>): blogViewModel {
+    create(newBlog: Omit<blogViewModel, 'id'>): blogViewModel {
         
         const created: blogViewModel = {
             id: +new Date() + '',
-            ...newPost
+            ...newBlog
         }
 
         db.blogs.push(created)
 
         return created
+    },
+
+    update(id: string, inputForUpdate: blogInputModel): Boolean {
+        const index = db.blogs.findIndex(b => b.id === id)
+
+        if(index === -1) {
+            return false
+        }
+
+        db.blogs[index] = {...db.blogs[index], ...inputForUpdate}
+
+        return true;
+    },
+
+    delete(id: string): Boolean {
+        const blogById = this.findById(id)
+
+        if(!blogById) {
+            return false
+        }
+
+        db.blogs = db.blogs.filter(b => b.id != id)
+
+        return true
     }
 }

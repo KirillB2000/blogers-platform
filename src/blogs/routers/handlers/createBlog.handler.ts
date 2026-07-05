@@ -1,14 +1,17 @@
 import { Request, Response } from "express";
-import { blogsInputModel } from "../../dto/blogsInputModel";
+import { blogInputModel } from "../../dto/blogInputModel";
 import { blogViewModel } from "../../types/blogViewModel";
 import { blogsRepository } from "../../repositories/blogs.repository";
+import { httpStatuses } from "../../../core/types/http-statuses";
 
-export const createBlogHandler = (req: Request<{}, {}, blogsInputModel>, res: Response<blogViewModel>) => {
+export const createBlogHandler = (req: Request<{}, {}, blogInputModel>, res: Response<blogViewModel>) => {
     const newBlog: Omit<blogViewModel, 'id'> = {
         name: req.body.name,
         description: req.body.description,
         websiteUrl: req.body.websiteUrl
     }
 
-    blogsRepository.create(newBlog)
+    const createdNewBlog = blogsRepository.create(newBlog)
+
+    res.sendStatus(httpStatuses.Created).json(createdNewBlog)
 }
