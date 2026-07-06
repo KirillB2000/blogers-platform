@@ -17,6 +17,8 @@ export const postsRepository = {
             ...newPost
         }
 
+        db.posts.push(created)
+
         return created
     },
 

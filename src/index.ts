@@ -1,5 +1,5 @@
 import express from 'express';
-import { setupApp } from './setup-app';
+import setupApp from './setup-app';
 
 export const app = express()
 export default setupApp(app)

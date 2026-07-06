@@ -5,6 +5,7 @@ import { TESTING_PATH, TESTING_ROUTES } from '../../../src/testing/constants/tes
 import { httpStatuses } from '../../../src/core/types/http-statuses';
 import { createPostDto } from '../../utils/posts/createPostDto';
 import { postViewModel } from '../../../src/posts/types/postViewModel';
+import { POSTS_PATH } from '../../../src/posts/constants/posts.paths';
 
 describe ('Posts API', () => {
     const app = express()
@@ -26,5 +27,19 @@ describe ('Posts API', () => {
             blogId: expect.any(String),
             blogName: expect.any(String)
         })
+    })
+
+    it('Should get post list; GET /api/posts', async () => {
+        await createPostDto(app)
+        await createPostDto(app)
+
+        const response = await request(app)
+                    .get(POSTS_PATH)
+                    .expect(httpStatuses.Ok)
+
+        console.log(response.body)
+        
+        expect(response.body).toBeInstanceOf(Array)
+        expect(response.body.length).toBeGreaterThanOrEqual(2)
     })
 })
