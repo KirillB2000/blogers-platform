@@ -5,8 +5,8 @@ import { getBlogByIdHandler } from "./handlers/getBlogById.handler";
 import { createBlogHandler } from "./handlers/createBlog.handler";
 import { updateBlogById } from "./handlers/updateBlogById.handler";
 import { deleteBlogById } from "./handlers/deleteBlogById.handler";
-import { idValidation } from "../../core/types/middlewares/validation/params-id.validation.middleware";
-import { inputValidationResultMiddleware } from "../../core/types/middlewares/validation/input-validation-result.middleware";
+import { idValidation } from "../../core/middlewares/validation/params-id.validation.middleware";
+import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { blogInputDtoValidation } from "../validation/blog-input.validation.middleware";
 
 

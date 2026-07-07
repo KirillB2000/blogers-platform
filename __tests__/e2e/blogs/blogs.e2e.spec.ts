@@ -1,7 +1,6 @@
 import express from 'express';
 import setupApp from '../../../src/setup-app'
 import request from 'supertest'
-import { TESTING_PATH, TESTING_ROUTES } from '../../../src/testing/constants/testing.paths';
 import { httpStatuses } from '../../../src/core/types/http-statuses';
 import { blogInputModel } from '../../../src/blogs/dto/blogInputModel';
 import { BLOGS_PATH } from '../../../src/blogs/constants/blogs.paths';
@@ -9,15 +8,14 @@ import { blogDto } from '../../utils/blogs/blogDto';
 import { createBlogDto } from '../../utils/blogs/createBlogDto';
 import { updateBlogById } from '../../utils/blogs/updateBlogById';
 import { getBlogById } from '../../utils/blogs/getBlogById';
+import { clearDb } from '../../utils/clearDb';
 
 describe ('Blogs API', () => {
     const app = express()
     setupApp(app)
 
     beforeAll(async () => {
-       await request(app)
-        .delete(`${TESTING_PATH}${TESTING_ROUTES.ALL_DATA}`)
-        .expect(httpStatuses.NoContent)
+        await clearDb(app);
     })
 
     it('Should create new blog; POST /api/blogs', async () => {

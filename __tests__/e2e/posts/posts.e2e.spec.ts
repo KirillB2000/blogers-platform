@@ -1,25 +1,22 @@
 import express from 'express'
 import setupApp from '../../../src/setup-app'
 import request from 'supertest'
-import { TESTING_PATH, TESTING_ROUTES } from '../../../src/testing/constants/testing.paths';
 import { httpStatuses } from '../../../src/core/types/http-statuses';
 import { createPostDto } from '../../utils/posts/createPostDto';
 import { postViewModel } from '../../../src/posts/types/postViewModel';
 import { POSTS_PATH } from '../../../src/posts/constants/posts.paths';
 import { getPostById } from '../../utils/posts/getPostByID';
-import { postDto } from '../../utils/posts/postDto';
 import { createBlogDto } from '../../utils/blogs/createBlogDto';
 import { updatePostById } from '../../utils/posts/updatePostById';
 import { postInputModel } from '../../../src/posts/dto/postInputModel';
+import { clearDb } from '../../utils/clearDb';
 
 describe ('Posts API', () => {
     const app = express()
     setupApp(app)
 
     beforeAll(async () => {
-       await request(app)
-        .delete(`${TESTING_PATH}${TESTING_ROUTES.ALL_DATA}`)
-        .expect(httpStatuses.NoContent)
+        await clearDb(app);
     })
 
     it('Should create new post; POST /api/posts', async () => {

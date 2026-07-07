@@ -1,0 +1,52 @@
+import express from 'express'
+import request from 'supertest'
+import setupApp from '../../../src/setup-app';
+import { clearDb } from '../../utils/clearDb';
+import { blogInputModel } from '../../../src/blogs/dto/blogInputModel';
+import { BLOGS_PATH } from '../../../src/blogs/constants/blogs.paths';
+import { httpStatuses } from '../../../src/core/types/http-statuses';
+import { createBlogDto } from '../../utils/blogs/createBlogDto';
+
+describe ('Blogs API body validation check', () => {
+    const app = express();
+    setupApp(app);
+
+    const correctBlogInputData: blogInputModel = {
+        name: 'correct name',
+        description: 'correct description',
+        websiteUrl: 'https://correctexample.com'
+    }
+
+    beforeAll(async () => {
+        await clearDb(app);
+    })
+
+    it ('Should not create blog with incorrect input data', async ()=> {
+        const incorrectBlogBodyInput1 = await request(app)
+            .post(BLOGS_PATH)
+            .send({
+                ...correctBlogInputData,
+                name: '    ',
+                description: '',
+                websiteUrl: 'dasfasdf'
+            })
+            .expect(httpStatuses.BadRequest)
+    
+        expect(incorrectBlogBodyInput1.body.errorsMessages).toHaveLength(3)
+    })
+
+    it ('Should not update blog with incorrect input data', async ()=> {
+        const createdBlog = await createBlogDto(app)
+        const incorrectBlogBodyInput1 = await request(app)
+            .put(`${BLOGS_PATH}/${createdBlog.id}`)
+            .send({
+                ...correctBlogInputData,
+                name: '    ',
+                description: '',
+                websiteUrl: 'dasfasdf'
+            })
+            .expect(httpStatuses.BadRequest)
+    
+        expect(incorrectBlogBodyInput1.body.errorsMessages).toHaveLength(3)
+    })
+})

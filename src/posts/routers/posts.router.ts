@@ -5,8 +5,8 @@ import { getPostByIdHandler } from "./handlers/getPostById.handler"
 import { createPost } from "./handlers/createPost.handler"
 import { updatePostById } from "./handlers/updatePostById.handler"
 import { deletePostById } from "./handlers/deletePostById,handler"
-import { idValidation } from "../../core/types/middlewares/validation/params-id.validation.middleware"
-import { inputValidationResultMiddleware } from "../../core/types/middlewares/validation/input-validation-result.middleware"
+import { idValidation } from "../../core/middlewares/validation/params-id.validation.middleware"
+import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware"
 import { postInputDtoValidation } from "../validation/post-input.validation.middleware"
 
 
