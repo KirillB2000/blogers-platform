@@ -8,6 +8,7 @@ import { deletePostById } from "./handlers/deletePostById,handler"
 import { idValidation } from "../../core/middlewares/validation/params-id.validation.middleware"
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware"
 import { postInputDtoValidation } from "../validation/post-input.validation.middleware"
+import { superAdminGuardMiddleware } from "../../auth/middlewares/super-admin.guard.middleware"
 
 
 
@@ -25,6 +26,7 @@ postsRouter
 
     .post(
         POSTS_ROUTES.ROOT,
+        superAdminGuardMiddleware,
         postInputDtoValidation,
         inputValidationResultMiddleware, 
         createPost
@@ -32,6 +34,7 @@ postsRouter
 
     .put(
         POSTS_ROUTES.BY_ID,
+        superAdminGuardMiddleware,
         postInputDtoValidation,
         inputValidationResultMiddleware,  
         updatePostById
@@ -39,6 +42,7 @@ postsRouter
 
     .delete(
         POSTS_ROUTES.BY_ID,
+        superAdminGuardMiddleware,
         idValidation,
         inputValidationResultMiddleware,
         deletePostById 
