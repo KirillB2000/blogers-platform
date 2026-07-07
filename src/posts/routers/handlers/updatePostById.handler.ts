@@ -13,5 +13,5 @@ export const updatePostById = (
             res.status(httpStatuses.NotFound).json({message: 'Post not found', field: 'id'})
         }
 
-        res.sendStatus(httpStatuses.Created)
+        res.sendStatus(httpStatuses.NoContent)
 }

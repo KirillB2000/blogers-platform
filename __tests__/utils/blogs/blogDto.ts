@@ -1,7 +1,7 @@
 import { blogInputModel } from "../../../src/blogs/dto/blogInputModel";
 
 
-export const getBlogDto = (): blogInputModel => {
+export const blogDto = (): blogInputModel => {
     return {
         name: 'Test name',
         description: 'Test description',

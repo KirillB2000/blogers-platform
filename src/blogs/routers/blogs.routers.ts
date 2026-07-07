@@ -13,5 +13,5 @@ blogsRouter
     .get('', getBlogListHanlder)
     .get(BLOGS_ROUTES.BY_ID, getBlogByIdHandler)
     .post('', createBlogHandler)
-    .get(BLOGS_ROUTES.BY_ID, updateBlogById)
+    .put(BLOGS_ROUTES.BY_ID, updateBlogById)
     .delete(BLOGS_ROUTES.BY_ID, deleteBlogById)

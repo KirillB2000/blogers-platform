@@ -8,7 +8,7 @@ export const postsRepository = {
     },
 
     findById (id: string): postViewModel | null {
-        return db.posts.find (p => p.id === id) ?? null
+        return db.posts.find(p => p.id === id) ?? null
     },
 
     create(newPost: Omit<postViewModel, 'id'>): postViewModel {

@@ -1,6 +1,6 @@
 import { postInputModel } from "../../../src/posts/dto/postInputModel";
 
-export const getPostDto = (blogId: string): postInputModel => {
+export const postDto = (blogId: string): postInputModel => {
     return {
         title: 'Test title',
         shortDescription: 'Test description',
