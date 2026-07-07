@@ -5,13 +5,41 @@ import { getBlogByIdHandler } from "./handlers/getBlogById.handler";
 import { createBlogHandler } from "./handlers/createBlog.handler";
 import { updateBlogById } from "./handlers/updateBlogById.handler";
 import { deleteBlogById } from "./handlers/deleteBlogById.handler";
+import { idValidation } from "../../core/types/middlewares/validation/params-id.validation.middleware";
+import { inputValidationResultMiddleware } from "../../core/types/middlewares/validation/input-validation-result.middleware";
+import { blogInputDtoValidation } from "../validation/blog-input.validation.middleware";
 
 
 export const blogsRouter = (Router({}))
 
 blogsRouter
-    .get('', getBlogListHanlder)
-    .get(BLOGS_ROUTES.BY_ID, getBlogByIdHandler)
-    .post('', createBlogHandler)
-    .put(BLOGS_ROUTES.BY_ID, updateBlogById)
-    .delete(BLOGS_ROUTES.BY_ID, deleteBlogById)
+    .get(BLOGS_ROUTES.ROOT, getBlogListHanlder)
+
+    .get(
+        BLOGS_ROUTES.BY_ID,
+        idValidation,
+        inputValidationResultMiddleware, 
+        getBlogByIdHandler
+    )
+
+    .post(
+        BLOGS_ROUTES.ROOT,
+        blogInputDtoValidation,
+        inputValidationResultMiddleware,
+        createBlogHandler
+    )
+
+
+    .put(
+        BLOGS_ROUTES.BY_ID,
+        blogInputDtoValidation,
+        inputValidationResultMiddleware,
+        updateBlogById
+    )
+
+    .delete(
+        BLOGS_ROUTES.BY_ID,
+        idValidation,
+        inputValidationResultMiddleware, 
+        deleteBlogById
+    )
