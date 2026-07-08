@@ -3,7 +3,8 @@ info:
   title: Bloggers Platform API
   version: 1.0.0
   description: API for managing blogs and posts
-
+servers:
+  - url: /api
 tags:
   - name: Blogs
     description: API for managing blogs
