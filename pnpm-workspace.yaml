@@ -1,3 +1,5 @@
+packages:
+  - '.'
 allowBuilds:
-  "@scarf/scarf": true
-  unrs-resolver: true
+  '@scarf/scarf': false
+  unrs-resolver: false
