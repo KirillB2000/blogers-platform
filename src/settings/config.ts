@@ -1,9 +1,9 @@
-const env = process.env
+const env = process.env;
 
-export const ADMIN_USERNAME = env.ADMIN_USERNAME || 'admin';
-export const ADMIN_PASSWORD = env.ADMIN_PASSWORD || 'qwerty';
+export const ADMIN_USERNAME = env.ADMIN_USERNAME || "admin";
+export const ADMIN_PASSWORD = env.ADMIN_PASSWORD || "qwerty";
 
 export const SETTINGS = {
-    PORT: env.PORT || 5002,
-    VERCEL: env.VERCEL
-}
+  PORT: env.PORT || 5002,
+  VERCEL: env.VERCEL,
+};

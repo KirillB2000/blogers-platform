@@ -4,14 +4,17 @@ import { blogViewModel } from "../../types/blogViewModel";
 import { blogsRepository } from "../../repositories/blogs.repository";
 import { httpStatuses } from "../../../core/types/http-statuses";
 
-export const createBlogHandler = (req: Request<{}, {}, blogInputModel>, res: Response<blogViewModel>) => {
-    const newBlog: Omit<blogViewModel, 'id'> = {
-        name: req.body.name,
-        description: req.body.description,
-        websiteUrl: req.body.websiteUrl
-    }
+export const createBlogHandler = (
+  req: Request<{}, {}, blogInputModel>,
+  res: Response<blogViewModel>,
+) => {
+  const newBlog: Omit<blogViewModel, "id"> = {
+    name: req.body.name,
+    description: req.body.description,
+    websiteUrl: req.body.websiteUrl,
+  };
 
-    const createdNewBlog = blogsRepository.create(newBlog)
+  const createdNewBlog = blogsRepository.create(newBlog);
 
-    res.status(httpStatuses.Created).json(createdNewBlog)
-}
+  res.status(httpStatuses.Created).json(createdNewBlog);
+};
