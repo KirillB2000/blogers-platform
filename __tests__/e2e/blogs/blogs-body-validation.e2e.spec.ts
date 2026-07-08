@@ -6,6 +6,7 @@ import { blogInputModel } from '../../../src/blogs/dto/blogInputModel';
 import { BLOGS_PATH } from '../../../src/blogs/constants/blogs.paths';
 import { httpStatuses } from '../../../src/core/types/http-statuses';
 import { createBlogDto } from '../../utils/blogs/createBlogDto';
+import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken';
 
 describe ('Blogs API body validation check', () => {
     const app = express();
@@ -21,9 +22,21 @@ describe ('Blogs API body validation check', () => {
         await clearDb(app);
     })
 
+    it('Should not create blog without authorization', async () => {
+        const createdBlog = await request(app)
+            .post(BLOGS_PATH)
+            .send({
+                ...correctBlogInputData
+            })
+            .expect(httpStatuses.Unauthorized)
+
+        expect(createdBlog.body).toEqual({})
+    })
+
     it ('Should not create blog with incorrect input data', async ()=> {
         const incorrectBlogBodyInput1 = await request(app)
             .post(BLOGS_PATH)
+            .set('Authorization', generateBasicAuthToken())
             .send({
                 ...correctBlogInputData,
                 name: '    ',
@@ -39,6 +52,7 @@ describe ('Blogs API body validation check', () => {
         const createdBlog = await createBlogDto(app)
         const incorrectBlogBodyInput1 = await request(app)
             .put(`${BLOGS_PATH}/${createdBlog.id}`)
+            .set('Authorization', generateBasicAuthToken())
             .send({
                 ...correctBlogInputData,
                 name: '    ',

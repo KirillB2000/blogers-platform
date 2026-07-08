@@ -4,6 +4,7 @@ import { postInputModel } from "../../../src/posts/dto/postInputModel"
 import { postDto } from "./postDto"
 import { POSTS_PATH } from "../../../src/posts/constants/posts.paths"
 import { httpStatuses } from "../../../src/core/types/http-statuses"
+import { generateBasicAuthToken } from "../generateBasicAuthToken"
 
 export const updatePostById = async (
     app: Express,
@@ -15,6 +16,7 @@ export const updatePostById = async (
 
             await request(app)
                 .put(`${POSTS_PATH}/${postId}`)
+                .set('Authorization', generateBasicAuthToken())
                 .send(updatedPostData)
                 .expect(httpStatuses.NoContent)
 }

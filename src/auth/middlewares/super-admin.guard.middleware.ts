@@ -4,8 +4,6 @@ import { ADMIN_PASSWORD, ADMIN_USERNAME } from "../../settings/config"
 
 export const superAdminGuardMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
-    // Authorization: Basic <base64-encoded-credentials>
-
     const auth = req.headers['authorization'] as string
 
     if(!auth) {

@@ -9,10 +9,13 @@ import { createBlogDto } from '../../utils/blogs/createBlogDto';
 import { updateBlogById } from '../../utils/blogs/updateBlogById';
 import { getBlogById } from '../../utils/blogs/getBlogById';
 import { clearDb } from '../../utils/clearDb';
+import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken';
 
 describe ('Blogs API', () => {
     const app = express()
     setupApp(app)
+
+    const adminToken = generateBasicAuthToken()
 
     beforeAll(async () => {
         await clearDb(app);
@@ -88,6 +91,7 @@ describe ('Blogs API', () => {
 
         await request(app)
             .delete(`${BLOGS_PATH}/${existedBlog.id}`)
+            .set('Authorization', adminToken)
             .expect(httpStatuses.NoContent)
 
         await request(app)
