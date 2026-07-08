@@ -5,9 +5,12 @@ import { BLOGS_PATH } from './blogs/constants/blogs.paths';
 import { POSTS_PATH } from './posts/constants/posts.paths';
 import { TESTING_PATH } from './testing/constants/testing.paths';
 import { testingRouter } from './testing/routers/testing.router';
+import { setupSwagger } from './core/swagger/setup-swagger';
 
 const setupApp = (app: Express) => {
     app.use(express.json())
+
+    setupSwagger(app)
 
     app.use(BLOGS_PATH, blogsRouter)
     app.use(POSTS_PATH, postsRouter)
