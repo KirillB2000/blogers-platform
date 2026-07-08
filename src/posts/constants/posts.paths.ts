@@ -1,4 +1,4 @@
-export const POSTS_PATH = "/api/posts";
+export const POSTS_PATH = "/posts";
 
 export const POSTS_ROUTES = {
   ROOT: "",
