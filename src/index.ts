@@ -7,6 +7,8 @@ export default setupApp(app)
 
 const PORT = SETTINGS.PORT
 
-app.listen(PORT, () => {
-    console.log(`Serever is running on http://localhost:${PORT}`);
-})
+if (!SETTINGS.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`Serever is running on http://localhost:${PORT}`);
+    })
+}
