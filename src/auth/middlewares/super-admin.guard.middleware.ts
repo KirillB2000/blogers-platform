@@ -1,31 +1,33 @@
-import { Request, Response, NextFunction} from "express"
-import { httpStatuses } from "../../core/types/http-statuses"
-import { ADMIN_PASSWORD, ADMIN_USERNAME } from "../../settings/config"
+import { Request, Response, NextFunction } from "express";
+import { httpStatuses } from "../../core/types/http-statuses";
+import { ADMIN_PASSWORD, ADMIN_USERNAME } from "../../settings/config";
 
-export const superAdminGuardMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const superAdminGuardMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const auth = req.headers["authorization"] as string;
 
-    const auth = req.headers['authorization'] as string
+  if (!auth) {
+    res.sendStatus(httpStatuses.Unauthorized);
+    return;
+  }
 
-    if(!auth) {
-        res.sendStatus(httpStatuses.Unauthorized)
-        return;
-    }
+  const [authType, token] = auth.split(" ");
 
-    const [authType, token] = auth.split(' ')
+  if (authType !== "Basic") {
+    res.sendStatus(httpStatuses.Unauthorized);
+    return;
+  }
 
-    if(authType !== 'Basic') {
-        res.sendStatus(httpStatuses.Unauthorized)
-        return;
-    }
+  const credentials = Buffer.from(token, "base64").toString("utf-8");
+  const [username, password] = credentials.split(":");
 
-    const credentials = Buffer.from(token, 'base64').toString('utf-8')
-    const [username, password] = credentials.split(':')
+  if (username !== ADMIN_USERNAME && password !== ADMIN_PASSWORD) {
+    res.sendStatus(httpStatuses.Unauthorized);
+    return;
+  }
 
-    if (username !== ADMIN_USERNAME && password !== ADMIN_PASSWORD) {
-        res.sendStatus(httpStatuses.Unauthorized)
-        return;
-    }
-
-    next()
-
-}
+  next();
+};

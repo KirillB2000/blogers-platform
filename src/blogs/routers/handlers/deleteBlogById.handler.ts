@@ -2,13 +2,13 @@ import { Request, Response } from "express";
 import { blogsRepository } from "../../repositories/blogs.repository";
 import { httpStatuses } from "../../../core/types/http-statuses";
 
-export const deleteBlogById = (req: Request<{id: string}>, res: Response) => {
-    const isDeleted = blogsRepository.delete(req.params.id)
+export const deleteBlogById = (req: Request<{ id: string }>, res: Response) => {
+  const isDeleted = blogsRepository.delete(req.params.id);
 
-    if (!isDeleted) {
-        res.sendStatus(httpStatuses.NotFound);
-        return;
-    }
+  if (!isDeleted) {
+    res.sendStatus(httpStatuses.NotFound);
+    return;
+  }
 
-    res.sendStatus(httpStatuses.NoContent)
-}
+  res.sendStatus(httpStatuses.NoContent);
+};

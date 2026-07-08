@@ -5,5 +5,5 @@ paths:
       tags:
         - Testing
       responses:
-        '204':
+        "204":
           description: No content. All data deleted

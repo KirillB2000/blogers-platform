@@ -1,6 +1,6 @@
 export type blogViewModel = {
-    id: string,
-    name: string,
-    description: string,
-    websiteUrl: string
-}
+  id: string;
+  name: string;
+  description: string;
+  websiteUrl: string;
+};

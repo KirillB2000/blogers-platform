@@ -10,40 +10,38 @@ import { inputValidationResultMiddleware } from "../../core/middlewares/validati
 import { blogInputDtoValidation } from "../validation/blog-input.validation.middleware";
 import { superAdminGuardMiddleware } from "../../auth/middlewares/super-admin.guard.middleware";
 
-
-export const blogsRouter = (Router({}))
+export const blogsRouter = Router({});
 
 blogsRouter
-    .get(BLOGS_ROUTES.ROOT, getBlogListHanlder)
+  .get(BLOGS_ROUTES.ROOT, getBlogListHanlder)
 
-    .get(
-        BLOGS_ROUTES.BY_ID,
-        idValidation,
-        inputValidationResultMiddleware, 
-        getBlogByIdHandler
-    )
+  .get(
+    BLOGS_ROUTES.BY_ID,
+    idValidation,
+    inputValidationResultMiddleware,
+    getBlogByIdHandler,
+  )
 
-    .post(
-        BLOGS_ROUTES.ROOT,
-        superAdminGuardMiddleware,
-        blogInputDtoValidation,
-        inputValidationResultMiddleware,
-        createBlogHandler
-    )
+  .post(
+    BLOGS_ROUTES.ROOT,
+    superAdminGuardMiddleware,
+    blogInputDtoValidation,
+    inputValidationResultMiddleware,
+    createBlogHandler,
+  )
 
+  .put(
+    BLOGS_ROUTES.BY_ID,
+    superAdminGuardMiddleware,
+    blogInputDtoValidation,
+    inputValidationResultMiddleware,
+    updateBlogById,
+  )
 
-    .put(
-        BLOGS_ROUTES.BY_ID,
-        superAdminGuardMiddleware,
-        blogInputDtoValidation,
-        inputValidationResultMiddleware,
-        updateBlogById
-    )
-
-    .delete(
-        BLOGS_ROUTES.BY_ID,
-        superAdminGuardMiddleware,
-        idValidation,
-        inputValidationResultMiddleware, 
-        deleteBlogById
-    )
+  .delete(
+    BLOGS_ROUTES.BY_ID,
+    superAdminGuardMiddleware,
+    idValidation,
+    inputValidationResultMiddleware,
+    deleteBlogById,
+  );
