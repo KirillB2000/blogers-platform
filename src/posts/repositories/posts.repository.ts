@@ -1,47 +1,37 @@
-import { db } from "../../db/db";
+import { ObjectId, WithId } from "mongodb";
 import { postInputModel } from "../dto/postInputModel";
-import { postViewModel } from "../types/postViewModel";
+import { Post } from "../types/post";
+import { postsCollection } from "../../db/collections";
 
 export const postsRepository = {
-  findAll(): postViewModel[] {
-    return db.posts;
+  async findAll(): Promise<WithId<Post>[]> {
+    return postsCollection.find().toArray()
   },
 
-  findById(id: string): postViewModel | null {
-    return db.posts.find((p) => p.id === id) ?? null;
+  async findById(id: string): Promise<WithId<Post> | null> {
+    return postsCollection.findOne({_id: new ObjectId(id)})
   },
 
-  create(newPost: Omit<postViewModel, "id">): postViewModel {
-    const created: postViewModel = {
-      id: +new Date() + "",
-      ...newPost,
-    };
+  async create(newPost: Post): Promise<WithId<Post>> {
+    const insertResult = await postsCollection.insertOne(newPost)
 
-    db.posts.push(created);
-
-    return created;
+    return {...newPost, _id: insertResult.insertedId}
   },
 
-  update(id: string, inputForUpdate: postInputModel): Boolean {
-    const index = db.posts.findIndex((p) => p.id === id);
+  async update(id: string, post: postInputModel): Promise<Boolean> {
+    const updatedResult = await postsCollection.updateOne(
+      {_id: new ObjectId(id)},
+      {$set: post}
+    )
 
-    if (index === -1) {
-      return false;
-    }
-
-    db.posts[index] = { ...db.posts[index], ...inputForUpdate };
-    return true;
+    return updatedResult.matchedCount > 0;
   },
 
-  delete(id: string): Boolean {
-    const postById = this.findById(id);
+  async delete(id: string): Promise<Boolean> {
+    const deleteResult = await postsCollection.deleteOne({
+      _id: new ObjectId(id)
+    })
 
-    if (!postById) {
-      return false;
-    }
-
-    db.posts = db.posts.filter((p) => p.id != id);
-
-    return true;
+    return deleteResult.deletedCount > 0;
   },
 };
