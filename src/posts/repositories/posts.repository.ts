@@ -27,7 +27,7 @@ export const postsRepository = {
     return updatedResult.matchedCount > 0;
   },
 
-  async delete(id: string): Promise<Boolean> {
+  async delete(id: string): Promise<boolean> {
     const deleteResult = await postsCollection.deleteOne({
       _id: new ObjectId(id)
     })

@@ -4,29 +4,34 @@ import { postViewModel } from "../../types/postViewModel";
 import { blogsRepository } from "../../../blogs/repositories/blogs.repository";
 import { httpStatuses } from "../../../core/types/http-statuses";
 import { postsRepository } from "../../repositories/posts.repository";
+import { Post } from "../../types/post";
+import { mapPostInputDtoToDbType } from "../mappers/map-from-post-input-dto-to-db-type";
+import { WithId } from "mongodb";
+import { mapToPostViewModel } from "../mappers/map-from-post-db-type-to-view-model";
 
-export const createPost = (
+export const createPost = async (
   req: Request<{}, {}, postInputModel>,
   res: Response<postViewModel | { message: string; field: string }>,
 ) => {
-  const blogByPostId = blogsRepository.findById(req.body.blogId);
+  const blogById = await blogsRepository.findById(req.body.blogId);
 
-  if (!blogByPostId) {
+  if (!blogById) {
     res
       .status(httpStatuses.BadRequest)
       .json({ message: "Blog not found", field: "blogID" }); // Переписать на errorHadler
     return;
   }
 
-  const newPost: Omit<postViewModel, "id"> = {
-    title: req.body.title,
-    shortDescription: req.body.shortDescription,
-    content: req.body.content,
-    blogId: req.body.blogId,
-    blogName: blogByPostId.name,
-  };
+  const newPost: Post = {
+    ...mapPostInputDtoToDbType(req.body),
+    blogId: blogById._id.toString(),
+    blogName: blogById.name,
+    createdAt: new Date()
+  }
 
-  const createdPost = postsRepository.create(newPost);
+  const createdPost: WithId<Post> = await postsRepository.create(newPost);
 
-  res.status(httpStatuses.Created).json(createdPost);
+  const postDataForResponse: postViewModel = mapToPostViewModel(createdPost)
+
+  res.status(httpStatuses.Created).json(postDataForResponse);
 };

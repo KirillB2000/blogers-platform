@@ -1,16 +1,22 @@
 import { Request, Response } from "express";
 import { postsRepository } from "../../repositories/posts.repository";
 import { httpStatuses } from "../../../core/types/http-statuses";
+import { postViewModel } from "../../types/postViewModel";
+import { mapToPostViewModel } from "../mappers/map-from-post-db-type-to-view-model";
 
-export const getPostByIdHandler = (req: Request, res: Response) => {
-  const postId = req.params.id.toString();
+export const getPostByIdHandler = async (
+  req: Request<{id: string}>, 
+  res: Response<postViewModel>) => {
+    const postId = req.params.id
 
-  const post = postsRepository.findById(postId);
+    const post = await postsRepository.findById(postId);
 
-  if (!post) {
-    res.sendStatus(httpStatuses.NotFound);
-    return;
-  }
+    if (!post) {
+      res.sendStatus(httpStatuses.NotFound);
+      return;
+    }
 
-  res.status(httpStatuses.Ok).json(post);
+    const postDataForResponse: postViewModel = mapToPostViewModel(post)
+
+    res.status(httpStatuses.Ok).json(postDataForResponse);
 };
