@@ -4,16 +4,14 @@ import { blogViewModel } from "../../types/blogViewModel";
 import { blogsRepository } from "../../repositories/blogs.repository";
 import { httpStatuses } from "../../../core/types/http-statuses";
 
-export const updateBlogById = (
+export const updateBlogById = async (
   req: Request<{ id: string }, {}, blogInputModel>,
-  res: Response<blogViewModel | { message: string; field: string }>,
+  res: Response<blogViewModel>,
 ) => {
-  const isUpdated = blogsRepository.update(req.params.id, req.body);
+  const isUpdated = await blogsRepository.update(req.params.id, req.body);
 
   if (!isUpdated) {
-    res
-      .status(httpStatuses.NotFound)
-      .json({ message: "Not found blog to update", field: "id" }); // Переписать на errorHadler
+    res.sendStatus(httpStatuses.NotFound)
     return;
   }
 

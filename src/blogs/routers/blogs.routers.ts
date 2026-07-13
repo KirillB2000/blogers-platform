@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getBlogListHanlder } from "./handlers/getBlogList.handler";
+import { getBlogListHandler } from "./handlers/getBlogList.handler";
 import { BLOGS_ROUTES } from "../constants/blogs.paths";
 import { getBlogByIdHandler } from "./handlers/getBlogById.handler";
 import { createBlogHandler } from "./handlers/createBlog.handler";
@@ -13,7 +13,7 @@ import { superAdminGuardMiddleware } from "../../auth/middlewares/super-admin.gu
 export const blogsRouter = Router({});
 
 blogsRouter
-  .get(BLOGS_ROUTES.ROOT, getBlogListHanlder)
+  .get(BLOGS_ROUTES.ROOT, getBlogListHandler)
 
   .get(
     BLOGS_ROUTES.BY_ID,
