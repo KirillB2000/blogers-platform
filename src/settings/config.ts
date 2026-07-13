@@ -6,4 +6,5 @@ export const ADMIN_PASSWORD = env.ADMIN_PASSWORD || "qwerty";
 export const SETTINGS = {
   PORT: env.PORT || 5002,
   VERCEL: env.VERCEL,
+  DB_NAME: env.DB_NAME || 'blogers-platform'
 };
