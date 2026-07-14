@@ -8,6 +8,8 @@ import { POSTS_PATH } from "../../../src/posts/constants/posts.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { createPostDto } from "../../utils/posts/createPostDto";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
+import { runDB, stopDb } from "../../../src/db/mongo.db";
+import { SETTINGS } from "../../../src/settings/config";
 
 describe("Posts API body validation check", () => {
   const app = express();
@@ -19,9 +21,15 @@ describe("Posts API body validation check", () => {
     content: "Correct content",
     blogId: "1",
   };
+
   beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL)
     await clearDb(app);
   });
+
+  afterAll(async () => {
+    await stopDb()
+  })
 
   it("Should not create post without authorization", async () => {
     const createdPost = await request(app)

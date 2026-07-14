@@ -11,6 +11,8 @@ import { updatePostById } from "../../utils/posts/updatePostById";
 import { postInputModel } from "../../../src/posts/dto/postInputModel";
 import { clearDb } from "../../utils/clearDb";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
+import { runDB, stopDb } from "../../../src/db/mongo.db";
+import { SETTINGS } from "../../../src/settings/config";
 
 describe("Posts API", () => {
   const app = express();
@@ -18,9 +20,14 @@ describe("Posts API", () => {
 
   const adminToken = generateBasicAuthToken();
 
-  beforeAll(async () => {
+ beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL)
     await clearDb(app);
   });
+
+  afterAll(async () => {
+    await stopDb()
+  })
 
   it("Should create new post; POST /api/posts", async () => {
     const createdPost: postViewModel = await createPostDto(app);
@@ -31,6 +38,7 @@ describe("Posts API", () => {
       content: "Test content",
       blogId: expect.any(String),
       blogName: expect.any(String),
+      createdAt: expect.any(String)
     });
   });
 
@@ -55,6 +63,7 @@ describe("Posts API", () => {
       content: "Test content",
       blogId: expect.any(String),
       blogName: expect.any(String),
+      createdAt: expect.any(String)
     });
   });
 
@@ -80,6 +89,7 @@ describe("Posts API", () => {
       content: postDataDtoForChange.content,
       blogId: createBlog.id,
       blogName: createBlog.name,
+      createdAt: expect.any(String)
     });
   });
 
