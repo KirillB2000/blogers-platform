@@ -22,3 +22,11 @@ export async function runDB(url: string): Promise<void> {
     throw new Error(`❌ Database not connected: ${e}`);
   }
 }
+
+export const stopDb = async () => {
+  if (!client) {
+    throw new Error (`❌ No active client`)  
+  }
+  await client.close()
+
+}

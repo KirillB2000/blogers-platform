@@ -7,6 +7,8 @@ import { BLOGS_PATH } from "../../../src/blogs/constants/blogs.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { createBlogDto } from "../../utils/blogs/createBlogDto";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
+import { runDB, stopDb } from "../../../src/db/mongo.db";
+import { SETTINGS } from "../../../src/settings/config";
 
 describe("Blogs API body validation check", () => {
   const app = express();
@@ -19,8 +21,13 @@ describe("Blogs API body validation check", () => {
   };
 
   beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL)
     await clearDb(app);
   });
+
+  afterAll(async () => {
+    await stopDb()
+  })
 
   it("Should not create blog without authorization", async () => {
     const createdBlog = await request(app)

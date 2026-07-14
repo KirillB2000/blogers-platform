@@ -10,6 +10,8 @@ import { updateBlogById } from "../../utils/blogs/updateBlogById";
 import { getBlogById } from "../../utils/blogs/getBlogById";
 import { clearDb } from "../../utils/clearDb";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
+import { runDB, stopDb } from "../../../src/db/mongo.db";
+import { SETTINGS } from "../../../src/settings/config";
 
 describe("Blogs API", () => {
   const app = express();
@@ -18,8 +20,13 @@ describe("Blogs API", () => {
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
+    await runDB(SETTINGS.MONGO_URL)
     await clearDb(app);
   });
+
+  afterAll(async () => {
+    await stopDb()
+  })
 
   it("Should create new blog; POST /api/blogs", async () => {
     const newBlogDto: blogInputModel = {
@@ -38,6 +45,8 @@ describe("Blogs API", () => {
       websiteUrl: expect.stringMatching(
         /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/,
       ),
+      createdAt: expect.any(String),
+      isMembership: expect.any(Boolean)
     });
   });
 
@@ -63,6 +72,8 @@ describe("Blogs API", () => {
       websiteUrl: expect.stringMatching(
         /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/,
       ),
+      createdAt: expect.any(String),
+      isMembership: expect.any(Boolean)
     });
   });
 
@@ -85,6 +96,8 @@ describe("Blogs API", () => {
       name: updateBlogDto.name,
       description: updateBlogDto.description,
       websiteUrl: updateBlogDto.websiteUrl,
+      createdAt: expect.any(String),
+      isMembership: expect.any(Boolean)
     });
   });
 
