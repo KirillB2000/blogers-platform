@@ -27,6 +27,7 @@ describe("Posts API body validation check", () => {
   });
 
   afterAll(async () => {
+    await clearDb(app);
     await stopDb()
   })
 
