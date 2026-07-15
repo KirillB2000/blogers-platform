@@ -34,8 +34,9 @@ const blogId = body("blogId")
   .trim()
   .notEmpty()
   .withMessage("Blog id is required and cannot be empty")
-  .custom((value) => {
-    const existedBlog = blogsRepository.findById(value);
+  .isMongoId()
+  .custom(async (value) => {
+    const existedBlog = await blogsRepository.findById(value);
 
     if (!existedBlog) {
       throw new Error("Blog should exist");

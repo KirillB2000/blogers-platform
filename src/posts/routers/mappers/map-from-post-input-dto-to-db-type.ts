@@ -8,7 +8,7 @@ export const mapPostInputDtoToDbType = (
     return {
         title: dto.title,
         shortDescription: dto.shortDescription,
-        content: dto.shortDescription,
+        content: dto.content,
         blogId: dto.blogId
     }
 }

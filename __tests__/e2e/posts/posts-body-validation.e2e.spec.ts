@@ -2,7 +2,6 @@ import express from "express";
 import request from "supertest";
 import setupApp from "../../../src/setup-app";
 import { postInputModel } from "../../../src/posts/dto/postInputModel";
-import { createBlogDto } from "../../utils/blogs/createBlogDto";
 import { clearDb } from "../../utils/clearDb";
 import { POSTS_PATH } from "../../../src/posts/constants/posts.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
