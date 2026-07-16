@@ -1,17 +1,16 @@
 {
   "version": 2,
   "name": "blogers-platform",
-  "buildCommand": null,
   "builds": [
     {
-      "src": "dist/src/index.js",
+      "src": "src/index.ts",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "dist/src/index.js"
+      "dest": "src/index.ts"
     }
   ]
 }
