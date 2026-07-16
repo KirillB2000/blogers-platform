@@ -20,4 +20,4 @@ const bootstrap = async () => {
   return app
 }
 
-bootstrap()
+export default bootstrap()
