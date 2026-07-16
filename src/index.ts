@@ -3,10 +3,10 @@ import setupApp from "./setup-app";
 import { SETTINGS } from "./settings/config";
 import { runDB } from "./db/mongo.db";
 
+const app = express();
+setupApp(app);
+
 const bootstrap = async () => {
-  const app = express();
-  setupApp(app);
-  
   const PORT = SETTINGS.PORT;
 
   await runDB(SETTINGS.MONGO_URL)
@@ -20,4 +20,9 @@ const bootstrap = async () => {
   return app
 }
 
-export default bootstrap()
+// Сразу экспортируем Express-приложение
+// Для Vercel: @vercel/node сам вызовет app(req, res)
+// Для локальной разработки: вызываем bootstrap для подключения БД и запуска сервера
+bootstrap();
+
+export default app;
