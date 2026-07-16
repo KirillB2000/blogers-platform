@@ -1,10 +1,12 @@
-import express from "express";
+import express, { Express } from "express";
 import setupApp from "./setup-app";
 import { SETTINGS } from "./settings/config";
 import { runDB } from "./db/mongo.db";
 
+let app: Express;
+
 const bootstrap = async () => {
-  const app = express();
+  app = express();
   setupApp(app);
   
   const PORT = SETTINGS.PORT;
@@ -20,4 +22,6 @@ const bootstrap = async () => {
   return app
 }
 
-bootstrap()
+bootstrap();
+
+export default app!;

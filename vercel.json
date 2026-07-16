@@ -1,8 +1,6 @@
 {
   "version": 2,
   "name": "blogers-platform",
-  "buildCommand": "npx tsc",
-  "outputDirectory": "dist",
   "builds": [
     {
       "src": "dist/src/index.js",
