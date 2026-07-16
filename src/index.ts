@@ -3,10 +3,12 @@ import setupApp from "./setup-app";
 import { SETTINGS } from "./settings/config";
 import { runDB } from "./db/mongo.db";
 
-let app: Express;
+let appInstance: Express | null = null;
 
 const bootstrap = async () => {
-  app = express();
+  if (appInstance) return appInstance;
+  
+  const app = express();
   setupApp(app);
   
   const PORT = SETTINGS.PORT;
@@ -19,9 +21,16 @@ const bootstrap = async () => {
     });
   }
   
-  return app
+  appInstance = app;
+  return app;
 }
 
-bootstrap();
+// Запускаем при создании модуля — для Vercel это гарантирует,
+// что app будет готов к моменту первого запроса
+const appPromise = bootstrap();
 
-export default app!;
+// Экспортируем handler для Vercel
+export default async function handler(req: any, res: any) {
+  const app = await appPromise;
+  return app(req, res);
+}

@@ -1,0 +1,7 @@
+# Exclude all TypeScript source files - Vercel uses precompiled JS from dist/
+**/*.ts
+!dist/**/*.js
+src/
+__tests__/
+tsconfig.json
+jest.config.js

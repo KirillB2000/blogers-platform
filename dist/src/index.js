@@ -12,13 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = handler;
 const express_1 = __importDefault(require("express"));
 const setup_app_1 = __importDefault(require("./setup-app"));
 const config_1 = require("./settings/config");
 const mongo_db_1 = require("./db/mongo.db");
-let app;
+let appInstance = null;
 const bootstrap = () => __awaiter(void 0, void 0, void 0, function* () {
-    app = (0, express_1.default)();
+    if (appInstance)
+        return appInstance;
+    const app = (0, express_1.default)();
     (0, setup_app_1.default)(app);
     const PORT = config_1.SETTINGS.PORT;
     yield (0, mongo_db_1.runDB)(config_1.SETTINGS.MONGO_URL);
@@ -27,7 +30,16 @@ const bootstrap = () => __awaiter(void 0, void 0, void 0, function* () {
             console.log(`Serever is running on http://localhost:${PORT}`);
         });
     }
+    appInstance = app;
     return app;
 });
-bootstrap();
-exports.default = app;
+// Запускаем при создании модуля — для Vercel это гарантирует,
+// что app будет готов к моменту первого запроса
+const appPromise = bootstrap();
+// Экспортируем handler для Vercel
+function handler(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const app = yield appPromise;
+        return app(req, res);
+    });
+}
