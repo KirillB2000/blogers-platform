@@ -15,17 +15,10 @@ export const createPost = async (
 ) => {
   const blogById = await blogsRepository.findById(req.body.blogId);
 
-  if (!blogById) {
-    res
-      .status(httpStatuses.BadRequest)
-      .json({ message: "Blog not found", field: "blogID" }); // Переписать на errorHadler
-    return;
-  }
-
   const newPost: Post = {
     ...mapPostInputDtoToDbType(req.body),
-    blogId: blogById._id.toString(),
-    blogName: blogById.name,
+    blogId: blogById!._id.toString(),
+    blogName: blogById!.name,
     createdAt: new Date()
   }
 
