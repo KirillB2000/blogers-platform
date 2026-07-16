@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.25
       express:
         specifier: 4.21.2
         version: 4.21.2
@@ -27,9 +30,6 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(express@4.21.2)
     devDependencies:
-      '@types/express':
-        specifier: ^4.17.21
-        version: 4.17.25
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
