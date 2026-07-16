@@ -12,12 +12,16 @@ setupApp(app);
 
 const PORT = SETTINGS.PORT;
 
-if (!SETTINGS.VERCEL) {
-  runDB(SETTINGS.MONGO_URL).then(() => {
+const startApp = async () => {
+  if (!SETTINGS.VERCEL) {
+    await runDB(SETTINGS.MONGO_URL)
+
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
     });
-  });
+  }
 }
+
+startApp()
 
 export default app;
