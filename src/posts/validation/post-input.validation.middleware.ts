@@ -35,15 +35,7 @@ const blogId = body("blogId")
   .notEmpty()
   .withMessage("Blog id is required and cannot be empty")
   .isMongoId()
-  .custom(async (value) => {
-    const existedBlog = await blogsRepository.findById(value);
-
-    if (!existedBlog) {
-      throw new Error("Blog should exist");
-    }
-
-    return true;
-  });
+  .withMessage('Incorrect mongo id')
 
 export const postInputDtoValidation = [
   titleValidation,

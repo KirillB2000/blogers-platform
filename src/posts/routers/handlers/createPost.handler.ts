@@ -15,6 +15,11 @@ export const createPost = async (
 ) => {
   const blogById = await blogsRepository.findById(req.body.blogId);
 
+  if (!blogById) {
+    res.sendStatus(httpStatuses.BadRequest).json({message: 'Blog should exist', field: 'blogId'});
+    return;
+  }
+
   const newPost: Post = {
     ...mapPostInputDtoToDbType(req.body),
     blogId: blogById!._id.toString(),
