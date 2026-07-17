@@ -1,7 +1,7 @@
 import { blogViewModel } from "../types/blogViewModel";
 import { blogInputModel } from "../dto/blogInputModel";
 import { ObjectId, WithId } from "mongodb";
-import { blogsCollection } from "../../db/collections";
+import { blogsCollection, postsCollection } from "../../db/collections";
 import { Blog } from "../types/blog";
 
 export const blogsRepository = {
@@ -28,7 +28,10 @@ export const blogsRepository = {
     return updateResult.matchedCount > 0
   },
 
-  async delete(id: string): Promise<Boolean> {
+  async delete(id: string): Promise<boolean> {
+
+    await postsCollection.deleteMany({blogId: id})
+
     const deleteResult = await blogsCollection.deleteOne(
       {_id: new ObjectId(id)}
     )
