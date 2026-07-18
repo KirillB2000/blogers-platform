@@ -12,6 +12,8 @@ import { clearDb } from "../../utils/clearDb";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
 import { runDB, stopDb } from "../../../src/db/mongo.db";
 import { SETTINGS } from "../../../src/settings/config";
+import { createPostDto } from "../../utils/posts/createPostDto";
+import { POSTS_PATH } from "../../../src/posts/constants/posts.paths";
 
 describe("Blogs API", () => {
   const app = express();
@@ -104,6 +106,24 @@ describe("Blogs API", () => {
   it("Should delete blog by id; DELETE /api/blogs/:id", async () => {
     const existedBlog = await createBlogDto(app);
 
+    const existedPost1 = await createPostDto(
+      app, 
+      {
+        blogId: existedBlog.id, 
+        title: 'Some title', 
+        shortDescription: 'Some description', 
+        content: 'Some content'
+      })
+
+    const existedPost2 = await createPostDto(
+      app, 
+      {
+        blogId: existedBlog.id, 
+        title: 'Some title2', 
+        shortDescription: 'Some description2', 
+        content: 'Some content2'
+      })
+
     await request(app)
       .delete(`${BLOGS_PATH}/${existedBlog.id}`)
       .set("Authorization", adminToken)
@@ -112,5 +132,13 @@ describe("Blogs API", () => {
     await request(app)
       .get(`${BLOGS_PATH}/${existedBlog.id}`)
       .expect(httpStatuses.NotFound);
+
+    await request(app)
+      .get(`${POSTS_PATH}/${existedPost1.id}`)
+      .expect(httpStatuses.NotFound)
+
+    await request(app)
+      .get(`${POSTS_PATH}/${existedPost2.id}`)
+      .expect(httpStatuses.NotFound)
   });
 });
