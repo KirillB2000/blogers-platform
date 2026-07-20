@@ -1,5 +1,5 @@
 import { blogInputModel } from "../../dto/blogInputModel";
-import { Blog } from "../../types/blog";
+import { Blog } from "../../domain/blog";
 
 
 export const  mapBlogInputDtoToDbType = (

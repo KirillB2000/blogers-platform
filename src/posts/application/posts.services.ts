@@ -3,7 +3,7 @@ import { Post } from "../types/post";
 import { postsRepository } from "../repositories/posts.repository";
 import { create } from "node:domain";
 import { postInputModel } from "../dto/postInputModel";
-import { mapPostInputDtoToDbType } from "../routers/mappers/map-from-post-input-dto-to-db-type";
+import { mapPostInputDtoToDbType } from "../routes/mappers/map-from-post-input-dto-to-db-type";
 import { blogsRepository } from "../../blogs/repositories/blogs.repository";
 import { blogsService } from "../../blogs/application/blogs.services";
 

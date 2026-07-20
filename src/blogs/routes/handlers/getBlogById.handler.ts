@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { httpStatuses } from "../../../core/types/http-statuses";
-import { blogViewModel } from "../../types/blogViewModel";
 import { WithId } from "mongodb";
-import { Blog } from "../../types/blog";
+import { Blog } from "../../domain/blog";
 import { mapToBlogViewModel } from "../mappers/map-from-blog-db-type-to-view-model";
 import { blogsService } from "../../application/blogs.services";
+import { BlogDataOutput } from "../output/bloger-data.output";
 
 export const getBlogByIdHandler = async (
   req: Request<{ id: string }>,
@@ -20,7 +20,7 @@ export const getBlogByIdHandler = async (
       return;
     }
   
-    const blogForResponse: blogViewModel = mapToBlogViewModel(blog)
+    const blogForResponse: BlogDataOutput = mapToBlogViewModel(blog)
   
     res.status(httpStatuses.Ok).json(blogForResponse);
   } catch (error) {

@@ -1,8 +1,8 @@
 import { WithId } from "mongodb"
-import { Blog } from "../types/blog"
+import { Blog } from "../domain/blog"
 import { blogsRepository } from "../repositories/blogs.repository"
 import { blogInputModel } from "../dto/blogInputModel"
-import { mapBlogInputDtoToDbType } from "../routers/mappers/map-from-blog-input-dto-to-db-type"
+import { mapBlogInputDtoToDbType } from "../routes/mappers/map-from-blog-input-dto-to-db-type"
 
 export const blogsService = {
     async findMany(): Promise<WithId<Blog>[]> {
