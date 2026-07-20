@@ -4,13 +4,13 @@ import request from "supertest";
 import { BLOGS_PATH } from "../../../src/blogs/constants/blogs.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { blogDto } from "./blogDto";
-import { blogViewModel } from "../../../src/blogs/types/blogViewModel";
 import { generateBasicAuthToken } from "../generateBasicAuthToken";
+import { BlogDataOutput } from "../../../src/blogs/routes/output/bloger-data.output";
 
 export const createBlogDto = async (
   app: Express,
   inputForBlog?: blogInputModel,
-): Promise<blogViewModel> => {
+): Promise<BlogDataOutput> => {
   const testBlogData: blogInputModel = { ...blogDto(), ...inputForBlog };
 
   const createdBlogResponse = await request(app)

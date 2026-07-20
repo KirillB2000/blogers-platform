@@ -1,6 +1,6 @@
 import express, { Express } from "express";
-import { blogsRouter } from "./blogs/routers/blogs.routers";
-import { postsRouter } from "./posts/routers/posts.router";
+import { blogsRouter } from "./blogs/routes/blogs.routers";
+import { postsRouter } from "./posts/routes/posts.router";
 import { BLOGS_PATH } from "./blogs/constants/blogs.paths";
 import { POSTS_PATH } from "./posts/constants/posts.paths";
 import { TESTING_PATH } from "./testing/constants/testing.paths";
