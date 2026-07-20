@@ -1,14 +1,18 @@
 import { Request, Response } from "express";
-import { blogsRepository } from "../../repositories/blogs.repository";
 import { httpStatuses } from "../../../core/types/http-statuses";
+import { blogsService } from "../../application/blogs.services";
 
 export const deleteBlogById = async (req: Request<{ id: string }>, res: Response) => {
-  const isDeleted = await blogsRepository.delete(req.params.id);
-
-  if (!isDeleted) {
-    res.sendStatus(httpStatuses.NotFound);
-    return;
+  try {
+    const isDeleted: boolean = await blogsService.delete(req.params.id);
+  
+    if (!isDeleted) {
+      res.sendStatus(httpStatuses.NotFound);
+      return;
+    }
+  
+    res.sendStatus(httpStatuses.NoContent);
+  } catch (error) {
+    res.status(httpStatuses.InternalServerError).json({error})
   }
-
-  res.sendStatus(httpStatuses.NoContent);
 };

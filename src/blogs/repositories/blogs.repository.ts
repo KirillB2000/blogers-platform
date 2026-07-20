@@ -19,7 +19,7 @@ export const blogsRepository = {
     return {...newBlog, _id: createdBlog.insertedId}
   },
 
-  async update(id: string, blog: blogInputModel): Promise<Boolean> {
+  async update(id: string, blog: blogInputModel): Promise<boolean> {
     const updateResult = await blogsCollection.updateOne(
       {_id: new ObjectId(id)},
       {$set: blog}
