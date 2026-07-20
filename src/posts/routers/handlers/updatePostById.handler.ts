@@ -1,18 +1,27 @@
 import { Request, Response } from "express";
 import { postInputModel } from "../../dto/postInputModel";
-import { postsRepository } from "../../repositories/posts.repository";
 import { httpStatuses } from "../../../core/types/http-statuses";
+import { postsServices } from "../../application/posts.services";
 
 export const updatePostById = async (
   req: Request<{ id: string }, {}, postInputModel>,
   res: Response,
 ) => {
-  const isUpdated = await postsRepository.update(req.params.id, req.body);
+  try {
+    const isUpdated: boolean | null = await postsServices.update(req.params.id, req.body);
 
-  if (!isUpdated) {
-    res.sendStatus(httpStatuses.NotFound)
-    return;
+    if (isUpdated === null) {
+      res.status(httpStatuses.BadRequest).json({message: 'Blog should exist', field: 'blogId'});
+      return;
+    }
+  
+    if (!isUpdated) {
+      res.sendStatus(httpStatuses.NotFound)
+      return;
+    }
+  
+    res.sendStatus(httpStatuses.NoContent);
+  } catch (error) {
+    res.status(httpStatuses.InternalServerError).json({error})
   }
-
-  res.sendStatus(httpStatuses.NoContent);
 };

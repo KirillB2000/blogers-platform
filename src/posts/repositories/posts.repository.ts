@@ -18,7 +18,7 @@ export const postsRepository = {
     return {...newPost, _id: insertResult.insertedId}
   },
 
-  async update(id: string, post: postInputModel): Promise<Boolean> {
+  async update(id: string, post: postInputModel): Promise<boolean> {
     const updatedResult = await postsCollection.updateOne(
       {_id: new ObjectId(id)},
       {$set: post}
