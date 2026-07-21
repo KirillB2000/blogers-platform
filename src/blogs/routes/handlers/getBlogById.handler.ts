@@ -4,7 +4,7 @@ import { WithId } from "mongodb";
 import { Blog } from "../../domain/blog";
 import { mapToBlogViewModel } from "../mappers/map-from-blog-db-type-to-view-model";
 import { blogsService } from "../../application/blogs.services";
-import { BlogDataOutput } from "../output/bloger-data.output";
+import { BlogViewModel } from "../output/blog-data.output";
 
 export const getBlogByIdHandler = async (
   req: Request<{ id: string }>,
@@ -20,7 +20,7 @@ export const getBlogByIdHandler = async (
       return;
     }
   
-    const blogForResponse: BlogDataOutput = mapToBlogViewModel(blog)
+    const blogForResponse: BlogViewModel = mapToBlogViewModel(blog)
   
     res.status(httpStatuses.Ok).json(blogForResponse);
   } catch (error) {

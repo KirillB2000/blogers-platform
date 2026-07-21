@@ -3,12 +3,13 @@ import { Blog } from "../domain/blog"
 import { blogsRepository } from "../repositories/blogs.repository"
 import { blogInputModel } from "../dto/blogInputModel"
 import { mapBlogInputDtoToDbType } from "../routes/mappers/map-from-blog-input-dto-to-db-type"
+import { BlogQueryInput } from "../routes/input/blog-query.input"
 
 export const blogsService = {
-    async findMany(): Promise<WithId<Blog>[]> {
-        const blogs: WithId<Blog>[] = await blogsRepository.findAll()
-
-        return blogs
+    async findMany(
+        queryDto: BlogQueryInput
+    ): Promise<{ items: WithId<Blog>[], totalCount: number }> {
+        return blogsRepository.findMany(queryDto)
     },
 
     async findById(id: string): Promise<WithId<Blog> | null> {
