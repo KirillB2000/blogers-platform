@@ -5,7 +5,7 @@ import { Blog } from "../../domain/blog";
 import { WithId } from "mongodb";
 import { mapToBlogViewModel } from "../mappers/map-from-blog-db-type-to-view-model";
 import { blogsService } from "../../application/blogs.services";
-import { BlogDataOutput } from "../output/bloger-data.output";
+import { BlogViewModel } from "../output/blog-data.output";
 
 export const createBlogHandler = async (
   req: Request<{}, {}, blogInputModel>,
@@ -14,7 +14,7 @@ export const createBlogHandler = async (
   try {
     const createdNewBlog: WithId<Blog> = await blogsService.create(req.body);
   
-    const blogForResponse: BlogDataOutput = mapToBlogViewModel(createdNewBlog)
+    const blogForResponse: BlogViewModel = mapToBlogViewModel(createdNewBlog)
   
     res.status(httpStatuses.Created).json(blogForResponse);
   } catch (error) {

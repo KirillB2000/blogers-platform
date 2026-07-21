@@ -1,9 +1,9 @@
 import { WithId } from "mongodb";
 import { Blog } from "../../domain/blog";
-import { BlogDataOutput } from "../output/bloger-data.output";
+import { BlogViewModel } from "../output/blog-data.output";
 
 
-export const mapToBlogViewModel = (blog: WithId<Blog>): BlogDataOutput => {
+export const mapToBlogViewModel = (blog: WithId<Blog>): BlogViewModel => {
     return {
         id: blog._id.toString(),
         name: blog.name,

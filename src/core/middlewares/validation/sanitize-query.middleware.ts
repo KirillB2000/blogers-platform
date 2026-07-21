@@ -29,4 +29,6 @@ export function sanitizeQueryParams (
         enumerable: true,
         writable: true
     })
+
+    next();
 }
