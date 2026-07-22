@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { postInputModel } from "../../dto/postInputModel";
-import { postViewModel } from "../../types/postViewModel";
+import { postViewModel } from "../output/post-data.output";
 import { httpStatuses } from "../../../core/types/http-statuses";
-import { Post } from "../../types/post";
+import { Post } from "../../domain/post";
 import { WithId } from "mongodb";
 import { mapToPostViewModel } from "../mappers/map-from-post-db-type-to-view-model";
 import { postsServices } from "../../application/posts.services";

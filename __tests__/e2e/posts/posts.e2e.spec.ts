@@ -3,7 +3,7 @@ import setupApp from "../../../src/setup-app";
 import request from "supertest";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { createPostDto } from "../../utils/posts/createPostDto";
-import { postViewModel } from "../../../src/posts/types/postViewModel";
+import { postViewModel } from "../../../src/posts/routes/output/post-data.output";
 import { POSTS_PATH } from "../../../src/posts/constants/posts.paths";
 import { getPostById } from "../../utils/posts/getPostByID";
 import { createBlogDto } from "../../utils/blogs/createBlogDto";

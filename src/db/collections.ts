@@ -1,6 +1,6 @@
 import { Collection, Db } from "mongodb"
 import { Blog } from "../blogs/domain/blog"
-import { Post } from "../posts/types/post"
+import { Post } from "../posts/domain/post"
 
 export const BLOGS_COLLECTION_NAME = 'blogs'
 export const POSTS_COLLECTION_NAME = 'posts'

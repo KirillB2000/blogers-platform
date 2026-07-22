@@ -4,6 +4,7 @@ import { blogsService } from "../../application/blogs.services";
 import { BlogQueryInput } from "../input/blog-query.input";
 import { mapToBlogListPaginatedOutput } from "../mappers/map-from-blog-domain-to-blog-list-paginated-output";
 import { PagindatedOutput } from "../../../core/types/paginated.output";
+import { BlogListPaginatedOutput } from "../output/blog-list-paginator.output";
 
 export const getBlogListHandler = async (
   req: Request<{}, {}, {}, BlogQueryInput>, 
@@ -23,7 +24,7 @@ export const getBlogListHandler = async (
       totalCount: totalCount
     }
 
-    const blogListOutput = mapToBlogListPaginatedOutput(items, meta)
+    const blogListOutput: BlogListPaginatedOutput = mapToBlogListPaginatedOutput(items, meta)
 
     res.status(httpStatuses.Ok).send(blogListOutput)
     

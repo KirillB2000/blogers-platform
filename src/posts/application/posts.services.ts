@@ -1,15 +1,18 @@
 import { WithId } from "mongodb";
-import { Post } from "../types/post";
+import { Post } from "../domain/post";
 import { postsRepository } from "../repositories/posts.repository";
 import { create } from "node:domain";
 import { postInputModel } from "../dto/postInputModel";
 import { mapPostInputDtoToDbType } from "../routes/mappers/map-from-post-input-dto-to-db-type";
 import { blogsRepository } from "../../blogs/repositories/blogs.repository";
 import { blogsService } from "../../blogs/application/blogs.services";
+import { PostQueryInput } from "../routes/input/post-query.input";
 
 export const postsServices = {
-    async findMany(): Promise<WithId<Post>[]> {
-        const posts = await postsRepository.findAll()
+    async findMany(
+        queryDto: PostQueryInput
+    ): Promise<{items: WithId<Post>[], totalCount: number}> {
+        const posts = await postsRepository.findAll(queryDto)
         
         return posts
     },
