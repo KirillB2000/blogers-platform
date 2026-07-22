@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { postsRepository } from "../../repositories/posts.repository";
 import { httpStatuses } from "../../../core/types/http-statuses";
-import { postViewModel } from "../../types/postViewModel";
+import { postViewModel } from "../output/post-data.output";
 import { mapToPostViewModel } from "../mappers/map-from-post-db-type-to-view-model";
 import { WithId } from "mongodb";
-import { Post } from "../../types/post";
+import { Post } from "../../domain/post";
 
 export const getPostByIdHandler = async (
   req: Request<{id: string}>, 

@@ -5,7 +5,7 @@ import { postDto } from "./postDto";
 import request from "supertest";
 import { POSTS_PATH } from "../../../src/posts/constants/posts.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
-import { postViewModel } from "../../../src/posts/types/postViewModel";
+import { postViewModel } from "../../../src/posts/routes/output/post-data.output";
 import { generateBasicAuthToken } from "../generateBasicAuthToken";
 
 export const createPostDto = async (

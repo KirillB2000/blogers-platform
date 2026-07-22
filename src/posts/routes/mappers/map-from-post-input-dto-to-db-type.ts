@@ -1,5 +1,5 @@
 import { postInputModel } from "../../dto/postInputModel";
-import { Post } from "../../types/post";
+import { Post } from "../../domain/post";
 
 
 export const mapPostInputDtoToDbType = (
