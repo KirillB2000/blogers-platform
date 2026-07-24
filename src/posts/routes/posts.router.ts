@@ -27,7 +27,7 @@ postsRouter
 
   .get(
     POSTS_ROUTES.BY_ID,
-    idValidation,
+    idValidation('id'),
     inputValidationResultMiddleware,
     getPostByIdHandler,
   )
@@ -50,8 +50,8 @@ postsRouter
 
   .delete(
     POSTS_ROUTES.BY_ID,
+    idValidation('id'),
     superAdminGuardMiddleware,
-    idValidation,
     inputValidationResultMiddleware,
     deletePostById,
   );
