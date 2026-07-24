@@ -12,6 +12,11 @@ import { superAdminGuardMiddleware } from "../../auth/middlewares/super-admin.gu
 import { paginationAndSortingValidation } from "../../core/middlewares/validation/query-pagination-sorting.validation.middleware";
 import { BlogSortField } from "./input/blog-sort-field";
 import { sanitizeQueryParams } from "../../core/middlewares/validation/sanitize-query.middleware";
+import { POSTS_PATH } from "../../posts/constants/posts.paths";
+import { postBlogInputDtoValidation } from "../../posts/validation/post-input.validation.middleware";
+import { createPostForSpecificBlogHandler } from "./handlers/createPostForSpecificBlog.handler";
+import { PostSortField } from "../../posts/routes/input/post-sort-fields";
+import { getPostListForSpecificBlog } from "./handlers/getPostListForSpecificBlog.handler";
 
 export const blogsRouter = Router({});
 
@@ -25,8 +30,17 @@ blogsRouter
   )
 
   .get(
+    `${BLOGS_ROUTES.BY_BLOG_ID}${POSTS_PATH}`,
+    idValidation('blogId'),
+    paginationAndSortingValidation(PostSortField),
+    inputValidationResultMiddleware,
+    sanitizeQueryParams,
+    getPostListForSpecificBlog as unknown as RequestHandler
+  )
+
+  .get(
     BLOGS_ROUTES.BY_ID,
-    idValidation,
+    idValidation('id'),
     inputValidationResultMiddleware,
     getBlogByIdHandler,
   )
@@ -39,6 +53,15 @@ blogsRouter
     createBlogHandler,
   )
 
+  .post(
+    `${BLOGS_ROUTES.BY_BLOG_ID}${POSTS_PATH}`,
+    idValidation('blogId'),
+    superAdminGuardMiddleware,
+    postBlogInputDtoValidation,
+    inputValidationResultMiddleware,
+    createPostForSpecificBlogHandler,
+  )
+
   .put(
     BLOGS_ROUTES.BY_ID,
     superAdminGuardMiddleware,
@@ -49,8 +72,8 @@ blogsRouter
 
   .delete(
     BLOGS_ROUTES.BY_ID,
+    idValidation('id'),
     superAdminGuardMiddleware,
-    idValidation,
     inputValidationResultMiddleware,
     deleteBlogById,
   );

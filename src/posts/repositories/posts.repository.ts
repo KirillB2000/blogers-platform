@@ -6,7 +6,8 @@ import { PostQueryInput } from "../routes/input/post-query.input";
 
 export const postsRepository = {
   async findAll(
-    queryDto: PostQueryInput
+    queryDto: PostQueryInput,
+    blogId?: string
   ): Promise<{items: WithId<Post>[], totalCount: number}> {
     const {
       pageNumber,
@@ -16,9 +17,14 @@ export const postsRepository = {
     } = queryDto
 
     const skip = (pageNumber - 1) * pageSize
+    const filter: any = {}
+
+    if (blogId) {
+      filter.blogId = blogId
+    }
 
     const items = await postsCollection
-      .find()
+      .find(filter)
       .sort({[sortBy]: sortDirection})
       .skip(skip)
       .limit(pageSize)

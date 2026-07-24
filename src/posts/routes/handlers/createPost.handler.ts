@@ -12,7 +12,7 @@ export const createPost = async (
   res: Response,
 ) => {
   try {
-    const createdPost: WithId<Post> | null = await postsServices.create(req.body, req.body.blogId);
+    const createdPost: WithId<Post> | null = await postsServices.create(req.body);
   
     if (!createdPost) {
       res.status(httpStatuses.BadRequest).json({message: 'Blog should exist', field: 'blogId'});

@@ -1,5 +1,4 @@
 import { body } from "express-validator";
-import { blogsRepository } from "../../blogs/repositories/blogs.repository";
 
 const titleValidation = body("title")
   .isString()
@@ -19,7 +18,7 @@ const shortDescriptionValidation = body("shortDescription")
   .isLength({ max: 100 })
   .withMessage("Short description is too long");
 
-const content = body("content")
+const contentValidation = body("content")
   .isString()
   .withMessage("Content must be a string")
   .trim()
@@ -40,6 +39,12 @@ const blogId = body("blogId")
 export const postInputDtoValidation = [
   titleValidation,
   shortDescriptionValidation,
-  content,
+  contentValidation,
   blogId,
 ];
+
+export const postBlogInputDtoValidation = [
+  titleValidation,
+  shortDescriptionValidation,
+  contentValidation,
+]

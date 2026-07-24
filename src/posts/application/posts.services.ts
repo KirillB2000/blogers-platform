@@ -10,9 +10,10 @@ import { PostQueryInput } from "../routes/input/post-query.input";
 
 export const postsServices = {
     async findMany(
-        queryDto: PostQueryInput
+        queryDto: PostQueryInput,
+        blogId?: string
     ): Promise<{items: WithId<Post>[], totalCount: number}> {
-        const posts = await postsRepository.findAll(queryDto)
+        const posts = await postsRepository.findAll(queryDto, blogId)
         
         return posts
     },
@@ -23,8 +24,8 @@ export const postsServices = {
         return post
     },
 
-    async create(dto: postInputModel, blogId: string): Promise<WithId<Post> | null> {
-        const blogById = await blogsRepository.findById(blogId);
+    async create(dto: postInputModel): Promise<WithId<Post> | null> {
+        const blogById = await blogsRepository.findById(dto.blogId);
         
         if (!blogById) {
             return null
