@@ -10,25 +10,18 @@ export const getBlogListHandler = async (
   req: Request<{}, {}, {}, BlogQueryInput>, 
   res: Response
 ) => {
-  try {
-    const queryInput = req.query
+  const queryInput = req.query
+  const { items, totalCount } = await blogsService.findMany(queryInput)
 
-    const { items, totalCount } = await blogsService.findMany(queryInput)
-
-    const pagesCount = Math.ceil(totalCount / queryInput.pageSize)
-
-    const meta: PagindatedOutput = {
-      pagesCount: pagesCount,
-      page: queryInput.pageNumber,
-      pageSize: queryInput.pageSize,
-      totalCount: totalCount
-    }
-
-    const blogListOutput: BlogListPaginatedOutput = mapToBlogListPaginatedOutput(items, meta)
-
-    res.status(httpStatuses.Ok).send(blogListOutput)
-    
-  } catch (error) {
-    res.status(httpStatuses.InternalServerError).json({error})
+  const pagesCount = Math.ceil(totalCount / queryInput.pageSize)
+  const meta: PagindatedOutput = {
+    pagesCount: pagesCount,
+    page: queryInput.pageNumber,
+    pageSize: queryInput.pageSize,
+    totalCount: totalCount
   }
+
+  const blogListOutput: BlogListPaginatedOutput = mapToBlogListPaginatedOutput(items, meta)
+  
+  res.status(httpStatuses.Ok).send(blogListOutput)
 };

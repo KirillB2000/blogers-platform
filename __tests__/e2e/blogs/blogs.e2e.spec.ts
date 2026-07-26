@@ -58,8 +58,14 @@ describe("Blogs API", () => {
 
     const response = await request(app).get(BLOGS_PATH).expect(httpStatuses.Ok);
 
-    expect(response.body).toBeInstanceOf(Array);
-    expect(response.body.length).toBeGreaterThanOrEqual(2);
+    expect(response.body).toBeInstanceOf(Object);
+    expect(response.body).toMatchObject({
+      pagesCount: expect.any(Number),
+      page: expect.any(Number),
+      pageSize: expect.any(Number),
+      totalCount: expect.any(Number),
+      items: expect.any(Array)
+    })
   });
 
   it("Should get blog by id; GET /api/blogs/:id", async () => {

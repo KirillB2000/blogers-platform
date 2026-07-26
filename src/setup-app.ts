@@ -5,6 +5,7 @@ import { BLOGS_PATH } from "./blogs/constants/blogs.paths";
 import { POSTS_PATH } from "./posts/constants/posts.paths";
 import { TESTING_PATH } from "./testing/constants/testing.paths";
 import { testingRouter } from "./testing/routers/testing.router";
+import { errorsHandler } from "./core/exceptions/error.handler";
 
 const setupApp = (app: Express) => {
   app.use(express.json());
@@ -12,6 +13,8 @@ const setupApp = (app: Express) => {
   app.use(BLOGS_PATH, blogsRouter);
   app.use(POSTS_PATH, postsRouter);
   app.use(TESTING_PATH, testingRouter);
+
+  app.use(errorsHandler)
 
   return app;
 };

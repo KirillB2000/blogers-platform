@@ -48,8 +48,14 @@ describe("Posts API", () => {
 
     const response = await request(app).get(POSTS_PATH).expect(httpStatuses.Ok);
 
-    expect(response.body).toBeInstanceOf(Array);
-    expect(response.body.length).toBeGreaterThanOrEqual(2);
+    expect(response.body).toBeInstanceOf(Object);
+    expect(response.body).toMatchObject({
+      pagesCount: expect.any(Number),
+      page: expect.any(Number),
+      pageSize: expect.any(Number),
+      totalCount: expect.any(Number),
+      items: expect.any(Array)
+    })
   });
 
   it("Shold get post by id; GET /api/posts/:id", async () => {

@@ -12,25 +12,18 @@ export const getPostListHandler = async (
   req: Request<{}, {}, {}, PostQueryInput>, 
   res: Response
 ) => {
-  try {
-
-    const queryInput = req.query
-
-    const posts: {items: WithId<Post>[], totalCount: number} = await postsServices.findMany(queryInput)
-
-    const pagesCount = Math.ceil(posts.totalCount / queryInput.pageSize)
-
-    const meta: PagindatedOutput = {
-      pagesCount: pagesCount,
-      page: queryInput.pageNumber,
-      pageSize: queryInput.pageSize,
-      totalCount: posts.totalCount,
-    }
+  const queryInput = req.query
+  const posts: {items: WithId<Post>[], totalCount: number} = await postsServices.findMany(queryInput)
   
-    const postsWithPagination: PostListPaginatorOutput = mapToPostListPaginatedOutput(posts.items, meta)
-  
-    res.status(httpStatuses.Ok).json(postsWithPagination)
-  } catch (error) {
-    res.status(httpStatuses.InternalServerError).json({error})
+  const pagesCount = Math.ceil(posts.totalCount / queryInput.pageSize)
+  const meta: PagindatedOutput = {
+    pagesCount: pagesCount,
+    page: queryInput.pageNumber,
+    pageSize: queryInput.pageSize,
+    totalCount: posts.totalCount,
   }
+
+  const postsWithPagination: PostListPaginatorOutput = mapToPostListPaginatedOutput(posts.items, meta)
+
+  res.status(httpStatuses.Ok).json(postsWithPagination)
 };
