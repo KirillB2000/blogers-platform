@@ -7,6 +7,7 @@ import { mapPostInputDtoToDbType } from "../routes/mappers/map-from-post-input-d
 import { blogsRepository } from "../../blogs/repositories/blogs.repository";
 import { blogsService } from "../../blogs/application/blogs.services";
 import { PostQueryInput } from "../routes/input/post-query.input";
+import { BadRequestError } from "../../core/exceptions/app-errors.exeption";
 
 export const postsServices = {
     async findMany(
@@ -43,11 +44,11 @@ export const postsServices = {
         return createdPost
     },
 
-    async update(id: string, dto: postInputModel): Promise<boolean | null> {
+    async update(id: string, dto: postInputModel): Promise<boolean> {
         const blog = await blogsService.findById(dto.blogId)
         
         if(!blog) {
-            return null
+            throw new BadRequestError([{message: 'Blog should exist', field: 'blogId'}])
         }
         return await postsRepository.update(id, dto)
     },

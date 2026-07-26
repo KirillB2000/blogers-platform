@@ -6,24 +6,19 @@ import { Post } from "../../domain/post";
 import { WithId } from "mongodb";
 import { mapToPostViewModel } from "../mappers/map-from-post-db-type-to-view-model";
 import { postsServices } from "../../application/posts.services";
+import { BadRequestError } from "../../../core/exceptions/app-errors.exeption";
 
-export const createPost = async (
+export const createPostHandler = async (
   req: Request<{}, {}, postInputModel>,
   res: Response,
 ) => {
-  try {
-    const createdPost: WithId<Post> | null = await postsServices.create(req.body);
-  
-    if (!createdPost) {
-      res.status(httpStatuses.BadRequest).json({message: 'Blog should exist', field: 'blogId'});
-      return;
-    }
-  
-  
-    const postDataForResponse: postViewModel = mapToPostViewModel(createdPost)
-  
-    res.status(httpStatuses.Created).json(postDataForResponse);
-  } catch (error) {
-    res.status(httpStatuses.InternalServerError).json({error})
+  const createdPost: WithId<Post> | null = await postsServices.create(req.body);
+
+  if (!createdPost) {
+    throw new BadRequestError([{message: 'Blog should exist', field: 'blogId'}])
   }
+
+  const postDataForResponse: postViewModel = mapToPostViewModel(createdPost)
+
+  res.status(httpStatuses.Created).json(postDataForResponse);
 };

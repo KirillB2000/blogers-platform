@@ -11,13 +11,8 @@ export const createBlogHandler = async (
   req: Request<{}, {}, blogInputModel>,
   res: Response,
 ) => {
-  try {
-    const createdNewBlog: WithId<Blog> = await blogsService.create(req.body);
+  const createdNewBlog: WithId<Blog> = await blogsService.create(req.body);
+  const blogForResponse: BlogViewModel = mapToBlogViewModel(createdNewBlog);
   
-    const blogForResponse: BlogViewModel = mapToBlogViewModel(createdNewBlog)
-  
-    res.status(httpStatuses.Created).json(blogForResponse);
-  } catch (error) {
-    res.status(httpStatuses.InternalServerError).json({error})
-  }
+  res.status(httpStatuses.Created).json(blogForResponse);
 };

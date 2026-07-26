@@ -2,9 +2,9 @@ import { Router } from "express";
 import { getPostListHandler } from "./handlers/getPostList.handler";
 import { POSTS_ROUTES } from "../constants/posts.paths";
 import { getPostByIdHandler } from "./handlers/getPostById.handler";
-import { createPost } from "./handlers/createPost.handler";
-import { updatePostById } from "./handlers/updatePostById.handler";
-import { deletePostById } from "./handlers/deletePostById.handler";
+import { createPostHandler } from "./handlers/createPost.handler";
+import { updatePostByIdHandler } from "./handlers/updatePostById.handler";
+import { deletePostByIdHandler } from "./handlers/deletePostById.handler";
 import { idValidation } from "../../core/middlewares/validation/params-id.validation.middleware";
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { postInputDtoValidation } from "../validation/post-input.validation.middleware";
@@ -13,6 +13,7 @@ import { paginationAndSortingValidation } from "../../core/middlewares/validatio
 import { sanitizeQueryParams } from "../../core/middlewares/validation/sanitize-query.middleware";
 import { PostSortField } from "./input/post-sort-fields";
 import { RequestHandler } from "express";
+import { catchAsync } from "../../core/helpers/catchAsync.helper";
 
 export const postsRouter = Router({});
 
@@ -22,14 +23,14 @@ postsRouter
     paginationAndSortingValidation(PostSortField),
     inputValidationResultMiddleware,
     sanitizeQueryParams,
-    getPostListHandler as unknown as RequestHandler
+    catchAsync(getPostListHandler as unknown as RequestHandler)
   )
 
   .get(
     POSTS_ROUTES.BY_ID,
     idValidation('id'),
     inputValidationResultMiddleware,
-    getPostByIdHandler,
+    catchAsync(getPostByIdHandler),
   )
 
   .post(
@@ -37,7 +38,7 @@ postsRouter
     superAdminGuardMiddleware,
     postInputDtoValidation,
     inputValidationResultMiddleware,
-    createPost,
+    catchAsync(createPostHandler),
   )
 
   .put(
@@ -45,7 +46,7 @@ postsRouter
     superAdminGuardMiddleware,
     postInputDtoValidation,
     inputValidationResultMiddleware,
-    updatePostById,
+    catchAsync(updatePostByIdHandler),
   )
 
   .delete(
@@ -53,5 +54,5 @@ postsRouter
     idValidation('id'),
     superAdminGuardMiddleware,
     inputValidationResultMiddleware,
-    deletePostById,
+    catchAsync(deletePostByIdHandler),
   );

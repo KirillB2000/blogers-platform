@@ -3,8 +3,7 @@ import { getBlogListHandler } from "./handlers/getBlogList.handler";
 import { BLOGS_ROUTES } from "../constants/blogs.paths";
 import { getBlogByIdHandler } from "./handlers/getBlogById.handler";
 import { createBlogHandler } from "./handlers/createBlog.handler";
-import { updateBlogById } from "./handlers/updateBlogById.handler";
-import { deleteBlogById } from "./handlers/deleteBlogById.handler";
+import {updateBlogByIdHandler } from "./handlers/updateBlogById.handler";
 import { idValidation } from "../../core/middlewares/validation/params-id.validation.middleware";
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { blogInputDtoValidation } from "../validation/blog-input.validation.middleware";
@@ -17,6 +16,8 @@ import { postBlogInputDtoValidation } from "../../posts/validation/post-input.va
 import { createPostForSpecificBlogHandler } from "./handlers/createPostForSpecificBlog.handler";
 import { PostSortField } from "../../posts/routes/input/post-sort-fields";
 import { getPostListForSpecificBlog } from "./handlers/getPostListForSpecificBlog.handler";
+import { catchAsync } from "../../core/helpers/catchAsync.helper";
+import { deleteBlogByIdHandler } from "./handlers/deleteBlogById.handler";
 
 export const blogsRouter = Router({});
 
@@ -26,7 +27,7 @@ blogsRouter
     paginationAndSortingValidation(BlogSortField),
     inputValidationResultMiddleware,
     sanitizeQueryParams,
-    getBlogListHandler as unknown as RequestHandler
+    catchAsync(getBlogListHandler as unknown as RequestHandler)
   )
 
   .get(
@@ -35,14 +36,14 @@ blogsRouter
     paginationAndSortingValidation(PostSortField),
     inputValidationResultMiddleware,
     sanitizeQueryParams,
-    getPostListForSpecificBlog as unknown as RequestHandler
+    catchAsync(getPostListForSpecificBlog as unknown as RequestHandler)
   )
 
   .get(
     BLOGS_ROUTES.BY_ID,
     idValidation('id'),
     inputValidationResultMiddleware,
-    getBlogByIdHandler,
+    catchAsync(getBlogByIdHandler),
   )
 
   .post(
@@ -50,7 +51,7 @@ blogsRouter
     superAdminGuardMiddleware,
     blogInputDtoValidation,
     inputValidationResultMiddleware,
-    createBlogHandler,
+    catchAsync(createBlogHandler),
   )
 
   .post(
@@ -59,7 +60,7 @@ blogsRouter
     superAdminGuardMiddleware,
     postBlogInputDtoValidation,
     inputValidationResultMiddleware,
-    createPostForSpecificBlogHandler,
+    catchAsync(createPostForSpecificBlogHandler),
   )
 
   .put(
@@ -67,7 +68,7 @@ blogsRouter
     superAdminGuardMiddleware,
     blogInputDtoValidation,
     inputValidationResultMiddleware,
-    updateBlogById,
+    catchAsync(updateBlogByIdHandler),
   )
 
   .delete(
@@ -75,5 +76,5 @@ blogsRouter
     idValidation('id'),
     superAdminGuardMiddleware,
     inputValidationResultMiddleware,
-    deleteBlogById,
+    catchAsync(deleteBlogByIdHandler),
   );
