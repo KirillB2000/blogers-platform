@@ -6,7 +6,7 @@ import { Post } from "../../../posts/domain/post"
 import { postsServices } from "../../../posts/application/posts.services"
 import { httpStatuses } from "../../../core/types/http-statuses"
 import { mapToPostViewModel } from "../../../posts/routes/mappers/map-from-post-db-type-to-view-model"
-import { BadRequestError } from "../../../core/exceptions/app-errors.exeption"
+import { BadRequestError, NotFoundError } from "../../../core/exceptions/app-errors.exeption"
 
 export const createPostForSpecificBlogHandler = async (
     req: Request<{blogId: string}, {}, postBlogInputModel>,
@@ -16,8 +16,9 @@ export const createPostForSpecificBlogHandler = async (
     const postInputDto: postInputModel = {blogId, ...req.body}
 
     const createdPost: WithId<Post> | null = await postsServices.create(postInputDto)
+
     if (!createdPost) {
-        throw new BadRequestError ([{message: 'Blog should exist', field: 'blogId'}])
+        throw new NotFoundError('Not found blog')
     }
     const postDataForResponse = mapToPostViewModel(createdPost)
 
