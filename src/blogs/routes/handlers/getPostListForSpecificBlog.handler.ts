@@ -26,6 +26,7 @@ export const getPostListForSpecificBlog = async (
     const posts: {items: WithId<Post>[], totalCount: number} = await postsServices.findMany(queryInput, blogId)
 
     const pagesCount = Math.ceil(posts.totalCount / queryInput.pageSize)
+    
     const meta : PagindatedOutput = {
         pagesCount: pagesCount,
         page: queryInput.pageNumber,
