@@ -22,7 +22,6 @@ export const postsRepository = {
     if (blogId) {
       filter.blogId = blogId
     }
-
     const items = await postsCollection
       .find(filter)
       .sort({[sortBy]: sortDirection})
