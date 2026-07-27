@@ -20,5 +20,5 @@ export const errorsHandler = (
 
     console.error ('Critical server error: ', err)
 
-    res.status(httpStatuses.InternalServerError).json({ message: 'Internal Server Error' })
+    return res.status(httpStatuses.InternalServerError).json({ message: 'Internal Server Error' })
 }
