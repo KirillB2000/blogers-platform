@@ -216,7 +216,7 @@ describe("Blogs API", () => {
     });
   });
 
-  it("Should return 400 when creating post for non-existent blog; POST /api/blogs/:blogId/posts", async () => {
+  it("Should return 404 when creating post for non-existent blog; POST /api/blogs/:blogId/posts", async () => {
     const fakeId = "000000000000000000000000";
 
     const postData: postBlogInputModel = {
@@ -229,7 +229,7 @@ describe("Blogs API", () => {
       .post(`${BLOGS_PATH}/${fakeId}${POSTS_PATH}`)
       .set("Authorization", adminToken)
       .send(postData)
-      .expect(httpStatuses.BadRequest);
+      .expect(httpStatuses.NotFound);
   });
 
   it("Should return 400 for invalid blogId format when creating post; POST /api/blogs/:blogId/posts", async () => {
@@ -308,7 +308,7 @@ describe("Blogs API", () => {
       .expect(httpStatuses.NotFound);
   });
 
-  it("Should return 400 for invalid blogId format when getting posts; GET /api/blogs/:blogId/posts", async () => {
+  it("Should return 404 for invalid blogId format when getting posts; GET /api/blogs/:blogId/posts", async () => {
     await request(app)
       .get(`${BLOGS_PATH}/invalid-id${POSTS_PATH}`)
       .expect(httpStatuses.BadRequest);
