@@ -8,7 +8,6 @@ import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
 import { runDB, stopDb } from "../../../src/db/mongo.db";
 import { SETTINGS } from "../../../src/settings/config";
 import { createBlogDto } from "../../utils/blogs/createBlogDto";
-import { log } from "node:console";
 
 describe("Posts API", () => {
   const app = express();

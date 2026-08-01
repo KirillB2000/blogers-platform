@@ -1,38 +1,36 @@
-import { WithId } from "mongodb"
+import { ObjectId } from "mongodb"
 import { Blog } from "../domain/blog"
 import { blogsRepository } from "../repositories/blogs.repository"
 import { blogInputModel } from "../dto/blogInputModel"
 import { mapBlogInputDtoToDbType } from "../routes/mappers/map-from-blog-input-dto-to-db-type"
-import { BlogQueryInput } from "../routes/input/blog-query.input"
+import { NotFoundError } from "../../core/exceptions/app-errors.exeption"
 
 export const blogsService = {
-    async findMany(
-        queryDto: BlogQueryInput
-    ): Promise<{ items: WithId<Blog>[], totalCount: number }> {
-        return blogsRepository.findMany(queryDto)
-    },
-
-    async findById(id: string): Promise<WithId<Blog> | null> {
-        return blogsRepository.findById(id)
-    },
-
-    async create(dto: blogInputModel): Promise<WithId<Blog>> {
+    async create(dto: blogInputModel): Promise<ObjectId> {
         const newBlog: Blog = {
             ...mapBlogInputDtoToDbType(dto),
             createdAt: new Date(),
             isMembership: false
         }
 
-        const createdBlog: WithId<Blog> = await blogsRepository.create(newBlog)
+        const blogsId: ObjectId = await blogsRepository.create(newBlog)
 
-        return createdBlog
+        return blogsId
     },
 
-    async update(id: string,  dto: blogInputModel): Promise<boolean> {
-        return await blogsRepository.update(id, dto)
+    async update(id: string,  dto: blogInputModel): Promise<void> {
+        const isUpdated = await blogsRepository.update(id, dto)
+
+        if (!isUpdated) {
+            throw new NotFoundError('Blog not found')
+        }
     },
 
-    async delete(id: string): Promise<boolean> {
-        return await blogsRepository.delete(id)
+    async delete(id: string): Promise<void> {
+        const isDeleted = await blogsRepository.delete(id)
+
+        if (!isDeleted) {
+            throw new NotFoundError('Blog not found')
+        }
     }
 }

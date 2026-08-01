@@ -2,47 +2,13 @@ import { blogInputModel } from "../dto/blogInputModel";
 import { ObjectId, WithId } from "mongodb";
 import { blogsCollection, postsCollection } from "../../db/collections";
 import { Blog } from "../domain/blog";
-import { BlogQueryInput } from "../routes/input/blog-query.input";
+import { assert } from "node:console";
 
 export const blogsRepository = {
-  async findMany(
-    queryDto: BlogQueryInput
-  ): Promise<{ items: WithId<Blog>[], totalCount: number}> {
-    const {
-      pageNumber,
-      pageSize,
-      sortBy,
-      sortDirection,
-      searchNameTerm
-    } = queryDto
-
-    const skip = (pageNumber -1 ) * pageSize
-    const filter: any = {}
-
-    if (searchNameTerm) {
-      filter.name = { $regex: searchNameTerm, $options: 'i' }
-    }
-
-    const items = await blogsCollection
-      .find(filter)
-      .sort({[sortBy]: sortDirection})
-      .skip(skip)
-      .limit(pageSize)
-      .toArray()
-
-    const totalCount = await blogsCollection.countDocuments(filter)
-
-    return { items, totalCount }
-  },
-
-  async findById(id: string): Promise<WithId<Blog> | null> {
-    return blogsCollection.findOne({_id: new ObjectId(id)})
-  },
-
-  async create(newBlog: Blog): Promise<WithId<Blog>> {
+  async create(newBlog: Blog): Promise<ObjectId> {
     const createdBlog = await blogsCollection.insertOne(newBlog)
 
-    return {...newBlog, _id: createdBlog.insertedId}
+    return createdBlog.insertedId
   },
 
   async update(id: string, blog: blogInputModel): Promise<boolean> {
@@ -64,4 +30,11 @@ export const blogsRepository = {
 
     return deleteResult.deletedCount > 0
   },
+
+  // For post creation and throwing bad request exeption
+  async findById (id: string) : Promise<WithId<Blog> | null> { 
+    const blog = await blogsCollection.findOne({_id: new ObjectId(id)})
+
+    return blog
+  }
 };

@@ -8,11 +8,8 @@ export const updateBlogByIdHandler = async (
   req: Request<{ id: string }, {}, blogInputModel>,
   res: Response,
 ) => {
-  const isUpdated: boolean = await blogsService.update(req.params.id, req.body);
 
-  if (!isUpdated) {
-    throw new NotFoundError('Blog not found')
-  }
-
+  await blogsService.update(req.params.id, req.body);
+  
   res.sendStatus(httpStatuses.NoContent);
 };

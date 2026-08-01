@@ -8,11 +8,7 @@ export const updatePostByIdHandler = async (
   req: Request<{ id: string }, {}, postInputModel>,
   res: Response,
 ) => {
-  const isUpdated: boolean = await postsServices.update(req.params.id, req.body);
-
-  if (!isUpdated) {
-    throw new NotFoundError('Post not found')
-  }
+  await postsServices.update(req.params.id, req.body);
 
   res.sendStatus(httpStatuses.NoContent);
 };

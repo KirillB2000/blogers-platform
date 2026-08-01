@@ -1,12 +1,11 @@
 import { Request, Response } from "express"
 import { postBlogInputModel } from "../../../posts/dto/postBlogInputModel"
-import { WithId } from "mongodb"
+import { ObjectId } from "mongodb"
 import { postInputModel } from "../../../posts/dto/postInputModel"
-import { Post } from "../../../posts/domain/post"
 import { postsServices } from "../../../posts/application/posts.services"
 import { httpStatuses } from "../../../core/types/http-statuses"
-import { mapToPostViewModel } from "../../../posts/routes/mappers/map-from-post-db-type-to-view-model"
-import { BadRequestError, NotFoundError } from "../../../core/exceptions/app-errors.exeption"
+import { postViewModel } from "../../../posts/routes/output/post-data.output"
+import { postsQwRepository } from "../../../posts/repositories/posts.queryRepository"
 
 export const createPostForSpecificBlogHandler = async (
     req: Request<{blogId: string}, {}, postBlogInputModel>,
@@ -15,12 +14,8 @@ export const createPostForSpecificBlogHandler = async (
     const blogId = req.params.blogId
     const postInputDto: postInputModel = {blogId, ...req.body}
 
-    const createdPost: WithId<Post> | null = await postsServices.create(postInputDto)
+    const createdPostId: ObjectId = await postsServices.create(postInputDto)
+    const createdPost: postViewModel = await postsQwRepository.findById(createdPostId)
 
-    if (!createdPost) {
-        throw new NotFoundError('Not found blog')
-    }
-    const postDataForResponse = mapToPostViewModel(createdPost)
-
-    res.status(httpStatuses.Created).json(postDataForResponse)
+    res.status(httpStatuses.Created).json(createdPost)
 }
