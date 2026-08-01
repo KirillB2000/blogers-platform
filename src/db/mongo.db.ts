@@ -1,6 +1,7 @@
 import { Db, MongoClient } from 'mongodb';
 import { SETTINGS } from '../settings/config';
 import { initCollections } from './collections';
+import { initIndexes } from './indexes';
  
 export let client: MongoClient;
  
@@ -16,6 +17,7 @@ export async function runDB(url: string): Promise<void> {
      // Инициализируем коллекции из подключённой базы.
     initCollections(db);
     console.log('✅ Connected to the database');
+    await initIndexes()
     
   } catch (e) {
     await client.close();

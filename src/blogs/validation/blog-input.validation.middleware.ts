@@ -16,7 +16,7 @@ const descriptionValidation = body("description")
   .notEmpty()
   .withMessage("Description is required and cannot be empty")
   .isLength({ max: 500 })
-  .withMessage("Description is too long");
+  .withMessage("Description is too long")
 
 const websiteValidation = body("websiteUrl")
   .isString()
@@ -29,7 +29,7 @@ const websiteValidation = body("websiteUrl")
   .matches(
     /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/,
   )
-  .withMessage("WebsiteUrl must match the required pattern");
+  .withMessage("WebsiteUrl must match the required pattern")
 
 export const blogInputDtoValidation = [
   nameValidation,
