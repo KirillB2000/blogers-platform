@@ -5,13 +5,14 @@ import { BlogQueryInput } from "../input/blog-query.input";
 import { mapToBlogListPaginatedOutput } from "../mappers/map-from-blog-domain-to-blog-list-paginated-output";
 import { PagindatedOutput } from "../../../core/types/paginated.output";
 import { BlogListPaginatedOutput } from "../output/blog-list-paginator.output";
+import { blogsQwRepository } from "../../repositories/blogs.queryRepository";
 
 export const getBlogListHandler = async (
   req: Request<{}, {}, {}, BlogQueryInput>, 
   res: Response
 ) => {
   const queryInput = req.query
-  const { items, totalCount } = await blogsService.findMany(queryInput)
+  const { items, totalCount } = await blogsQwRepository.findMany(queryInput)
 
   const pagesCount = Math.ceil(totalCount / queryInput.pageSize)
   const meta: PagindatedOutput = {

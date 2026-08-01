@@ -1,59 +1,54 @@
-import { WithId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 import { Post } from "../domain/post";
 import { postsRepository } from "../repositories/posts.repository";
-import { create } from "node:domain";
 import { postInputModel } from "../dto/postInputModel";
 import { mapPostInputDtoToDbType } from "../routes/mappers/map-from-post-input-dto-to-db-type";
+import { BadRequestError, NotFoundError } from "../../core/exceptions/app-errors.exeption";
+import { blogsQwRepository } from "../../blogs/repositories/blogs.queryRepository";
+import { Blog } from "../../blogs/domain/blog";
 import { blogsRepository } from "../../blogs/repositories/blogs.repository";
-import { blogsService } from "../../blogs/application/blogs.services";
-import { PostQueryInput } from "../routes/input/post-query.input";
-import { BadRequestError } from "../../core/exceptions/app-errors.exeption";
 
 export const postsServices = {
-    async findMany(
-        queryDto: PostQueryInput,
-        blogId?: string
-    ): Promise<{items: WithId<Post>[], totalCount: number}> {
-        const posts = await postsRepository.findAll(queryDto, blogId)
-        
-        return posts
-    },
 
-    async findById(id: string): Promise<WithId<Post> | null> {
-        const post = await postsRepository.findById(id)
+    async create(dto: postInputModel): Promise<ObjectId> {
 
-        return post
-    },
+        const blog: WithId<Blog> | null = await blogsRepository.findById(dto.blogId)
 
-    async create(dto: postInputModel): Promise<WithId<Post> | null> {
-        const blogById = await blogsRepository.findById(dto.blogId);
-        
-        if (!blogById) {
-            return null
+        if (!blog) {
+            throw new BadRequestError([{ message: 'Blog should exist', field: 'blogId' }])
         }
 
         const newPost: Post = {
             ...mapPostInputDtoToDbType(dto),
-            blogId: blogById._id.toString(),
-            blogName: blogById.name,
+            blogId: blog._id.toString(),
+            blogName: blog.name,
             createdAt: new Date()
         }
 
-        const createdPost: WithId<Post> = await postsRepository.create(newPost)
+        const createdPostId: ObjectId = await postsRepository.create(newPost)
 
-        return createdPost
+        return createdPostId
     },
 
-    async update(id: string, dto: postInputModel): Promise<boolean> {
-        const blog = await blogsService.findById(dto.blogId)
+    async update(id: string, dto: postInputModel): Promise<void> {
+        const blog = await blogsRepository.findById(dto.blogId)
         
         if(!blog) {
             throw new BadRequestError([{message: 'Blog should exist', field: 'blogId'}])
         }
-        return await postsRepository.update(id, dto)
+
+        const isUpdated = await postsRepository.update(id, dto)
+
+        if (!isUpdated) {
+            throw new NotFoundError('Post not found')
+        }
     },
 
-    async delete(id: string): Promise<boolean> {
-        return await postsRepository.delete(id)
+    async delete(id: string): Promise<void> {
+        const isDeleted = await postsRepository.delete(id);
+        
+        if (!isDeleted) {
+            throw new NotFoundError('Post not found')
+        }
     }
 } 

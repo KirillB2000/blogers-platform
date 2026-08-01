@@ -12,6 +12,7 @@ import { runDB, stopDb } from "../../../src/db/mongo.db";
 import { SETTINGS } from "../../../src/settings/config";
 import { POSTS_PATH } from "../../../src/posts/constants/posts.paths";
 import { postBlogInputModel } from "../../../src/posts/dto/postBlogInputModel";
+import { postForBlogDto } from "../../utils/posts/postForBlogDto";
 
 describe("Blogs API", () => {
   const app = express();
@@ -216,21 +217,18 @@ describe("Blogs API", () => {
     });
   });
 
-  it("Should return 404 when creating post for non-existent blog; POST /api/blogs/:blogId/posts", async () => {
-    const fakeId = "000000000000000000000000";
-
-    const postData: postBlogInputModel = {
-      title: "Blog post title",
-      shortDescription: "Blog post description",
-      content: "Blog post content",
-    };
-
+  it('Shoould return 400 when trying create post for specific not exiting blog; POST /blogs/:blodId/posts', async () => {
+    const incorretId = '12121212'
+    const incorrectInputData = {
+      ...postForBlogDto(incorretId)
+    }
+    
     await request(app)
-      .post(`${BLOGS_PATH}/${fakeId}${POSTS_PATH}`)
+      .post(`${BLOGS_PATH}/${incorretId}${POSTS_PATH}`)
       .set("Authorization", adminToken)
-      .send(postData)
-      .expect(httpStatuses.NotFound);
-  });
+      .send(incorrectInputData)
+      .expect(httpStatuses.BadRequest)
+  })
 
   it("Should return 400 for invalid blogId format when creating post; POST /api/blogs/:blogId/posts", async () => {
     const postData: postBlogInputModel = {

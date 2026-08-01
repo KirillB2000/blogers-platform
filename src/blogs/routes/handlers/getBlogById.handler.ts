@@ -2,10 +2,10 @@ import { Request, Response } from "express";
 import { httpStatuses } from "../../../core/types/http-statuses";
 import { WithId } from "mongodb";
 import { Blog } from "../../domain/blog";
-import { mapToBlogViewModel } from "../mappers/map-from-blog-db-type-to-view-model";
 import { blogsService } from "../../application/blogs.services";
-import { BlogViewModel } from "../output/blog-data.output";
 import { NotFoundError } from "../../../core/exceptions/app-errors.exeption";
+import { BlogViewModel } from "../output/blog-data.output";
+import { blogsQwRepository } from "../../repositories/blogs.queryRepository";
 
 export const getBlogByIdHandler = async (
   req: Request<{ id: string }>,
@@ -13,12 +13,7 @@ export const getBlogByIdHandler = async (
 ) => {
   const blogId = req.params.id;
 
-  const blog: WithId<Blog> | null = await blogsService.findById(blogId);
-  if (!blog) {
-    throw new NotFoundError('Blog not found')
-  }
+  const blogById: BlogViewModel = await blogsQwRepository.findById(blogId);
 
-  const blogForResponse: BlogViewModel = mapToBlogViewModel(blog)
-
-  res.status(httpStatuses.Ok).json(blogForResponse);
+  res.status(httpStatuses.Ok).json(blogById);
 };
