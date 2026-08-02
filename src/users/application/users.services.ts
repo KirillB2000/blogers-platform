@@ -5,7 +5,7 @@ import { mapUserInputToDbType } from "../mappers/mapUserInputToDbType";
 import { User } from "../domain/user";
 import bycrypt from 'bcrypt'
 import { FieldError } from "../../core/types/errors";
-import { BadRequestError } from "../../core/exceptions/app-errors.exeption";
+import { BadRequestError, NotFoundError } from "../../core/exceptions/app-errors.exeption";
 
 export const usersService = {
     async create (
@@ -32,5 +32,13 @@ export const usersService = {
         const userId = await usersRepository.create(userDomain)
 
         return userId
+    },
+
+    async delete(id: string): Promise<void> {
+        const isDeleted = await usersRepository.delete(id)
+
+        if (!isDeleted) {
+            throw new NotFoundError('User not found')
+        }
     }
 }
