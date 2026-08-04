@@ -1,17 +1,19 @@
-import { ObjectId, WithId } from "mongodb";
+import { ObjectId } from "mongodb";
 import { usersCollection } from "../../db/collections";
 import { mapUserDomaiToViewModel } from "../mappers/mapUserDomaiToViewModel";
 import { NotFoundError } from "../../core/exceptions/app-errors.exeption";
 import { UserViewModel } from "../output/userViewModel";
 import { UserQueryInput } from "../input/user-query.input";
-import { User } from "../domain/user";
+import { mapToUserListPaginatedOutput } from "../mappers/mapToUserListPaginatedOutput";
+import { PagindatedOutput } from "../../core/types/paginated.output";
+import { UserListPaginatorOutput } from "../output/userListPaginatorOutput";
 
 
 export const userQwRepository = {
     
     async findMany (
         queryInput: UserQueryInput
-    ): Promise<{ items: WithId<User>[], totalCount: number }> { // Надо переделать так, чтобы маппинг в Paginator<UserViewModel> был тут (также поменять в блогах)
+    ): Promise<UserListPaginatorOutput> { // Надо переделать так, чтобы маппинг в Paginator<UserViewModel> был тут (также поменять в блогах)
         const {
             pageNumber,
             pageSize,
@@ -42,8 +44,18 @@ export const userQwRepository = {
             .toArray()
 
         const totalCount = await usersCollection.countDocuments(filter)
+        const pageCount = Math.ceil(totalCount / pageSize)
 
-        return {items, totalCount}
+        const meta: PagindatedOutput = {
+            pagesCount: pageCount,
+            page: pageNumber,
+            pageSize: pageSize,
+            totalCount: totalCount
+        }
+        
+        const userListWithPagination: UserListPaginatorOutput = mapToUserListPaginatedOutput(items, meta)
+
+        return userListWithPagination
 
     },
 

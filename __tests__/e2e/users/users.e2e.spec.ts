@@ -5,7 +5,7 @@ import { SETTINGS } from '../../../src/settings/config'
 import { createUserDto } from '../../utils/users/createUserDto'
 import { usersCollection } from '../../../src/db/collections'
 import request from 'supertest'
-import { USERS_PATH, USERS_ROUTING } from '../../../src/users/constants/users.paths'
+import { USERS_PATH } from '../../../src/users/constants/users.paths'
 import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken'
 import { httpStatuses } from '../../../src/core/types/http-statuses'
 
@@ -49,5 +49,46 @@ describe('Users API', () => {
             .delete(`${USERS_PATH}/${userId}`)
             .set("Authorization", adminToken)
             .expect(httpStatuses.NoContent)
+    })
+
+    it('Should get paginated list of users; GET /users', async () => {
+        const user = await createUserDto(app)
+        const user2 = await createUserDto(app, {
+            login: 'SecndUser2',
+            password: '12332111',
+            email: 'secondUser@example.com'
+        })
+
+        const paginatedUsers = await request(app)
+            .get(USERS_PATH)
+            .set("Authorization", adminToken)
+            .expect(httpStatuses.Ok)
+        
+        expect(paginatedUsers.body.items).toHaveLength(2)
+        expect(paginatedUsers.body.items[0]).toEqual({...user2})
+        expect(paginatedUsers.body.items[1]).toEqual({ ...user})
+    })
+
+    it('Should get paginated list of users for firts page with page size 2; GET /users', async () => {
+        const user = await createUserDto(app)
+        const user2 = await createUserDto(app, {
+            login: 'SecndUser2',
+            password: '12332111',
+            email: 'secondUser@example.com'
+        })
+        const user3 = await createUserDto(app, {
+            login: 'SecndUser3',
+            password: '12332111',
+            email: 'thirdUser@example.com'
+        })
+
+        const paginatedUsers = await request(app)
+            .get(`${USERS_PATH}?pageNumber=1&pageSize=2`)
+            .set("Authorization", adminToken)
+            .expect(httpStatuses.Ok)
+
+        expect(paginatedUsers.body.items).toHaveLength(2)
+        expect(paginatedUsers.body.items[0]).toEqual({ ...user3})
+        expect(paginatedUsers.body.items[1]).toEqual({ ...user2})
     })
 })
