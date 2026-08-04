@@ -6,7 +6,7 @@ import { BlogViewModel } from "../routes/output/blog-data.output"
 import { NotFoundError } from "../../core/exceptions/app-errors.exeption"
 import { mapToBlogViewModel } from "../routes/mappers/map-from-blog-db-type-to-view-model"
 
-export const blogsQwRepository = {
+export const blogsQwRepository = { // Сделать маппинг здесь
     async findMany(
         queryDto: BlogQueryInput
     ): Promise<{ items: WithId<Blog>[], totalCount: number }> {

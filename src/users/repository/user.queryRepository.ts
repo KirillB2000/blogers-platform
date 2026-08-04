@@ -13,7 +13,7 @@ export const userQwRepository = {
     
     async findMany (
         queryInput: UserQueryInput
-    ): Promise<UserListPaginatorOutput> { // Надо переделать так, чтобы маппинг в Paginator<UserViewModel> был тут (также поменять в блогах)
+    ): Promise<UserListPaginatorOutput> {
         const {
             pageNumber,
             pageSize,
@@ -29,10 +29,10 @@ export const userQwRepository = {
         if (searchEmailTerm || searchLoginTerm) {
             filter.$or = [];
             if (searchEmailTerm) {
-                filter.$or.push({ name: { $regex: searchEmailTerm, $options: 'i' }})
+                filter.$or.push({ email: { $regex: searchEmailTerm, $options: 'i' }})
             }
             if (searchLoginTerm) {
-                filter.$or.push({ name: { $regex: searchLoginTerm, $options: 'i' }})
+                filter.$or.push({ login: { $regex: searchLoginTerm, $options: 'i' }})
             }
         }
 

@@ -4,7 +4,6 @@ import { postsRepository } from "../repositories/posts.repository";
 import { postInputModel } from "../dto/postInputModel";
 import { mapPostInputDtoToDbType } from "../routes/mappers/map-from-post-input-dto-to-db-type";
 import { BadRequestError, NotFoundError } from "../../core/exceptions/app-errors.exeption";
-import { blogsQwRepository } from "../../blogs/repositories/blogs.queryRepository";
 import { Blog } from "../../blogs/domain/blog";
 import { blogsRepository } from "../../blogs/repositories/blogs.repository";
 
@@ -15,7 +14,7 @@ export const postsServices = {
         const blog: WithId<Blog> | null = await blogsRepository.findById(dto.blogId)
 
         if (!blog) {
-            throw new BadRequestError([{ message: 'Blog should exist', field: 'blogId' }])
+            throw new NotFoundError('Blog is not found')
         }
 
         const newPost: Post = {
