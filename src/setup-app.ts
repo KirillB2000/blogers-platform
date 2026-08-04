@@ -1,5 +1,5 @@
 import express, { Express } from "express";
-import { blogsRouter } from "./blogs/routes/blogs.routers";
+import { blogsRouter } from "./blogs/routes/blogs.router";
 import { postsRouter } from "./posts/routes/posts.router";
 import { BLOGS_PATH } from "./blogs/constants/blogs.paths";
 import { POSTS_PATH } from "./posts/constants/posts.paths";
@@ -8,6 +8,8 @@ import { testingRouter } from "./testing/routers/testing.router";
 import { errorsHandler } from "./core/exceptions/error.handler";
 import { USERS_PATH } from "./users/constants/users.paths";
 import { userRouter } from "./users/routes/users.router";
+import { AUTH_PATH } from "./auth/constants/auth.paths";
+import { authRouter } from "./auth/routes/auth.router";
 
 const setupApp = (app: Express) => {
   app.use(express.json());
@@ -16,6 +18,7 @@ const setupApp = (app: Express) => {
   app.use(POSTS_PATH, postsRouter);
   app.use(TESTING_PATH, testingRouter);
   app.use(USERS_PATH, userRouter)
+  app.use(AUTH_PATH, authRouter)
 
   app.use(errorsHandler)
 
