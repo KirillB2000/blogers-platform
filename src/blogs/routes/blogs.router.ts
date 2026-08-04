@@ -56,8 +56,8 @@ blogsRouter
 
   .post(
     `${BLOGS_ROUTES.BY_BLOG_ID}${POSTS_PATH}`,
-    idValidation('blogId'),
     superAdminGuardMiddleware,
+    idValidation('blogId'),
     postBlogInputDtoValidation,
     inputValidationResultMiddleware,
     catchAsync(createPostForSpecificBlogHandler),
@@ -66,6 +66,7 @@ blogsRouter
   .put(
     BLOGS_ROUTES.BY_ID,
     superAdminGuardMiddleware,
+    idValidation('id'),
     blogInputDtoValidation,
     inputValidationResultMiddleware,
     catchAsync(updateBlogByIdHandler),
@@ -73,8 +74,8 @@ blogsRouter
 
   .delete(
     BLOGS_ROUTES.BY_ID,
-    idValidation('id'),
     superAdminGuardMiddleware,
+    idValidation('id'),
     inputValidationResultMiddleware,
     catchAsync(deleteBlogByIdHandler),
   );

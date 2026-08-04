@@ -51,8 +51,8 @@ postsRouter
 
   .delete(
     POSTS_ROUTES.BY_ID,
-    idValidation('id'),
     superAdminGuardMiddleware,
+    idValidation('id'),
     inputValidationResultMiddleware,
     catchAsync(deletePostByIdHandler),
   );

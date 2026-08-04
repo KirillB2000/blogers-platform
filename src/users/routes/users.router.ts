@@ -25,8 +25,8 @@ userRouter
 
     .delete(
         USERS_ROUTING.BY_ID,
-        idValidation('id'),
         superAdminGuardMiddleware,
+        idValidation('id'),
         inputValidationResultMiddleware,
         catchAsync(deleteUserHandler)
     )
