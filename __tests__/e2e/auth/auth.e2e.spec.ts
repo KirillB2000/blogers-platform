@@ -10,6 +10,7 @@ import { createUserDto } from "../../utils/users/createUserDto";
 import { authDto } from "../../utils/auth/authDto";
 import { UserInputModel } from "../../../src/users/dto/userInputModel";
 import { usersCollection } from "../../../src/db/collections";
+import { generateTestJwt } from "../../utils/generateJwt";
 
 describe("Auth API body validation check", () => {
     const app = express();
@@ -34,9 +35,29 @@ describe("Auth API body validation check", () => {
         const exisedUser = await createUserDto(app, userRegestrationInput)
         const userLoginInput = authDto(exisedUser.email, userRegestrationInput.password)
 
-        await request(app)
+        const response = await request(app)
             .post(`${AUTH_PATH}${AUTH_ROUTING.LOGIN}`)
             .send(userLoginInput)
-            .expect(httpStatuses.NoContent)
+            .expect(httpStatuses.Ok)
+
+        expect(response.body).toEqual({
+            accessToken: expect.any(String)
+        })
+    })
+
+    it('Should successfully return current user data; GET /auth/me', async () => {
+        const existedUser = await createUserDto(app)
+        const token = generateTestJwt(existedUser)
+
+        const response = await request(app)
+            .get(`${AUTH_PATH}${AUTH_ROUTING.ME}`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(httpStatuses.Ok)
+
+        expect(response.body).toEqual({
+            email: existedUser.email,
+            login: existedUser.login,
+            userId: existedUser.id
+        })
     })
 })

@@ -4,6 +4,8 @@ import { authDtoValidation } from "../validation/auth.validation";
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { authHandler } from "./handlers/auth.handler";
 import { catchAsync } from "../../core/helpers/catchAsync.helper";
+import { accessTokenMiddleware } from "../middlewares/access-token.guard.middleware";
+import { meHandler } from "./handlers/me.handler";
 
 export const authRouter = Router({})
 
@@ -13,4 +15,10 @@ authRouter
         authDtoValidation,
         inputValidationResultMiddleware,
         catchAsync(authHandler)
+    )
+
+    .get(
+        AUTH_ROUTING.ME,
+        accessTokenMiddleware,
+        catchAsync(meHandler)
     )

@@ -1,12 +1,14 @@
 import { ObjectId } from "mongodb";
 import { usersCollection } from "../../db/collections";
 import { mapUserDomaiToViewModel } from "../mappers/mapUserDomaiToViewModel";
-import { NotFoundError } from "../../core/exceptions/app-errors.exeption";
+import { NotFoundError, UnauthorizedError } from "../../core/exceptions/app-errors.exeption";
 import { UserViewModel } from "../output/userViewModel";
 import { UserQueryInput } from "../input/user-query.input";
 import { mapToUserListPaginatedOutput } from "../mappers/mapToUserListPaginatedOutput";
 import { PagindatedOutput } from "../../core/types/paginated.output";
 import { UserListPaginatorOutput } from "../output/userListPaginatorOutput";
+import { MeViewModel } from "../../auth/output/me-output.type";
+import { mapUserDomainToMeViewModel } from "../mappers/mapUserDomainToMeViewModel";
 
 
 export const userQwRepository = {
@@ -71,5 +73,19 @@ export const userQwRepository = {
         const userForResponse: UserViewModel = mapUserDomaiToViewModel(user)
 
         return userForResponse
+    },
+
+    async findByIdMe (
+        id: string
+    ): Promise<MeViewModel> {
+        const user = await usersCollection.findOne({_id: new ObjectId(id)})
+
+        if(!user) {
+            throw new UnauthorizedError('Unauthorized')
+        }
+
+        const userMeForResponse: MeViewModel = mapUserDomainToMeViewModel(user)
+
+        return userMeForResponse
     }
 }
