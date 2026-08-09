@@ -1,4 +1,4 @@
-import { postViewModel } from "./post-data.output";
+import { PostViewModel } from "./post-data.output";
 
 
 export type PostListPaginatorOutput = {
@@ -6,5 +6,5 @@ export type PostListPaginatorOutput = {
     page?: number,
     pageSize?: number,
     totalCount?: number,
-    items: postViewModel[],
+    items: PostViewModel[],
 }

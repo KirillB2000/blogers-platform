@@ -1,17 +1,17 @@
 import { Express } from "express";
-import { postInputModel } from "../../../src/posts/dto/postInputModel";
+import { PostInputModel } from "../../../src/posts/input/dto/postInputModel";
 import { createBlogDto } from "../blogs/createBlogDto";
 import { postDto } from "./postDto";
 import request from "supertest";
 import { POSTS_PATH } from "../../../src/posts/constants/posts.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
-import { postViewModel } from "../../../src/posts/routes/output/post-data.output";
+import { PostViewModel } from "../../../src/posts/output/post-data.output";
 import { generateBasicAuthToken } from "../generateBasicAuthToken";
 
 export const createPostDto = async (
   app: Express,
-  inputForPost?: postInputModel,
-): Promise<postViewModel> => {
+  inputForPost?: PostInputModel,
+): Promise<PostViewModel> => {
   const blog = await createBlogDto(app);
 
   const testPostData = { ...postDto(blog.id), ...inputForPost };

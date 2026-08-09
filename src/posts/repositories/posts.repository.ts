@@ -1,8 +1,7 @@
-import { ObjectId, WithId } from "mongodb";
-import { postInputModel } from "../dto/postInputModel";
-import { Post } from "../domain/post";
+import { ObjectId } from "mongodb";
+import { PostInputModel } from "../input/dto/postInputModel";
+import { Post } from "../input/post";
 import { postsCollection } from "../../db/collections";
-import { PostQueryInput } from "../routes/input/post-query.input";
 
 export const postsRepository = {
 
@@ -12,7 +11,7 @@ export const postsRepository = {
     return insertResult.insertedId
   },
 
-  async update(id: string, post: postInputModel): Promise<boolean> {
+  async update(id: string, post: PostInputModel): Promise<boolean> {
     const updatedResult = await postsCollection.updateOne(
       {_id: new ObjectId(id)},
       {$set: post}

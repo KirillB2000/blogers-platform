@@ -11,6 +11,7 @@ import { paginationAndSortingValidation } from "../../core/middlewares/validatio
 import { sanitizeQueryParams } from "../../core/middlewares/validation/sanitize-query.middleware";
 import { UserSortFields } from "../input/user-sort-fields";
 import { getUserListHandler } from "./handlers/getUserList.handler";
+import { PARAMS_IDS } from "../../core/types/paramsIds";
 
 export const userRouter = Router({})
 
@@ -26,7 +27,7 @@ userRouter
     .delete(
         USERS_ROUTING.BY_ID,
         superAdminGuardMiddleware,
-        idValidation('id'),
+        idValidation(PARAMS_IDS.ID),
         inputValidationResultMiddleware,
         catchAsync(deleteUserHandler)
     )

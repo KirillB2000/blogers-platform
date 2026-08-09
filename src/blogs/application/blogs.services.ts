@@ -6,14 +6,14 @@ import { mapBlogInputDtoToDbType } from "../routes/mappers/map-from-blog-input-d
 import { NotFoundError } from "../../core/exceptions/app-errors.exeption"
 
 export const blogsService = {
-    async create(dto: blogInputModel): Promise<ObjectId> {
+    async create(dto: blogInputModel): Promise<string> {
         const newBlog: Blog = {
             ...mapBlogInputDtoToDbType(dto),
             createdAt: new Date(),
             isMembership: false
         }
 
-        const blogsId: ObjectId = await blogsRepository.create(newBlog)
+        const blogsId = await blogsRepository.create(newBlog)
 
         return blogsId
     },

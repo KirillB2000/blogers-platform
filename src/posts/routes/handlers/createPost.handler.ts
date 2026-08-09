@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { postInputModel } from "../../dto/postInputModel";
-import { postViewModel } from "../output/post-data.output";
+import { PostInputModel } from "../../input/dto/postInputModel";
+import { PostViewModel } from "../../output/post-data.output";
 import { httpStatuses } from "../../../core/types/http-statuses";
 import { ObjectId } from "mongodb";
 import { postsServices } from "../../application/posts.services";
@@ -10,7 +10,7 @@ import { BlogViewModel } from "../../../blogs/routes/output/blog-data.output";
 import { postsQwRepository } from "../../repositories/posts.queryRepository";
 
 export const createPostHandler = async (
-  req: Request<{}, {}, postInputModel>,
+  req: Request<{}, {}, PostInputModel>,
   res: Response,
 ) => {
   const blogById: BlogViewModel = await blogsQwRepository.findById(req.body.blogId);
@@ -21,7 +21,7 @@ export const createPostHandler = async (
 
   const createdPostId: ObjectId = await postsServices.create(req.body);
 
-  const createdPostForResponse : postViewModel = await postsQwRepository.findById(createdPostId)
+  const createdPostForResponse : PostViewModel = await postsQwRepository.findById(createdPostId)
 
   res.status(httpStatuses.Created).json(createdPostForResponse);
 };

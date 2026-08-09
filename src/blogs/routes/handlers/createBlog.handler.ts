@@ -10,7 +10,7 @@ export const createBlogHandler = async (
   req: Request<{}, {}, blogInputModel>,
   res: Response,
 ) => {
-  const blogsId: ObjectId = await blogsService.create(req.body);
+  const blogsId = await blogsService.create(req.body);
   const createdObject: BlogViewModel = await blogsQwRepository.findById(blogsId)
   
   res.status(httpStatuses.Created).json(createdObject);

@@ -1,15 +1,15 @@
 import { ObjectId, WithId } from "mongodb";
-import { Post } from "../domain/post";
+import { Post } from "../input/post";
 import { postsRepository } from "../repositories/posts.repository";
-import { postInputModel } from "../dto/postInputModel";
-import { mapPostInputDtoToDbType } from "../routes/mappers/map-from-post-input-dto-to-db-type";
+import { PostInputModel } from "../input/dto/postInputModel";
+import { mapPostInputDtoToDbType } from "../mappers/map-from-post-input-dto-to-db-type";
 import { BadRequestError, NotFoundError } from "../../core/exceptions/app-errors.exeption";
 import { Blog } from "../../blogs/domain/blog";
 import { blogsRepository } from "../../blogs/repositories/blogs.repository";
 
 export const postsServices = {
 
-    async create(dto: postInputModel): Promise<ObjectId> {
+    async create(dto: PostInputModel): Promise<ObjectId> {
 
         const blog: WithId<Blog> | null = await blogsRepository.findById(dto.blogId)
 
@@ -29,7 +29,7 @@ export const postsServices = {
         return createdPostId
     },
 
-    async update(id: string, dto: postInputModel): Promise<void> {
+    async update(id: string, dto: PostInputModel): Promise<void> {
         const blog = await blogsRepository.findById(dto.blogId)
         
         if(!blog) {

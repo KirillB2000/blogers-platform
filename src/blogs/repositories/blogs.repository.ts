@@ -5,10 +5,10 @@ import { Blog } from "../domain/blog";
 import { assert } from "node:console";
 
 export const blogsRepository = {
-  async create(newBlog: Blog): Promise<ObjectId> {
+  async create(newBlog: Blog): Promise<string> {
     const createdBlog = await blogsCollection.insertOne(newBlog)
 
-    return createdBlog.insertedId
+    return createdBlog.insertedId.toString()
   },
 
   async update(id: string, blog: blogInputModel): Promise<boolean> {

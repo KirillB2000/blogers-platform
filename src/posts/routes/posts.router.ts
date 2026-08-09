@@ -11,13 +11,20 @@ import { postInputDtoValidation } from "../validation/post-input.validation.midd
 import { superAdminGuardMiddleware } from "../../auth/middlewares/super-admin.guard.middleware";
 import { paginationAndSortingValidation } from "../../core/middlewares/validation/query-pagination-sorting.validation.middleware";
 import { sanitizeQueryParams } from "../../core/middlewares/validation/sanitize-query.middleware";
-import { PostSortField } from "./input/post-sort-fields";
+import { PostSortField } from "../input/post-sort-fields";
 import { RequestHandler } from "express";
 import { catchAsync } from "../../core/helpers/catchAsync.helper";
+import { PARAMS_IDS } from "../../core/types/paramsIds";
+import { COMMENTS_PATH } from "../../comments/constants/comments.paths";
+import { createCommentForSpecificPostHandler } from "./handlers/createCommentForSpecificPost.handler";
+import { commentInputDtoValidation } from "../../comments/validation/commentInput.validation";
+import { accessTokenGuardMiddleware } from "../../auth/middlewares/access-token.guard.middleware";
 
 export const postsRouter = Router({});
 
 postsRouter
+  //posts
+  
   .get(
     POSTS_ROUTES.ROOT,
     paginationAndSortingValidation(PostSortField),
@@ -28,7 +35,7 @@ postsRouter
 
   .get(
     POSTS_ROUTES.BY_ID,
-    idValidation('id'),
+    idValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
     catchAsync(getPostByIdHandler),
   )
@@ -52,7 +59,18 @@ postsRouter
   .delete(
     POSTS_ROUTES.BY_ID,
     superAdminGuardMiddleware,
-    idValidation('id'),
+    idValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
     catchAsync(deletePostByIdHandler),
-  );
+  )
+
+  // comments
+
+  .post(
+    `${POSTS_ROUTES.ROOT}${POSTS_ROUTES.BY_POST_ID}${COMMENTS_PATH}`,
+    accessTokenGuardMiddleware,
+    idValidation(PARAMS_IDS.POST_ID),
+    commentInputDtoValidation,
+    inputValidationResultMiddleware,
+    catchAsync(createCommentForSpecificPostHandler)
+  )

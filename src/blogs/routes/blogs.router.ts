@@ -14,10 +14,11 @@ import { sanitizeQueryParams } from "../../core/middlewares/validation/sanitize-
 import { POSTS_PATH } from "../../posts/constants/posts.paths";
 import { postBlogInputDtoValidation } from "../../posts/validation/post-input.validation.middleware";
 import { createPostForSpecificBlogHandler } from "./handlers/createPostForSpecificBlog.handler";
-import { PostSortField } from "../../posts/routes/input/post-sort-fields";
+import { PostSortField } from "../../posts/input/post-sort-fields";
 import { getPostListForSpecificBlog } from "./handlers/getPostListForSpecificBlog.handler";
 import { catchAsync } from "../../core/helpers/catchAsync.helper";
 import { deleteBlogByIdHandler } from "./handlers/deleteBlogById.handler";
+import { PARAMS_IDS } from "../../core/types/paramsIds";
 
 export const blogsRouter = Router({});
 
@@ -41,7 +42,7 @@ blogsRouter
 
   .get(
     BLOGS_ROUTES.BY_ID,
-    idValidation('id'),
+    idValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
     catchAsync(getBlogByIdHandler),
   )
@@ -57,7 +58,7 @@ blogsRouter
   .post(
     `${BLOGS_ROUTES.BY_BLOG_ID}${POSTS_PATH}`,
     superAdminGuardMiddleware,
-    idValidation('blogId'),
+    idValidation(PARAMS_IDS.BLOG_ID),
     postBlogInputDtoValidation,
     inputValidationResultMiddleware,
     catchAsync(createPostForSpecificBlogHandler),
@@ -66,7 +67,7 @@ blogsRouter
   .put(
     BLOGS_ROUTES.BY_ID,
     superAdminGuardMiddleware,
-    idValidation('id'),
+    idValidation(PARAMS_IDS.ID),
     blogInputDtoValidation,
     inputValidationResultMiddleware,
     catchAsync(updateBlogByIdHandler),
@@ -75,7 +76,7 @@ blogsRouter
   .delete(
     BLOGS_ROUTES.BY_ID,
     superAdminGuardMiddleware,
-    idValidation('id'),
+    idValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
     catchAsync(deleteBlogByIdHandler),
   );

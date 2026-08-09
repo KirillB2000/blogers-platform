@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { httpStatuses } from "../../../core/types/http-statuses";
 import { WithId } from "mongodb";
-import { Post } from "../../domain/post";
-import { PostQueryInput } from "../input/post-query.input";
+import { Post } from "../../input/post";
+import { PostQueryInput } from "../../input/post-query.input";
 import { PagindatedOutput } from "../../../core/types/paginated.output";
-import { mapToPostListPaginatedOutput } from "../mappers/map-from-post-domain-to-post-paginated-output";
-import { PostListPaginatorOutput } from "../output/post-list-paginator.output";
+import { mapToPostListPaginatedOutput } from "../../mappers/map-from-post-domain-to-post-paginated-output";
+import { PostListPaginatorOutput } from "../../output/post-list-paginator.output";
 import { postsQwRepository } from "../../repositories/posts.queryRepository";
 
 export const getPostListHandler = async (

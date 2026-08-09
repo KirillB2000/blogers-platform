@@ -2,12 +2,16 @@ import express from "express";
 import setupApp from "../../../src/setup-app";
 import request from "supertest";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
-import { POSTS_PATH } from "../../../src/posts/constants/posts.paths";
+import { POSTS_PATH, POSTS_ROUTES } from "../../../src/posts/constants/posts.paths";
 import { clearDb } from "../../utils/clearDb";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
 import { runDB, stopDb } from "../../../src/db/mongo.db";
 import { SETTINGS } from "../../../src/settings/config";
 import { createBlogDto } from "../../utils/blogs/createBlogDto";
+import { createPostDto } from "../../utils/posts/createPostDto";
+import { createUserDto } from "../../utils/users/createUserDto";
+import { COMMENTS_PATH } from "../../../src/comments/constants/comments.paths";
+import { createCommentDto } from "../../utils/comments/createCommentDto";
 
 describe("Posts API", () => {
   const app = express();
@@ -102,7 +106,7 @@ describe("Posts API", () => {
     expect(indexA).toBeLessThan(indexB);
   });
 
-  it("Shold get post by id; GET /api/posts/:id", async () => {
+  it("Should get post by id; GET /api/posts/:id", async () => {
     const blog = await createBlogDto(app);
 
     const createResponse = await request(app)
@@ -211,4 +215,22 @@ describe("Posts API", () => {
       .get(`${POSTS_PATH}/${createResponse.body.id}`)
       .expect(httpStatuses.NotFound);
   });
+
+  it("Should create comment for specific post; POST /post/:postId/comments", async () => {
+    const existedPost = await createPostDto(app)
+    const existedUser = await createUserDto(app)
+
+    const comment = await createCommentDto(app, existedPost.id, existedUser)
+
+    expect(comment).toEqual({
+      id: expect.any(String),
+      content: expect.any(String),
+      commentatorInfo: {
+        userId: existedUser.id,
+        userLogin: existedUser.login
+      },
+      createdAt: expect.any(String)
+    })
+
+  })
 });

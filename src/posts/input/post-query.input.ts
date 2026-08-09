@@ -1,4 +1,4 @@
-import { PaginationAndSorting } from "../../../core/types/pagination-and-sorting";
+import { PaginationAndSorting } from "../../core/types/pagination-and-sorting";
 import { PostSortField } from "./post-sort-fields";
 
 

@@ -1,9 +1,9 @@
-import { postInputModel } from "../../dto/postInputModel";
-import { Post } from "../../domain/post";
+import { PostInputModel } from "../input/dto/postInputModel";
+import { Post } from "../input/post";
 
 
 export const mapPostInputDtoToDbType = (
-    dto: postInputModel
+    dto: PostInputModel
 ): Omit<Post, 'createdAt' | 'blogName'> => {
     return {
         title: dto.title,

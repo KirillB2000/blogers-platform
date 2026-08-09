@@ -17,6 +17,9 @@ describe('Users API', () => {
 
     beforeAll(async () => {
         await runDB(SETTINGS.MONGO_URL)
+    })
+
+    beforeEach(async () => {
         await usersCollection.deleteMany({})
     })
 

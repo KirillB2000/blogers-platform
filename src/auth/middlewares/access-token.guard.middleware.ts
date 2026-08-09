@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { httpStatuses } from "../../core/types/http-statuses";
-import { jwtService } from "../application/jwt.service";
+import { jwtService } from "../application/jwt.services";
 import { IdType } from "../../core/types/id";
 
-export const accessTokenMiddleware = async (
+export const accessTokenGuardMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction,

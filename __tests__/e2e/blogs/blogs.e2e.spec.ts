@@ -11,7 +11,7 @@ import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
 import { runDB, stopDb } from "../../../src/db/mongo.db";
 import { SETTINGS } from "../../../src/settings/config";
 import { POSTS_PATH } from "../../../src/posts/constants/posts.paths";
-import { postBlogInputModel } from "../../../src/posts/dto/postBlogInputModel";
+import { PostBlogInputModel } from "../../../src/posts/input/dto/postBlogInputModel";
 import { postForBlogDto } from "../../utils/posts/postForBlogDto";
 
 describe("Blogs API", () => {
@@ -194,7 +194,7 @@ describe("Blogs API", () => {
   it("Should create post for specific blog; POST /api/blogs/:blogId/posts", async () => {
     const blog = await createBlogDto(app);
 
-    const postData: postBlogInputModel = {
+    const postData: PostBlogInputModel = {
       title: "Blog post title",
       shortDescription: "Blog post description",
       content: "Blog post content",
@@ -231,7 +231,7 @@ describe("Blogs API", () => {
   })
 
   it("Should return 400 for invalid blogId format when creating post; POST /api/blogs/:blogId/posts", async () => {
-    const postData: postBlogInputModel = {
+    const postData: PostBlogInputModel = {
       title: "Blog post title",
       shortDescription: "Blog post description",
       content: "Blog post content",
@@ -247,7 +247,7 @@ describe("Blogs API", () => {
   it("Should return 401 when creating post without auth; POST /api/blogs/:blogId/posts", async () => {
     const blog = await createBlogDto(app);
 
-    const postData: postBlogInputModel = {
+    const postData: PostBlogInputModel = {
       title: "Blog post title",
       shortDescription: "Blog post description",
       content: "Blog post content",

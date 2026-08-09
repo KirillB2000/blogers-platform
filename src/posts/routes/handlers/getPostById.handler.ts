@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { httpStatuses } from "../../../core/types/http-statuses";
-import { postViewModel } from "../output/post-data.output";
+import { PostViewModel } from "../../output/post-data.output";
 import { postsQwRepository } from "../../repositories/posts.queryRepository";
 
 export const getPostByIdHandler = async (
@@ -8,7 +8,7 @@ export const getPostByIdHandler = async (
   res: Response) => {
     const postId = req.params.id
 
-    const postById: postViewModel = await postsQwRepository.findById(postId);
+    const postById: PostViewModel = await postsQwRepository.findById(postId);
 
   res.status(httpStatuses.Ok).json(postById);
 };
