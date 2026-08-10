@@ -12,7 +12,7 @@ export const createCommentDto = async (
     app: Express,
     postId: string,
     user: UserViewModel
-): Promise<CommentViewModel> => {
+): Promise<{body: CommentViewModel, token: string}> => {
     const token = generateTestJwt(user)
     const testCommentData = { ...commentDto() }
     const response = await request(app)
@@ -21,5 +21,9 @@ export const createCommentDto = async (
         .send(testCommentData)
         .expect(httpStatuses.Created)
 
-    return response.body
+    const responseWithToken = {
+        body: response.body,
+        token: token
+    }
+    return responseWithToken
 }

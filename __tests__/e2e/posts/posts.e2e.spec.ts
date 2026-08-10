@@ -12,6 +12,7 @@ import { createPostDto } from "../../utils/posts/createPostDto";
 import { createUserDto } from "../../utils/users/createUserDto";
 import { COMMENTS_PATH } from "../../../src/comments/constants/comments.paths";
 import { createCommentDto } from "../../utils/comments/createCommentDto";
+import { commentsCollection, postsCollection, usersCollection } from "../../../src/db/collections";
 
 describe("Posts API", () => {
   const app = express();
@@ -19,10 +20,15 @@ describe("Posts API", () => {
 
   const adminToken = generateBasicAuthToken();
 
- beforeAll(async () => {
+  beforeAll(async () => {
     await runDB(SETTINGS.MONGO_URL)
-    await clearDb(app);
-  });
+  })
+
+  beforeEach(async () => {
+    await commentsCollection.deleteMany({})
+    await usersCollection.deleteMany({})
+    await postsCollection.deleteMany({})
+  })
 
   afterAll(async () => {
     await stopDb()
@@ -220,7 +226,7 @@ describe("Posts API", () => {
     const existedPost = await createPostDto(app)
     const existedUser = await createUserDto(app)
 
-    const comment = await createCommentDto(app, existedPost.id, existedUser)
+    const {body: comment, token} = await createCommentDto(app, existedPost.id, existedUser)
 
     expect(comment).toEqual({
       id: expect.any(String),
@@ -232,5 +238,18 @@ describe("Posts API", () => {
       createdAt: expect.any(String)
     })
 
-  })
+  }),
+
+    it("Should get comments list for specific post; GET /post/:postId/comments", async () => {
+      const existedPost = await createPostDto(app)
+      const existedUser = await createUserDto(app)
+
+      await createCommentDto(app, existedPost.id, existedUser)
+      await createCommentDto(app, existedPost.id, existedUser)
+      await createCommentDto(app, existedPost.id, existedUser)
+
+      const response = await request(app)
+        .get(`${POSTS_PATH}/${existedPost.id}${COMMENTS_PATH}`)
+        .expect(httpStatuses.Ok)
+    })
 });

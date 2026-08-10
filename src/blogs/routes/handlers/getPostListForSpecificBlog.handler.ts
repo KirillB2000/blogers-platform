@@ -1,16 +1,12 @@
 import { Request, Response } from "express"
 import { PostQueryInput } from "../../../posts/input/post-query.input"
-import { postsServices } from "../../../posts/application/posts.services"
 import { Post } from "../../../posts/input/post"
 import { WithId } from "mongodb"
 import { PagindatedOutput } from "../../../core/types/paginated.output"
 import { PostListPaginatorOutput } from "../../../posts/output/post-list-paginator.output"
 import { mapToPostListPaginatedOutput } from "../../../posts/mappers/map-from-post-domain-to-post-paginated-output"
 import { httpStatuses } from "../../../core/types/http-statuses"
-import { blogsRepository } from "../../repositories/blogs.repository"
-import { Blog } from "../../domain/blog"
 import { NotFoundError } from "../../../core/exceptions/app-errors.exeption"
-import { blogInputModel } from "../../dto/blogInputModel"
 import { BlogViewModel } from "../output/blog-data.output"
 import { blogsQwRepository } from "../../repositories/blogs.queryRepository"
 import { postsQwRepository } from "../../../posts/repositories/posts.queryRepository"
@@ -19,7 +15,7 @@ export const getPostListForSpecificBlog = async (
     req: Request<{blogId: string}, {}, {}, PostQueryInput>,
     res: Response
 ) => {
-    const queryInput = req.query
+    const queryInput: PostQueryInput = req.query
     const blogId = req.params.blogId
 
     const blog: BlogViewModel = await blogsQwRepository.findById(blogId)

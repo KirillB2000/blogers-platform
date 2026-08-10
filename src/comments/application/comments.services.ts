@@ -1,3 +1,4 @@
+import { NotFoundError } from "../../core/exceptions/app-errors.exeption";
 import { UserViewModel } from "../../users/output/userViewModel";
 import { PComment } from "../input/comment";
 import { CommentInputModel } from "../input/dto/commentInputModel";
@@ -22,5 +23,26 @@ export const commentsService = {
         const commentId = await commentsRepository.create(commentDomain)
 
         return commentId
+    },
+
+    async delete(
+        commentId: string
+    ): Promise<void> {
+        const isDeleted = await commentsRepository.delete(commentId)
+
+        if (!isDeleted) {
+            throw new NotFoundError('Comment not found')
+        }
+    },
+
+    async update(
+        commentId: string,
+        content: CommentInputModel
+    ): Promise<void> {
+        const isUpdated = await commentsRepository.update(commentId, content)
+
+        if (!isUpdated) {
+            throw new NotFoundError('Comment not found')
+        }
     }
 }

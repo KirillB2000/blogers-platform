@@ -2,25 +2,28 @@ import express from 'express'
 import setupApp from '../../../src/setup-app'
 import { runDB, stopDb } from '../../../src/db/mongo.db'
 import { SETTINGS } from '../../../src/settings/config'
-import { commentsCollection } from '../../../src/db/collections'
+import { commentsCollection, postsCollection, usersCollection } from '../../../src/db/collections'
 import request from 'supertest'
-import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken'
 import { httpStatuses } from '../../../src/core/types/http-statuses'
 import { createPostDto } from '../../utils/posts/createPostDto'
 import { createUserDto } from '../../utils/users/createUserDto'
 import { createCommentDto } from '../../utils/comments/createCommentDto'
-import { COMMENTS_PATH, COMMENTS_ROUTES } from '../../../src/comments/constants/comments.paths'
-import { clearDb } from '../../utils/clearDb'
+import { COMMENTS_PATH } from '../../../src/comments/constants/comments.paths'
+import { commentDto } from '../../utils/comments/commentDto'
+import { CommentInputModel } from '../../../src/comments/input/dto/commentInputModel'
 
 describe('Users API', () => {
     const app = express()
     setupApp(app)
 
-    const adminToken = generateBasicAuthToken()
-
-    beforeAll(async () => {
+    beforeAll( async () => {
         await runDB(SETTINGS.MONGO_URL)
-        await clearDb(app);
+    })
+
+    beforeEach(async () => {
+        await commentsCollection.deleteMany({})
+        await usersCollection.deleteMany({})
+        await postsCollection.deleteMany({})
     })
 
     afterAll(async () => {
@@ -31,11 +34,11 @@ describe('Users API', () => {
         const existedPost = await createPostDto(app)
         const existedUser = await createUserDto(app)
     
-        const comment = await createCommentDto(app, existedPost.id, existedUser)
+        const {body: comment, token} = await createCommentDto(app, existedPost.id, existedUser)
 
         const response = await request(app)
             .get(`${COMMENTS_PATH}/${comment.id}`)
-            expect(httpStatuses.Ok)
+            .expect(httpStatuses.Ok)
         
         expect(response.body).toEqual({
             id: comment.id,
@@ -46,5 +49,45 @@ describe('Users API', () => {
             },
             createdAt: comment.createdAt
         })
+    }),
+
+    it('Should delete comment by id; DELETE /comments/:commentId', async () => {
+        const existedPost = await createPostDto(app)
+        const existedUser = await createUserDto(app)
+
+        const {body: existedComment, token} = await createCommentDto(app, existedPost.id, existedUser)
+
+        await request(app)
+            .delete(`${COMMENTS_PATH}/${existedComment.id}`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(httpStatuses.NoContent)
+
+        await request(app)
+            .get(`${COMMENTS_PATH}/${existedComment.id}`)
+            .expect(httpStatuses.NotFound)
+    })
+
+    it('Should update comment by id; PUT /comments/:commentId', async () => {
+        const commentDtoBody: CommentInputModel = {
+            ...commentDto(),
+            content: 'Updated content with correct length between 20 and 300 chars'
+        }
+
+        const existedPost = await createPostDto(app)
+        const existedUser = await createUserDto(app)
+
+        const { body: existedComment, token } = await createCommentDto(app, existedPost.id, existedUser)
+
+        await request(app)
+            .put(`${COMMENTS_PATH}/${existedComment.id}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send(commentDtoBody)
+            .expect(httpStatuses.NoContent)
+
+        const response = await request(app)
+            .get(`${COMMENTS_PATH}/${existedComment.id}`)
+            .expect(httpStatuses.Ok)
+
+        expect(response.body.content).toEqual(commentDtoBody.content)
     })
 })

@@ -19,6 +19,8 @@ import { COMMENTS_PATH } from "../../comments/constants/comments.paths";
 import { createCommentForSpecificPostHandler } from "./handlers/createCommentForSpecificPost.handler";
 import { commentInputDtoValidation } from "../../comments/validation/commentInput.validation";
 import { accessTokenGuardMiddleware } from "../../auth/middlewares/access-token.guard.middleware";
+import { getCommentListForSpecificPostHandler } from "./handlers/getCommentListForSpecificPost.handler";
+import { CommentSortField } from "../../comments/input/commentSortFields";
 
 export const postsRouter = Router({});
 
@@ -73,4 +75,13 @@ postsRouter
     commentInputDtoValidation,
     inputValidationResultMiddleware,
     catchAsync(createCommentForSpecificPostHandler)
+  )
+
+  .get(
+    `${POSTS_ROUTES.ROOT}${POSTS_ROUTES.BY_POST_ID}${COMMENTS_PATH}`,
+    idValidation(PARAMS_IDS.POST_ID),
+    paginationAndSortingValidation(CommentSortField),
+    inputValidationResultMiddleware,
+    sanitizeQueryParams,
+    catchAsync(getCommentListForSpecificPostHandler as unknown as RequestHandler)
   )
