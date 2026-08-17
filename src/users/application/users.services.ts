@@ -1,35 +1,31 @@
 import { ObjectId } from "mongodb";
-import { UserInputModel } from "../dto/userInputModel";
+import { UserInputModel } from "../input/dto/userInputModel";
 import { usersRepository } from "../repository/user.repository";
-import { mapUserInputToDbType } from "../mappers/mapUserInputToDbType";
-import { User } from "../domain/user";
-import bycrypt from 'bcrypt'
-import { FieldError } from "../../core/types/errors";
 import { BadRequestError, NotFoundError } from "../../core/exceptions/app-errors.exeption";
+import { bcryptService } from "../../auth/adapters/bcrypt.services";
+import { mapUserInputToIDbType } from "../mappers/mapUserInputToIDbType";
+import { IUserDB } from "../input/domain/iUserDb";
 
 export const usersService = {
     async create (
         dto: UserInputModel
     ): Promise<ObjectId> {
-        const existingUserByLoginOrEmail = await usersRepository.findByLoginOrEmail(dto.login, dto.email)
-        if (existingUserByLoginOrEmail) {
-            const errors: FieldError[] = []
-            if (existingUserByLoginOrEmail.login === dto.login) {
-                errors.push({message: 'Login must be unique', field: 'login'})
-            }
-            if (existingUserByLoginOrEmail.email === dto.email) {
-                errors.push({ message: 'Email must be unique', field: 'email' })
-            }
-            throw new BadRequestError(errors)
-        }
-        const userDtoWithHashedPassword = {
-            ...dto,
-            password: await bycrypt.hash(dto.password, 10)
+
+        const existingUserEmail = await usersRepository.findByEmail(dto.email)
+        if (existingUserEmail) {
+            throw new BadRequestError([{ message: 'Email must be unique', field: 'email' }])
         }
 
-        const userDomain: User = mapUserInputToDbType(userDtoWithHashedPassword)
+        const existingUserLogin = await usersRepository.findByLogin(dto.login)
+        if (existingUserLogin) {
+            throw new BadRequestError([{ message: 'Login must be unique', field: 'login' }])
+        }
 
-        const userId = await usersRepository.create(userDomain)
+        const hashedPassword = await bcryptService.generateHash(dto.password)
+
+        const dbUser: IUserDB = mapUserInputToIDbType(dto, hashedPassword)
+
+        const userId = await usersRepository.create(dbUser)
 
         return userId
     },

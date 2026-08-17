@@ -1,12 +1,12 @@
-import { ObjectId, WithId } from "mongodb";
-import { User } from "../../users/domain/user";
+import { WithId } from "mongodb";
 import { LoginSuccessViewModel } from "../output/accessToken-output.type";
 import jwt from 'jsonwebtoken'
 import { SETTINGS } from "../../settings/config";
+import { IUserDB } from "../../users/input/domain/iUserDb";
 
 export const jwtService = {
     async createJWT (
-        user: WithId<User>
+        user: WithId<IUserDB>
     ): Promise<LoginSuccessViewModel> {
         const token = jwt.sign({userId: user._id.toString()}, SETTINGS.JWT_SECRET, {expiresIn: '10m'})
 

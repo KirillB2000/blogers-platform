@@ -1,4 +1,4 @@
-import { UserInputModel } from "../../../src/users/dto/userInputModel"
+import { UserInputModel } from "../../../src/users/input/dto/userInputModel"
 
 export const userDto = (): UserInputModel => {
     return {

@@ -20,7 +20,7 @@ const passwordValidation = body('password')
     .isLength({ min: 6, max: 20 })
     .withMessage('Login must contains from 6 to 20 characters')
 
-const emailValidation = body('email')
+export const emailValidation = body('email')
     .isString()
     .withMessage('Email must be a string')
     .trim()

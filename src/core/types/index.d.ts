@@ -1,4 +1,4 @@
-import { UserInputModel } from "../../users/dto/userInputModel";
+import { UserInputModel } from "../../users/input/dto/userInputModel";
 import { IdType } from "./id";
 
 declare global {

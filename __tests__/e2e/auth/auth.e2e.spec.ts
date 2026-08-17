@@ -8,7 +8,7 @@ import express from 'express'
 import request from "supertest";
 import { createUserDto } from "../../utils/users/createUserDto";
 import { authDto } from "../../utils/auth/authDto";
-import { UserInputModel } from "../../../src/users/dto/userInputModel";
+import { UserInputModel } from "../../../src/users/input/dto/userInputModel";
 import { usersCollection } from "../../../src/db/collections";
 import { generateTestJwt } from "../../utils/generateJwt";
 

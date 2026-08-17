@@ -1,7 +1,7 @@
-import { ObjectId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 import { usersCollection } from "../../db/collections";
 import { mapUserDomaiToViewModel } from "../mappers/mapUserDomaiToViewModel";
-import { NotFoundError, UnauthorizedError } from "../../core/exceptions/app-errors.exeption";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../../core/exceptions/app-errors.exeption";
 import { UserViewModel } from "../output/userViewModel";
 import { UserQueryInput } from "../input/user-query.input";
 import { mapToUserListPaginatedOutput } from "../mappers/mapToUserListPaginatedOutput";
@@ -9,6 +9,7 @@ import { PagindatedOutput } from "../../core/types/paginated.output";
 import { UserListPaginatorOutput } from "../output/userListPaginatorOutput";
 import { MeViewModel } from "../../auth/output/me-output.type";
 import { mapUserDomainToMeViewModel } from "../mappers/mapUserDomainToMeViewModel";
+import { IUserDB } from "../input/domain/iUserDb";
 
 
 export const userQwRepository = {
@@ -87,5 +88,29 @@ export const userQwRepository = {
         const userMeForResponse: MeViewModel = mapUserDomainToMeViewModel(user)
 
         return userMeForResponse
+    },
+
+    async findByConfiramationCode(
+        confirmationCode: string
+    ) {
+        const userByCode = await usersCollection.findOne({"emailConfirmation.confirmationCode": confirmationCode})
+
+        if (!userByCode) {
+            throw new BadRequestError([{ message: 'Code should be correct and exist in the system', field: 'code'}])
+        }
+
+        return userByCode
+    },
+
+    async findByEmail(
+        email: string
+    ): Promise<WithId<IUserDB>> {
+        const userByEmail = await usersCollection.findOne({email: email})
+
+        if (!userByEmail) {
+            throw new BadRequestError([{message: 'Email should be correct and exist in the system', field: 'email'}])
+        }
+
+        return userByEmail
     }
 }

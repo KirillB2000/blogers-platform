@@ -1,9 +1,9 @@
 import { WithId } from "mongodb"
-import { User } from "../domain/user"
+import { IUserDB } from "../input/domain/iUserDb"
 import { UserViewModel } from "../output/userViewModel"
 
 export const mapUserDomaiToViewModel = (
-    domain: WithId<User>
+    domain: WithId<IUserDB>
 ): UserViewModel => {
     return {
         id: domain._id.toString(),

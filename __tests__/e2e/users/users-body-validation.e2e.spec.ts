@@ -1,5 +1,5 @@
 import express from 'express'
-import { UserInputModel } from '../../../src/users/dto/userInputModel';
+import { UserInputModel } from '../../../src/users/input/dto/userInputModel';
 import setupApp from '../../../src/setup-app';
 import { runDB, stopDb } from '../../../src/db/mongo.db';
 import { usersCollection } from '../../../src/db/collections';

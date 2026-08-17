@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { UserInputModel } from "../../dto/userInputModel"
+import { UserInputModel } from "../../input/dto/userInputModel"
 import { ObjectId } from "mongodb"
 import { usersService } from "../../application/users.services"
 import { UserViewModel } from "../../output/userViewModel"
