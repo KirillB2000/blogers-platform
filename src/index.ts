@@ -1,6 +1,9 @@
+import * as dotenv from 'dotenv'
+dotenv.config()
+
+import { SETTINGS } from "./settings/config";
 import express from "express";
 import setupApp from "./setup-app";
-import { SETTINGS } from "./settings/config";
 import { runDB } from "./db/mongo.db";
 import { dbConnectionMiddleware } from "./db/db-connection.middleware";
 
