@@ -15,7 +15,7 @@ export const usersRepository = {
     },
 
     async findByEmail(emailDto: string) {
-        return await usersCollection.findOne({ login: emailDto })
+        return await usersCollection.findOne({ email: emailDto })
     },
 
     async findByLoginOrEmailField(loginOrEmail: string) {
