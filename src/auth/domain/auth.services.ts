@@ -22,7 +22,7 @@ export const authService = {
             throw new UnauthorizedError('Unauthorized')
         }
 
-        const isPasswordCorrect = await bcrypt.compare(userCreds.password, user.password)
+        const isPasswordCorrect = await bcryptService.checkPassword(userCreds.password, user.password)
         if (!isPasswordCorrect) {
             throw new UnauthorizedError('Unauthorized')
         }
