@@ -7,6 +7,8 @@ import { UserInputModel } from "../../src/users/input/dto/userInputModel"
 import { nodemailerService } from "../../src/auth/adapters/nodemailer.services"
 import { BadRequestError, UnauthorizedError } from "../../src/core/exceptions/app-errors.exeption"
 import { LoginInputModel } from "../../src/auth/input/dto/loginInputModel"
+import { usersRepository } from "../../src/users/repository/user.repository"
+import { add } from "date-fns"
 
 
 describe('Integration tests for AuthService', () => {
@@ -151,7 +153,84 @@ describe('Integration tests for AuthService', () => {
         })
     })
 
-    // email confirmation
+    describe('emailConfirmation', () => {
+        it('should confirm email for user with correct data', async() => {
+            const userInput = userDto()
+            await authService.registerUser(userInput)
 
-    // email resending
+            const notConfirmedUser = await usersRepository.findByEmail(userInput.email)
+
+            expect (notConfirmedUser?.emailConfirmation.isConfirmed).toBe(false)
+
+            await authService.emailConfirmation(notConfirmedUser!)
+
+            const confirmedUser = await usersRepository.findByEmail(userInput.email)
+
+            expect(confirmedUser?.emailConfirmation.isConfirmed).toBe(true)
+        })
+
+        it ('should not confirm already confirmed user', async () => {
+            const userInput = userDto()
+            await authService.registerUser(userInput)
+
+            const notConfirmedUser = await usersRepository.findByEmail(userInput.email)
+            
+            await authService.emailConfirmation(notConfirmedUser!)
+
+            const confirmedUser = await usersRepository.findByEmail(userInput.email)
+
+            await expect (authService.emailConfirmation(confirmedUser!))
+                .rejects
+                .toThrow(BadRequestError)
+        })
+
+        it ('should not confirm user with expired token', async() => {
+            const userInput = userDto()
+            await authService.registerUser(userInput)
+
+            const notConfirmedUser = await usersRepository.findByEmail(userInput.email)
+            notConfirmedUser!.emailConfirmation.expirationDate = add(new Date(), {'hours': -1})
+
+            await expect(authService.emailConfirmation(notConfirmedUser!))
+                .rejects
+                .toThrow(BadRequestError)
+        })
+    })
+
+    describe('emailResending', () => {
+
+        it ('should resending email to user', async () => {
+            const userInput = userDto()
+            await authService.registerUser(userInput)
+
+            const existedUser = await usersRepository.findByEmail(userInput.email)
+
+            await authService.emailResending(existedUser!)
+
+            const existedUserAfterResending = await usersRepository.findByEmail(userInput.email)
+
+            expect(existedUserAfterResending!.emailConfirmation.confirmationCode).not.toBe(existedUser!.emailConfirmation.confirmationCode)
+            expect(existedUserAfterResending!.emailConfirmation.expirationDate).not.toBe(existedUser!.emailConfirmation.expirationDate)
+
+            expect(sendEmailMock).toHaveBeenCalledTimes(2)
+        })
+
+        it('should to resending email to user with already confirmed email', async() => {
+            const userInput = userDto()
+            await authService.registerUser(userInput)
+
+            const existedUser = await usersRepository.findByEmail(userInput.email)
+            
+            await authService.emailConfirmation(existedUser!)
+
+            const confirmedUser = await usersRepository.findByEmail(userInput.email)
+
+            await expect(authService.emailResending(confirmedUser!))
+                .rejects
+                .toThrow(BadRequestError)
+
+            expect(sendEmailMock).toHaveBeenCalledTimes(1) // Only from registration method 
+        })
+    
+    })
 })
