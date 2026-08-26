@@ -9,12 +9,14 @@ import { errorsHandler } from "./core/exceptions/error.handler";
 import { USERS_PATH } from "./users/constants/users.paths";
 import { userRouter } from "./users/routes/users.router";
 import { AUTH_PATH } from "./auth/constants/auth.paths";
-import { authRouter } from "./auth/routes/auth.router";
 import { COMMENTS_PATH } from "./comments/constants/comments.paths";
 import { commentsRouter } from "./comments/routes/comments.router";
+import cookieParser from "cookie-parser";
+import { authRouter } from "./auth/api/routes/auth.router";
 
 const setupApp = (app: Express) => {
   app.use(express.json());
+  app.use(cookieParser())
 
   app.use(BLOGS_PATH, blogsRouter);
   app.use(POSTS_PATH, postsRouter);

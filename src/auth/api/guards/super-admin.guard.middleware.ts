@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { httpStatuses } from "../../core/types/http-statuses";
-import { ADMIN_PASSWORD, ADMIN_USERNAME } from "../../settings/config";
+import { httpStatuses } from "../../../core/types/http-statuses";
+import { ADMIN_USERNAME, ADMIN_PASSWORD } from "../../../settings/config";
 
 export const superAdminGuardMiddleware = (
   req: Request,

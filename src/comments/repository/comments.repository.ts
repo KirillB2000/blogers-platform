@@ -1,11 +1,11 @@
 import { ObjectId } from "mongodb";
 import { commentsCollection } from "../../db/collections";
-import { PComment } from "../input/comment";
+import { CommentDb } from "../input/comment";
 import { CommentInputModel } from "../input/dto/commentInputModel";
 
 export const commentsRepository = {
     async create (
-        comment: PComment
+        comment: CommentDb
     ): Promise<string> {
         const insertResult = await commentsCollection.insertOne(comment)
 

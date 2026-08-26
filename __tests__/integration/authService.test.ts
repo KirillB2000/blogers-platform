@@ -110,20 +110,10 @@ describe('Integration tests for AuthService', () => {
 
             const logedInUser = await authService.loginUser(loginUserCreds)
 
-            expect(logedInUser.password).not.toBe(userIntput.password)
-
             expect(logedInUser)
                 .toEqual({
-                    _id: expect.any(ObjectId),
-                    login: userIntput.login,
-                    email: userIntput.email,
-                    password: expect.any(String),
-                    createdAt: expect.any(Date),
-                    emailConfirmation: {
-                        confirmationCode: expect.any(String),
-                        expirationDate: expect.any(Date),
-                        isConfirmed: expect.any(Boolean)
-                    }
+                    accessToken: expect.any(String),
+                    refreshToken: expect.any(String)
                 })
         })
 

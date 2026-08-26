@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import { httpStatuses } from "../../../core/types/http-statuses";
-import { userQwRepository } from "../../../users/repository/user.queryRepository";
+import { httpStatuses } from "../../../../core/types/http-statuses";
+import { userQwRepository } from "../../../../users/repository/user.queryRepository";
+
 
 export const meHandler = async (req: Request, res: Response) => {
     const userId = req.user?.id as string;

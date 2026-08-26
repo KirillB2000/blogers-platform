@@ -10,7 +10,7 @@ import { createUserDto } from "../../utils/users/createUserDto";
 import { authDto } from "../../utils/auth/authDto";
 import { UserInputModel } from "../../../src/users/input/dto/userInputModel";
 import { usersCollection } from "../../../src/db/collections";
-import { generateTestJwt } from "../../utils/generateJwt";
+import { generateTestAccessJwt } from "../../utils/generateJwt";
 
 describe("Auth API body validation check", () => {
     const app = express();
@@ -47,7 +47,7 @@ describe("Auth API body validation check", () => {
 
     it('Should successfully return current user data; GET /auth/me', async () => {
         const existedUser = await createUserDto(app)
-        const token = generateTestJwt(existedUser)
+        const token = generateTestAccessJwt(existedUser)
 
         const response = await request(app)
             .get(`${AUTH_PATH}${AUTH_ROUTING.ME}`)

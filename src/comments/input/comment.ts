@@ -1,6 +1,6 @@
 import { CommentatorInfo } from "../output/commentatorInfo"
 
-export type PComment = {
+export type CommentDb = {
     postId: string
     content: string
     commentatorInfo: CommentatorInfo

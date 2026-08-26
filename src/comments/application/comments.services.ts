@@ -1,6 +1,6 @@
 import { NotFoundError } from "../../core/exceptions/app-errors.exeption";
 import { UserViewModel } from "../../users/output/userViewModel";
-import { PComment } from "../input/comment";
+import { CommentDb } from "../input/comment";
 import { CommentInputModel } from "../input/dto/commentInputModel";
 import { commentsRepository } from "../repository/comments.repository";
 
@@ -10,7 +10,7 @@ export const commentsService = {
         postId: string,
         commentDto: CommentInputModel
     ): Promise<string> {
-        const commentDomain: PComment = {
+        const commentDomain: CommentDb = {
             postId: postId,
             content: commentDto.content,
             createdAt: new Date(),

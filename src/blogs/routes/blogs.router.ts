@@ -7,7 +7,6 @@ import {updateBlogByIdHandler } from "./handlers/updateBlogById.handler";
 import { idValidation } from "../../core/middlewares/validation/params-id.validation.middleware";
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { blogInputDtoValidation } from "../validation/blog-input.validation.middleware";
-import { superAdminGuardMiddleware } from "../../auth/middlewares/super-admin.guard.middleware";
 import { paginationAndSortingValidation } from "../../core/middlewares/validation/query-pagination-sorting.validation.middleware";
 import { BlogSortField } from "./input/blog-sort-field";
 import { sanitizeQueryParams } from "../../core/middlewares/validation/sanitize-query.middleware";
@@ -19,6 +18,7 @@ import { getPostListForSpecificBlog } from "./handlers/getPostListForSpecificBlo
 import { catchAsync } from "../../core/helpers/catchAsync.helper";
 import { deleteBlogByIdHandler } from "./handlers/deleteBlogById.handler";
 import { PARAMS_IDS } from "../../core/types/paramsIds";
+import { superAdminGuardMiddleware } from "../../auth/api/guards/super-admin.guard.middleware";
 
 export const blogsRouter = Router({});
 

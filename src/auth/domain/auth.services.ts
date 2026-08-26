@@ -2,7 +2,6 @@ import { WithId } from "mongodb";
 import { BadRequestError, UnauthorizedError } from "../../core/exceptions/app-errors.exeption";
 import { usersRepository } from "../../users/repository/user.repository";
 import { LoginInputModel } from "../input/dto/loginInputModel";
-import bcrypt from 'bcrypt'
 import { UserInputModel } from "../../users/input/dto/userInputModel";
 import { bcryptService } from "../adapters/bcrypt.services";
 import { mapUserInputToIDbType } from "../../users/mappers/mapUserInputToIDbType";
@@ -11,11 +10,14 @@ import { emailExamples } from "../adapters/emailExamples";
 import { IUserDB } from "../../users/input/domain/iUserDb";
 import { isAfter, add } from "date-fns";
 import { randomUUID } from "node:crypto";
+import { jwtService } from "../adapters/jwt.services";
+import { sessionsRepository } from "../infrastructure/sessions.repository";
+import { authServiceHelpers } from "./auth.serviceHelpers";
 
 export const authService = {
     async loginUser (
         userCreds: LoginInputModel
-    ): Promise<WithId<IUserDB>> {
+    ): Promise<{ accessToken: string, refreshToken: string }> {
         const user = await usersRepository.findByLoginOrEmailField(userCreds.loginOrEmail)
 
         if (!user) {
@@ -27,7 +29,10 @@ export const authService = {
             throw new UnauthorizedError('Unauthorized')
         }
 
-        return user
+        const accessToken = await jwtService.createAccessJWT(user)
+        const refreshToken = await jwtService.createRefreshJWT(user)
+
+        return { accessToken, refreshToken }
     },
 
     async registerUser(
@@ -50,7 +55,7 @@ export const authService = {
 
         await usersRepository.create(dbUser)
 
-        await nodemailerService
+        nodemailerService
         .sendEmail(
             dbUser.email,
             dbUser.emailConfirmation.confirmationCode,
@@ -96,5 +101,39 @@ export const authService = {
             newCode,
             emailExamples.registrationEmail
         ).catch(er => console.error(`Error occured while sending an email: ${er}`))
+    },
+
+    async refreshToken (
+        refreshToken: string
+    ): Promise<{ newAccessToken: string, newRefreshToken: string}> {
+
+        const { userId, expirationDate, userById } = await authServiceHelpers.refreshValidation(refreshToken)
+
+        const refreshTokenForDb: RefreshTokenDb = {
+            userId: userId,
+            expirationDate: expirationDate,
+            token: refreshToken
+        }
+
+        await sessionsRepository.create(refreshTokenForDb)
+
+        const newAccessToken = await jwtService.createAccessJWT(userById)
+        const newRefreshToken = await jwtService.createRefreshJWT(userById)
+
+        return { newAccessToken, newRefreshToken }
+    },
+
+    async logout (
+        refreshToken: string
+    ) {
+        const { userId, expirationDate } = await authServiceHelpers.refreshValidation(refreshToken)
+
+        const refreshTokenForDb: RefreshTokenDb = {
+            userId: userId,
+            expirationDate: expirationDate,
+            token: refreshToken
+        }
+
+        await sessionsRepository.create(refreshTokenForDb)
     }
 }

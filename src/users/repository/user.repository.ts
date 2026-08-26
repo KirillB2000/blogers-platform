@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 import { usersCollection } from "../../db/collections";
 import { IUserDB } from "../input/domain/iUserDb";
 
@@ -16,6 +16,12 @@ export const usersRepository = {
 
     async findByEmail(emailDto: string) {
         return await usersCollection.findOne({ email: emailDto })
+    },
+
+    async findById(
+        userId: string
+    ): Promise<WithId<IUserDB> | null> {
+        return await usersCollection.findOne({_id: new ObjectId(userId)})
     },
 
     async findByLoginOrEmailField(loginOrEmail: string) {

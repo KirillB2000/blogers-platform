@@ -8,7 +8,8 @@ export const SETTINGS = {
     VERCEL: env.VERCEL,
     DB_NAME: env.DB_NAME,
     MONGO_URL: env.MONGO_URL || '', // Убрать || '' в settings проверкой
-    JWT_SECRET: env.JWT_SECRET,
+    JWT_ACCESS_SECRET: env.JWT_ACCESS_SECRET,
+    JWT_REFRESH_SECRET: env.JWT_REFRESH_SECRET,
     EMAIL: env.EMAIL,
     EMAIL_PASSWORD: env.EMAIL_PASSWORD
 };

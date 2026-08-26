@@ -1,8 +1,9 @@
 import { Request, Response } from "express"
-import { RegistrationEmailResendingInputModel } from "../../input/dto/registrationEmailResendingInputModel"
-import { userQwRepository } from "../../../users/repository/user.queryRepository"
-import { authService } from "../../domain/auth.services"
-import { httpStatuses } from "../../../core/types/http-statuses"
+import { httpStatuses } from "../../../../core/types/http-statuses"
+import { userQwRepository } from "../../../../users/repository/user.queryRepository"
+import { authService } from "../../../domain/auth.services"
+import { RegistrationEmailResendingInputModel } from "../../../input/dto/registrationEmailResendingInputModel"
+
 
 export const registrationEmailResendingHandler = async (
     req: Request<{}, {}, RegistrationEmailResendingInputModel>,

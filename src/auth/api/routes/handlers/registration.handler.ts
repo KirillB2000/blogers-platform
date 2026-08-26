@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
-import { UserInputModel } from "../../../users/input/dto/userInputModel"
-import { authService } from "../../domain/auth.services"
-import { httpStatuses } from "../../../core/types/http-statuses"
+import { httpStatuses } from "../../../../core/types/http-statuses"
+import { UserInputModel } from "../../../../users/input/dto/userInputModel"
+import { authService } from "../../../domain/auth.services"
 
 export const registrationHandler = async (
     req: Request<{}, {}, UserInputModel>,

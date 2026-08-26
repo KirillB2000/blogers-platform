@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { httpStatuses } from "../../core/types/http-statuses";
-import { jwtService } from "../adapters/jwt.services";
-import { IdType } from "../../core/types/id";
+import { httpStatuses } from "../../../core/types/http-statuses";
+import { IdType } from "../../../core/types/id";
+import { jwtService } from "../../adapters/jwt.services";
+
 
 export const accessTokenGuardMiddleware = async (
   req: Request,
@@ -14,7 +15,7 @@ export const accessTokenGuardMiddleware = async (
 
     if (authType !== 'Bearer' || !token) return res.sendStatus(httpStatuses.Unauthorized)
 
-    const payload = await jwtService.getUserIdByToken(token)
+    const payload = await jwtService.getUserIdByAccessToken(token)
     if (payload) {
         const {userId} = payload
 

@@ -39,7 +39,7 @@ export class BadRequestError extends AppError {
 }
 export class UnauthorizedError extends AppError {
     readonly statusCode = httpStatuses.Unauthorized
-    constructor (message: string) {
+    constructor(message: string) {
         super(message)
     }
 }

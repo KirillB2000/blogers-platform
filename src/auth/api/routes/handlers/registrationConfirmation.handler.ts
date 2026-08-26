@@ -1,8 +1,9 @@
 import { Request, Response } from "express"
-import { RegistrationConfirmationCodeInputModel } from "../../input/dto/registrationConfirmationCodeInputModel"
-import { authService } from "../../domain/auth.services"
-import { userQwRepository } from "../../../users/repository/user.queryRepository"
-import { httpStatuses } from "../../../core/types/http-statuses"
+import { httpStatuses } from "../../../../core/types/http-statuses"
+import { userQwRepository } from "../../../../users/repository/user.queryRepository"
+import { authService } from "../../../domain/auth.services"
+import { RegistrationConfirmationCodeInputModel } from "../../../input/dto/registrationConfirmationCodeInputModel"
+
 
 export const registrationConfirmationHandler = async (
     req: Request<{}, {}, RegistrationConfirmationCodeInputModel>,

@@ -3,7 +3,7 @@ import { UserViewModel } from "../../../src/users/output/userViewModel"
 import request from 'supertest'
 import { COMMENTS_PATH } from "../../../src/comments/constants/comments.paths"
 import { POSTS_PATH } from "../../../src/posts/constants/posts.paths"
-import { generateTestJwt } from "../generateJwt"
+import { generateTestAccessJwt } from "../generateJwt"
 import { commentDto } from "./commentDto"
 import { httpStatuses } from "../../../src/core/types/http-statuses"
 import { CommentViewModel } from "../../../src/comments/output/commentViewModel"
@@ -13,7 +13,7 @@ export const createCommentDto = async (
     postId: string,
     user: UserViewModel
 ): Promise<{body: CommentViewModel, token: string}> => {
-    const token = generateTestJwt(user)
+    const token = generateTestAccessJwt(user)
     const testCommentData = { ...commentDto() }
     const response = await request(app)
         .post(`${POSTS_PATH}/${postId}${COMMENTS_PATH}`)

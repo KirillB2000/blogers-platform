@@ -1,6 +1,5 @@
 import { RequestHandler, Router } from "express";
 import { USERS_ROUTING } from "../constants/users.paths";
-import { superAdminGuardMiddleware } from "../../auth/middlewares/super-admin.guard.middleware";
 import { userDtoValidation } from "../validation/user-input.validation";
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { createUserHandler } from "./handlers/createUser.handler";
@@ -12,6 +11,7 @@ import { sanitizeQueryParams } from "../../core/middlewares/validation/sanitize-
 import { UserSortFields } from "../input/user-sort-fields";
 import { getUserListHandler } from "./handlers/getUserList.handler";
 import { PARAMS_IDS } from "../../core/types/paramsIds";
+import { superAdminGuardMiddleware } from "../../auth/api/guards/super-admin.guard.middleware";
 
 export const userRouter = Router({})
 

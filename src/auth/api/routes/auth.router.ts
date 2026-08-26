@@ -1,16 +1,17 @@
 import { Router } from "express";
-import { AUTH_ROUTING } from "../constants/auth.paths";
-import { loginDtoValidation } from "../validation/loginInput.validation";
-import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { loginHandler } from "./handlers/login.handler";
-import { catchAsync } from "../../core/helpers/catchAsync.helper";
-import { accessTokenGuardMiddleware } from "../middlewares/access-token.guard.middleware";
+import { accessTokenGuardMiddleware } from "../guards/access-token.guard.middleware";
 import { meHandler } from "./handlers/me.handler";
 import { registrationHandler } from "./handlers/registration.handler";
-import { emailValidation, userDtoValidation } from "../../users/validation/user-input.validation";
-import { codeDtoValidation } from "../validation/codeInput.validation";
 import { registrationConfirmationHandler } from "./handlers/registrationConfirmation.handler";
 import { registrationEmailResendingHandler } from "./handlers/registrationEmailResending.handler";
+import { refreshTokenHadler } from "./handlers/refreshToken.handler";
+import { AUTH_ROUTING } from "../../constants/auth.paths";
+import { loginDtoValidation } from "../../validation/loginInput.validation";
+import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validation-result.middleware";
+import { catchAsync } from "../../../core/helpers/catchAsync.helper";
+import { userDtoValidation, emailValidation } from "../../../users/validation/user-input.validation";
+import { codeDtoValidation } from "../../validation/codeInput.validation";
 
 export const authRouter = Router({})
 
@@ -50,4 +51,9 @@ authRouter
         emailValidation,
         inputValidationResultMiddleware,
         catchAsync(registrationEmailResendingHandler)
+    )
+
+    .post(
+        AUTH_ROUTING.REFRESH_TOKEN,
+        catchAsync(refreshTokenHadler)
     )

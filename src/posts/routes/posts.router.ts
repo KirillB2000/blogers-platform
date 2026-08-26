@@ -8,7 +8,6 @@ import { deletePostByIdHandler } from "./handlers/deletePostById.handler";
 import { idValidation } from "../../core/middlewares/validation/params-id.validation.middleware";
 import { inputValidationResultMiddleware } from "../../core/middlewares/validation/input-validation-result.middleware";
 import { postInputDtoValidation } from "../validation/post-input.validation.middleware";
-import { superAdminGuardMiddleware } from "../../auth/middlewares/super-admin.guard.middleware";
 import { paginationAndSortingValidation } from "../../core/middlewares/validation/query-pagination-sorting.validation.middleware";
 import { sanitizeQueryParams } from "../../core/middlewares/validation/sanitize-query.middleware";
 import { PostSortField } from "../input/post-sort-fields";
@@ -18,9 +17,10 @@ import { PARAMS_IDS } from "../../core/types/paramsIds";
 import { COMMENTS_PATH } from "../../comments/constants/comments.paths";
 import { createCommentForSpecificPostHandler } from "./handlers/createCommentForSpecificPost.handler";
 import { commentInputDtoValidation } from "../../comments/validation/commentInput.validation";
-import { accessTokenGuardMiddleware } from "../../auth/middlewares/access-token.guard.middleware";
 import { getCommentListForSpecificPostHandler } from "./handlers/getCommentListForSpecificPost.handler";
 import { CommentSortField } from "../../comments/input/commentSortFields";
+import { accessTokenGuardMiddleware } from "../../auth/api/guards/access-token.guard.middleware";
+import { superAdminGuardMiddleware } from "../../auth/api/guards/super-admin.guard.middleware";
 
 export const postsRouter = Router({});
 
