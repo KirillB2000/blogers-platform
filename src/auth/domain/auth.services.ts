@@ -107,7 +107,7 @@ export const authService = {
         refreshToken: string
     ): Promise<{ newAccessToken: string, newRefreshToken: string}> {
 
-        const { userId, expirationDate, userById } = await authServiceHelpers.refreshValidation(refreshToken)
+        const { userId, expirationDate, userById } = await authServiceHelpers.refreshTokenValidation(refreshToken)
 
         const refreshTokenForDb: RefreshTokenDb = {
             userId: userId,
@@ -125,8 +125,8 @@ export const authService = {
 
     async logout (
         refreshToken: string
-    ) {
-        const { userId, expirationDate } = await authServiceHelpers.refreshValidation(refreshToken)
+    ): Promise<void> {
+        const { userId, expirationDate } = await authServiceHelpers.refreshTokenValidation(refreshToken)
 
         const refreshTokenForDb: RefreshTokenDb = {
             userId: userId,

@@ -12,6 +12,7 @@ import { inputValidationResultMiddleware } from "../../../core/middlewares/valid
 import { catchAsync } from "../../../core/helpers/catchAsync.helper";
 import { userDtoValidation, emailValidation } from "../../../users/validation/user-input.validation";
 import { codeDtoValidation } from "../../validation/codeInput.validation";
+import { logoutHandler } from "./handlers/logout.handler";
 
 export const authRouter = Router({})
 
@@ -56,4 +57,9 @@ authRouter
     .post(
         AUTH_ROUTING.REFRESH_TOKEN,
         catchAsync(refreshTokenHadler)
+    )
+
+    .post(
+        AUTH_ROUTING.LOGOUT,
+        catchAsync(logoutHandler)
     )

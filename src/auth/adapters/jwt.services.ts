@@ -2,6 +2,7 @@ import { WithId } from "mongodb";
 import jwt, { JwtPayload} from 'jsonwebtoken'
 import { SETTINGS } from "../../settings/config";
 import { IUserDB } from "../../users/input/domain/iUserDb";
+import { randomUUID } from "crypto";
 
 const JWT_ACCESS_SECRET = SETTINGS.JWT_ACCESS_SECRET
 if (!JWT_ACCESS_SECRET) {
@@ -18,7 +19,12 @@ export const jwtService = {
     async createAccessJWT (
         user: WithId<IUserDB>
     ): Promise<string> {
-        const accessToken = jwt.sign({ userId: user._id.toString() }, JWT_ACCESS_SECRET, {expiresIn: '10s'})
+        const payload = { 
+            userId: user._id.toString(),
+            jti: randomUUID()
+        }
+
+        const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, {expiresIn: '10s'})
 
         return accessToken
     },
@@ -26,7 +32,11 @@ export const jwtService = {
     async createRefreshJWT (
         user: WithId<IUserDB>
     ): Promise<string> {
-        const refreshToken = jwt.sign({userId: user._id.toString()}, JWT_REFRESH_SECRET, {expiresIn: '20s'})
+        const payload = {
+            userId: user._id.toString(),
+            jti: randomUUID()
+        }
+        const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {expiresIn: '20s'})
 
         return refreshToken
     },
@@ -36,17 +46,17 @@ export const jwtService = {
         try {
             return jwt.verify(token, JWT_ACCESS_SECRET) as {userId: string}
         } catch(error) {
-            console.error("Token verify some error");
+            // Log errors or not? Logged every time launching tests
             return null
         }
     },
 
-    async getUserIdByRefreshToken(token: string): Promise<string | null> {
+    async getUserIdByRefreshToken(token: string): Promise<{userId: string} | null> {
 
         try {
-            return jwt.verify(token, JWT_REFRESH_SECRET) as string
+            return jwt.verify(token, JWT_REFRESH_SECRET) as {userId: string}
         } catch (error) {
-            console.error("Token verify some error");
+            // Log errors or not? Logged every time launching tests
             return null
         }
     },

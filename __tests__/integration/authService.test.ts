@@ -1,7 +1,7 @@
 import { MongoMemoryServer } from "mongodb-memory-server"
 import { authService } from "../../src/auth/domain/auth.services"
 import { userDto } from "../utils/users/userDto"
-import { Db, MongoClient, ObjectId } from "mongodb"
+import { Db, MongoClient } from "mongodb"
 import { initCollections, usersCollection } from "../../src/db/collections"
 import { UserInputModel } from "../../src/users/input/dto/userInputModel"
 import { nodemailerService } from "../../src/auth/adapters/nodemailer.services"
@@ -9,6 +9,7 @@ import { BadRequestError, UnauthorizedError } from "../../src/core/exceptions/ap
 import { LoginInputModel } from "../../src/auth/input/dto/loginInputModel"
 import { usersRepository } from "../../src/users/repository/user.repository"
 import { add } from "date-fns"
+import { sessionsRepository } from "../../src/auth/infrastructure/sessions.repository"
 
 
 describe('Integration tests for AuthService', () => {
@@ -222,5 +223,62 @@ describe('Integration tests for AuthService', () => {
             expect(sendEmailMock).toHaveBeenCalledTimes(1) // Only from registration method 
         })
     
+    })
+
+    describe ('refreshToken', () => {
+        it('should return newAccessToken and newRefreshToken', async() => {
+            const userInput = userDto()
+            await authService.registerUser(userInput)
+
+            const userLoginCreds: LoginInputModel = {
+                loginOrEmail: userInput.email,
+                password: userInput.password
+            }
+
+            const { refreshToken, accessToken } = await authService.loginUser(userLoginCreds)
+
+            const { newRefreshToken, newAccessToken } = await authService.refreshToken(refreshToken)
+
+            const tokenInSessionCollection = await sessionsRepository.findByToken(refreshToken)
+
+            expect(tokenInSessionCollection).not.toBe(null)
+            expect(tokenInSessionCollection?.token).toBe(refreshToken)
+
+            await expect(authService.refreshToken(refreshToken))
+                .rejects
+                .toThrow(UnauthorizedError)
+
+            expect(refreshToken).not.toBe(newRefreshToken)
+            expect(accessToken).not.toBe(newAccessToken)
+        })
+    }),
+
+    describe('logout', () => {
+        it('should logout user and enter refresh token to sessions collection', async () => {
+            const userInput = userDto()
+            await authService.registerUser(userInput)
+
+            const userLoginCreds: LoginInputModel = {
+                loginOrEmail: userInput.email,
+                password: userInput.password
+            }
+
+            const { refreshToken } = await authService.loginUser(userLoginCreds)
+
+            await authService.logout(refreshToken)
+
+            const tokenInSessionCollection = await sessionsRepository.findByToken(refreshToken)
+
+            expect(tokenInSessionCollection).not.toBe(null)
+            expect(tokenInSessionCollection?.token).toBe(refreshToken)
+
+            await expect(authService.logout(refreshToken))
+            .rejects
+            .toThrow(UnauthorizedError)
+
+            await expect(authService.refreshToken(refreshToken))
+            .rejects
+            .toThrow(UnauthorizedError)
+        })
     })
 })

@@ -7,7 +7,7 @@ import { WithId } from "mongodb"
 import { IUserDB } from "../../users/input/domain/iUserDb"
 
 export const authServiceHelpers = {
-    async refreshValidation (
+    async refreshTokenValidation (
         refreshToken: string
     ): Promise<{ userId: string, expirationDate: Date, userById: WithId<IUserDB> }> {
         const blackListedToken = await sessionsRepository.findByToken(refreshToken)
@@ -16,11 +16,13 @@ export const authServiceHelpers = {
             throw new UnauthorizedError('Unauthorized')
         }
 
-        const userId = await jwtService.getUserIdByRefreshToken(refreshToken)
+        const jwtServiceResult = await jwtService.getUserIdByRefreshToken(refreshToken)
 
-        if (!userId) {
+        if (!jwtServiceResult) {
             throw new UnauthorizedError('Unauthorized')
         }
+
+        const { userId } = jwtServiceResult
 
         const userById = await usersRepository.findById(userId)
 
