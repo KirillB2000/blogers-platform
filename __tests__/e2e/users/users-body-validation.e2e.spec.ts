@@ -1,13 +1,13 @@
 import express from 'express'
-import { UserInputModel } from '../../../src/users/input/dto/userInputModel';
 import setupApp from '../../../src/setup-app';
 import { runDB, stopDb } from '../../../src/db/mongo.db';
 import { usersCollection } from '../../../src/db/collections';
 import { SETTINGS } from '../../../src/settings/config';
 import request from 'supertest'
-import { USERS_PATH } from '../../../src/users/constants/users.paths';
+import { USERS_PATH } from '../../../src/modules/users/constants/users.paths';
 import { httpStatuses } from '../../../src/core/types/http-statuses';
 import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken';
+import { UserInputModel } from '../../../src/modules/users/api/input/dto/userInputModel';
 
 describe("Blogs API body validation check", () => {
     const app = express();

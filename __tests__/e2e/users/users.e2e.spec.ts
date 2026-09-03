@@ -5,7 +5,7 @@ import { SETTINGS } from '../../../src/settings/config'
 import { createUserDto } from '../../utils/users/createUserDto'
 import { usersCollection } from '../../../src/db/collections'
 import request from 'supertest'
-import { USERS_PATH } from '../../../src/users/constants/users.paths'
+import { USERS_PATH } from '../../../src/modules/users/constants/users.paths'
 import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken'
 import { httpStatuses } from '../../../src/core/types/http-statuses'
 

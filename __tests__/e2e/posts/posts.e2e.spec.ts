@@ -2,7 +2,6 @@ import express from "express";
 import setupApp from "../../../src/setup-app";
 import request from "supertest";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
-import { POSTS_PATH, POSTS_ROUTES } from "../../../src/posts/constants/posts.paths";
 import { clearDb } from "../../utils/clearDb";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
 import { runDB, stopDb } from "../../../src/db/mongo.db";
@@ -10,9 +9,10 @@ import { SETTINGS } from "../../../src/settings/config";
 import { createBlogDto } from "../../utils/blogs/createBlogDto";
 import { createPostDto } from "../../utils/posts/createPostDto";
 import { createUserDto } from "../../utils/users/createUserDto";
-import { COMMENTS_PATH } from "../../../src/comments/constants/comments.paths";
 import { createCommentDto } from "../../utils/comments/createCommentDto";
 import { commentsCollection, postsCollection, usersCollection } from "../../../src/db/collections";
+import { COMMENTS_PATH } from "../../../src/modules/comments/constants/comments.paths";
+import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths";
 
 describe("Posts API", () => {
   const app = express();

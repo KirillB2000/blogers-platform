@@ -1,5 +1,5 @@
-import { authService } from "../../../src/auth/domain/auth.services"
-import { LoginInputModel } from "../../../src/auth/input/dto/loginInputModel"
+import { authService } from "../../../src/modules/auth/application/auth.services"
+import { LoginInputModel } from "../../../src/modules/auth/api/input/dto/loginInputModel"
 import { userDto } from "../../utils/users/userDto"
 
 export const testRegisterAndLoginUser = async () => {

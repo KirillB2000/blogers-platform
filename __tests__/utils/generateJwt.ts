@@ -1,5 +1,5 @@
+import { UserViewModel } from "../../src/modules/users/api/output/userViewModel";
 import { SETTINGS } from "../../src/settings/config";
-import { UserViewModel } from "../../src/users/output/userViewModel";
 import jwt from 'jsonwebtoken'
 
 const JWT_ACCESS_SECRET = SETTINGS.JWT_ACCESS_SECRET

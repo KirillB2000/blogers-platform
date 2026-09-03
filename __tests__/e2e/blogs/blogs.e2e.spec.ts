@@ -2,17 +2,19 @@ import express from "express";
 import setupApp from "../../../src/setup-app";
 import request from "supertest";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
-import { blogInputModel } from "../../../src/blogs/dto/blogInputModel";
-import { BLOGS_PATH } from "../../../src/blogs/constants/blogs.paths";
+
 import { blogDto } from "../../utils/blogs/blogDto";
 import { createBlogDto } from "../../utils/blogs/createBlogDto";
 import { clearDb } from "../../utils/clearDb";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
 import { runDB, stopDb } from "../../../src/db/mongo.db";
 import { SETTINGS } from "../../../src/settings/config";
-import { POSTS_PATH } from "../../../src/posts/constants/posts.paths";
-import { PostBlogInputModel } from "../../../src/posts/input/dto/postBlogInputModel";
+
 import { postForBlogDto } from "../../utils/posts/postForBlogDto";
+import { BLOGS_PATH } from "../../../src/modules/blogs/constants/blogs.paths";
+import { blogInputModel } from "../../../src/modules/blogs/api/input/dto/blogInputModel";
+import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths";
+import { PostBlogInputModel } from "../../../src/modules/posts/api/input/dto/postBlogInputModel";
 
 describe("Blogs API", () => {
   const app = express();

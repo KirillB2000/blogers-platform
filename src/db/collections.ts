@@ -1,8 +1,9 @@
 import { Collection, Db } from "mongodb"
-import { Blog } from "../blogs/domain/blog"
-import { Post } from "../posts/input/post"
-import { CommentDb } from "../comments/input/comment"
-import { IUserDB } from "../users/input/domain/iUserDb"
+
+import { Blog } from "../modules/blogs/domain/blog"
+import { CommentDb } from "../modules/comments/domain/comment"
+import { Post } from "../modules/posts/domain/post"
+import { IUserDB } from "../modules/users/domain/iUserDb"
 
 
 export const BLOGS_COLLECTION_NAME = 'blogs'

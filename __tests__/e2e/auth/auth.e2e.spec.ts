@@ -1,4 +1,4 @@
-import { AUTH_PATH, AUTH_ROUTING } from "../../../src/auth/constants/auth.paths";
+import { AUTH_PATH, AUTH_ROUTING } from "../../../src/modules/auth/constants/auth.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { runDB, stopDb } from "../../../src/db/mongo.db";
 import { SETTINGS } from "../../../src/settings/config";
@@ -8,9 +8,9 @@ import express from 'express'
 import request from "supertest";
 import { createUserDto } from "../../utils/users/createUserDto";
 import { authDto } from "../../utils/auth/authDto";
-import { UserInputModel } from "../../../src/users/input/dto/userInputModel";
 import { usersCollection } from "../../../src/db/collections";
 import { generateTestAccessJwt } from "../../utils/generateJwt";
+import { UserInputModel } from "../../../src/modules/users/api/input/dto/userInputModel";
 
 describe("Auth API body validation check", () => {
     const app = express();

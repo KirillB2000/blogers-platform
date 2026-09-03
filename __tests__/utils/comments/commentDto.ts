@@ -1,6 +1,4 @@
-
-
-import { CommentInputModel } from "../../../src/comments/input/dto/commentInputModel";
+import { CommentInputModel } from "../../../src/modules/comments/api/input/dto/commentInputModel"
 
 export const commentDto = (
     

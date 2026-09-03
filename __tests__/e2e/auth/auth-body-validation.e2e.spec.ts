@@ -1,5 +1,5 @@
-import { AUTH_PATH, AUTH_ROUTING } from "../../../src/auth/constants/auth.paths";
-import { LoginInputModel } from "../../../src/auth/input/dto/loginInputModel";
+import { AUTH_PATH, AUTH_ROUTING } from "../../../src/modules/auth/constants/auth.paths";
+import { LoginInputModel } from "../../../src/modules/auth/api/input/dto/loginInputModel";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { usersCollection } from "../../../src/db/collections";
 import { runDB, stopDb } from "../../../src/db/mongo.db";

@@ -1,4 +1,4 @@
-import { blogInputModel } from "../../../src/blogs/dto/blogInputModel";
+import { blogInputModel } from "../../../src/modules/blogs/api/input/dto/blogInputModel";
 
 export const blogDto = (): blogInputModel => {
   return {

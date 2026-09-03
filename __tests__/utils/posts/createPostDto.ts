@@ -1,12 +1,12 @@
 import { Express } from "express";
-import { PostInputModel } from "../../../src/posts/input/dto/postInputModel";
+import request from "supertest";
+import { httpStatuses } from "../../../src/core/types/http-statuses";
+import { generateBasicAuthToken } from "../generateBasicAuthToken";
+import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths";
+import { PostInputModel } from "../../../src/modules/posts/api/input/dto/postInputModel";
+import { PostViewModel } from "../../../src/modules/posts/api/output/post-data.output";
 import { createBlogDto } from "../blogs/createBlogDto";
 import { postDto } from "./postDto";
-import request from "supertest";
-import { POSTS_PATH } from "../../../src/posts/constants/posts.paths";
-import { httpStatuses } from "../../../src/core/types/http-statuses";
-import { PostViewModel } from "../../../src/posts/output/post-data.output";
-import { generateBasicAuthToken } from "../generateBasicAuthToken";
 
 export const createPostDto = async (
   app: Express,

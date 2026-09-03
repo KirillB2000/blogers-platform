@@ -8,9 +8,9 @@ import { httpStatuses } from '../../../src/core/types/http-statuses'
 import { createPostDto } from '../../utils/posts/createPostDto'
 import { createUserDto } from '../../utils/users/createUserDto'
 import { createCommentDto } from '../../utils/comments/createCommentDto'
-import { COMMENTS_PATH } from '../../../src/comments/constants/comments.paths'
 import { commentDto } from '../../utils/comments/commentDto'
-import { CommentInputModel } from '../../../src/comments/input/dto/commentInputModel'
+import { COMMENTS_PATH } from '../../../src/modules/comments/constants/comments.paths'
+import { CommentInputModel } from '../../../src/modules/comments/api/input/dto/commentInputModel'
 
 describe('Users API', () => {
     const app = express()

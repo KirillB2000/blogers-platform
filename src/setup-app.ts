@@ -1,18 +1,18 @@
+import cookieParser from "cookie-parser";
 import express, { Express } from "express";
-import { blogsRouter } from "./blogs/routes/blogs.router";
-import { postsRouter } from "./posts/routes/posts.router";
-import { BLOGS_PATH } from "./blogs/constants/blogs.paths";
-import { POSTS_PATH } from "./posts/constants/posts.paths";
+import { errorsHandler } from "./core/exceptions/error.handler";
+import { authRouter } from "./modules/auth/api/auth.router";
+import { AUTH_PATH } from "./modules/auth/constants/auth.paths";
+import { blogsRouter } from "./modules/blogs/api/blogs.router";
+import { BLOGS_PATH } from "./modules/blogs/constants/blogs.paths";
+import { commentsRouter } from "./modules/comments/api/comments.router";
+import { COMMENTS_PATH } from "./modules/comments/constants/comments.paths";
+import { postsRouter } from "./modules/posts/api/posts.router";
+import { POSTS_PATH } from "./modules/posts/constants/posts.paths";
+import { userRouter } from "./modules/users/api/users.router";
+import { USERS_PATH } from "./modules/users/constants/users.paths";
 import { TESTING_PATH } from "./testing/constants/testing.paths";
 import { testingRouter } from "./testing/routers/testing.router";
-import { errorsHandler } from "./core/exceptions/error.handler";
-import { USERS_PATH } from "./users/constants/users.paths";
-import { userRouter } from "./users/routes/users.router";
-import { AUTH_PATH } from "./auth/constants/auth.paths";
-import { COMMENTS_PATH } from "./comments/constants/comments.paths";
-import { commentsRouter } from "./comments/routes/comments.router";
-import cookieParser from "cookie-parser";
-import { authRouter } from "./auth/api/routes/auth.router";
 
 const setupApp = (app: Express) => {
   app.use(express.json());

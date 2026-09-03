@@ -2,13 +2,13 @@ import express from "express";
 import request from "supertest";
 import setupApp from "../../../src/setup-app";
 import { clearDb } from "../../utils/clearDb";
-import { blogInputModel } from "../../../src/blogs/dto/blogInputModel";
-import { BLOGS_PATH } from "../../../src/blogs/constants/blogs.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { createBlogDto } from "../../utils/blogs/createBlogDto";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
 import { runDB, stopDb } from "../../../src/db/mongo.db";
 import { SETTINGS } from "../../../src/settings/config";
+import { BLOGS_PATH } from "../../../src/modules/blogs/constants/blogs.paths";
+import { blogInputModel } from "../../../src/modules/blogs/api/input/dto/blogInputModel";
 
 describe("Blogs API body validation check", () => {
   const app = express();

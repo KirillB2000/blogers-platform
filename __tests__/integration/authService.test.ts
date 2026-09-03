@@ -1,18 +1,18 @@
 import { MongoMemoryServer } from "mongodb-memory-server"
-import { authService } from "../../src/auth/domain/auth.services"
+import { authService } from "../../src/modules/auth/application/auth.services"
 import { userDto } from "../utils/users/userDto"
 import { Db, MongoClient } from "mongodb"
 import { initCollections, usersCollection } from "../../src/db/collections"
-import { UserInputModel } from "../../src/users/input/dto/userInputModel"
-import { nodemailerService } from "../../src/auth/adapters/nodemailer.services"
+import { nodemailerService } from "../../src/modules/auth/adapters/nodemailer.services"
 import { BadRequestError, UnauthorizedError } from "../../src/core/exceptions/app-errors.exeption"
-import { LoginInputModel } from "../../src/auth/input/dto/loginInputModel"
-import { usersRepository } from "../../src/users/repository/user.repository"
+import { LoginInputModel } from "../../src/modules/auth/api/input/dto/loginInputModel"
 import { add } from "date-fns"
-import { sessionsRepository } from "../../src/auth/infrastructure/sessions.repository"
+import { sessionsRepository } from "../../src/modules/auth/infrastructure/sessions.repository"
 import { testRegisterAndLoginUser } from "./utils/testRegisterAndLoginUser"
 import jwt from 'jsonwebtoken'
 import { SETTINGS } from "../../src/settings/config"
+import { UserInputModel } from "../../src/modules/users/api/input/dto/userInputModel"
+import { usersRepository } from "../../src/modules/users/infrastructure/user.repository"
 
 
 describe('Integration tests for AuthService', () => {

@@ -1,4 +1,4 @@
-import { PostInputModel } from "../../../src/posts/input/dto/postInputModel";
+import { PostInputModel } from "../../../src/modules/posts/api/input/dto/postInputModel";
 
 export const postDto = (blogId: string): PostInputModel => {
   return {

@@ -1,8 +1,8 @@
 import { Express } from "express";
-import { BLOGS_PATH } from "../../../src/blogs/constants/blogs.paths";
 import request from "supertest";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
-import { BlogViewModel } from "../../../src/blogs/routes/output/blog-data.output";
+import { BLOGS_PATH } from "../../../src/modules/blogs/constants/blogs.paths";
+import { BlogViewModel } from "../../../src/modules/blogs/api/output/blog-data.output";
 
 export const getBlogById = async (
   app: Express,

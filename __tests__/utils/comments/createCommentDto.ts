@@ -1,12 +1,12 @@
 import { Express } from "express"
-import { UserViewModel } from "../../../src/users/output/userViewModel"
 import request from 'supertest'
-import { COMMENTS_PATH } from "../../../src/comments/constants/comments.paths"
-import { POSTS_PATH } from "../../../src/posts/constants/posts.paths"
 import { generateTestAccessJwt } from "../generateJwt"
 import { commentDto } from "./commentDto"
 import { httpStatuses } from "../../../src/core/types/http-statuses"
-import { CommentViewModel } from "../../../src/comments/output/commentViewModel"
+import { COMMENTS_PATH } from "../../../src/modules/comments/constants/comments.paths"
+import { CommentViewModel } from "../../../src/modules/comments/api/output/commentViewModel"
+import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths"
+import { UserViewModel } from "../../../src/modules/users/api/output/userViewModel"
 
 export const createCommentDto = async (
     app: Express,

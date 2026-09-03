@@ -1,10 +1,10 @@
 import { Express } from "express";
 import request from "supertest";
-import { BLOGS_PATH } from "../../../src/blogs/constants/blogs.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
-import { blogInputModel } from "../../../src/blogs/dto/blogInputModel";
 import { blogDto } from "./blogDto";
 import { generateBasicAuthToken } from "../generateBasicAuthToken";
+import { BLOGS_PATH } from "../../../src/modules/blogs/constants/blogs.paths";
+import { blogInputModel } from "../../../src/modules/blogs/api/input/dto/blogInputModel";
 
 export const updateBlogById = async (
   app: Express,

@@ -1,8 +1,8 @@
 import { Express } from "express";
 import request from "supertest";
-import { PostViewModel } from "../../../src/posts/output/post-data.output";
-import { POSTS_PATH } from "../../../src/posts/constants/posts.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
+import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths";
+import { PostViewModel } from "../../../src/modules/posts/api/output/post-data.output";
 
 export const getPostById = async (
   app: Express,

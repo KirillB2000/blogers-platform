@@ -1,11 +1,11 @@
 import { Express } from "express";
-import { blogInputModel } from "../../../src/blogs/dto/blogInputModel";
 import request from "supertest";
-import { BLOGS_PATH } from "../../../src/blogs/constants/blogs.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { blogDto } from "./blogDto";
 import { generateBasicAuthToken } from "../generateBasicAuthToken";
-import { BlogViewModel } from "../../../src/blogs/routes/output/blog-data.output";
+import { BLOGS_PATH } from "../../../src/modules/blogs/constants/blogs.paths";
+import { blogInputModel } from "../../../src/modules/blogs/api/input/dto/blogInputModel";
+import { BlogViewModel } from "../../../src/modules/blogs/api/output/blog-data.output";
 
 export const createBlogDto = async (
   app: Express,
