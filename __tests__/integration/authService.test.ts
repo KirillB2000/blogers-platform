@@ -10,9 +10,17 @@ import { LoginInputModel } from "../../src/auth/input/dto/loginInputModel"
 import { usersRepository } from "../../src/users/repository/user.repository"
 import { add } from "date-fns"
 import { sessionsRepository } from "../../src/auth/infrastructure/sessions.repository"
+import { testRegisterAndLoginUser } from "./utils/testRegisterAndLoginUser"
+import jwt from 'jsonwebtoken'
+import { SETTINGS } from "../../src/settings/config"
 
 
 describe('Integration tests for AuthService', () => {
+
+    const JWT_REFRESH_SECRET = SETTINGS.JWT_REFRESH_SECRET
+    if (!JWT_REFRESH_SECRET) {
+        throw new Error("❌ Critical: JWT_REFRESH_SECRET is missing in environment variables!")
+    }
 
     let mongoServer: MongoMemoryServer
     let client: MongoClient
@@ -250,6 +258,27 @@ describe('Integration tests for AuthService', () => {
 
             expect(refreshToken).not.toBe(newRefreshToken)
             expect(accessToken).not.toBe(newAccessToken)
+        })
+
+        it('should not refresh token if token from coockie is expired', async () => {
+            const { userEmail } = await testRegisterAndLoginUser()
+
+            const user = await usersRepository.findByEmail(userEmail)
+
+
+            const expiredIn = Math.floor(Date.now() / 1000) - 40
+            
+            const payload = {
+                userId: user!._id.toString(),
+                jti: 'some uuid'
+            }
+
+            const refreshToken = jwt.sign({ ...payload, exp: expiredIn }, JWT_REFRESH_SECRET)
+
+            await expect(authService.refreshToken(refreshToken))
+                .rejects
+                .toThrow(UnauthorizedError)
+
         })
     }),
 
