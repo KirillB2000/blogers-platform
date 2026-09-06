@@ -1,10 +1,11 @@
 import { sessionsCollection } from "../../../db/collections"
+import { AuthSession } from "../domain/session"
 
 export const sessionsRepository = {
     async create (
-        tokenInfo: RefreshTokenDb
+        sessionInfo: AuthSession
     ): Promise<String> {
-        const blackListedTokenId = await sessionsCollection.insertOne(tokenInfo)
+        const blackListedTokenId = await sessionsCollection.insertOne(sessionInfo)
 
         const tokenInfoId = blackListedTokenId.insertedId.toString()
 

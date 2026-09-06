@@ -13,11 +13,15 @@ import { authServiceHelpers } from "./auth.serviceHelpers";
 import { UserInputModel } from "../../users/api/input/dto/userInputModel";
 import { IUserDB } from "../../users/domain/iUserDb";
 import { usersRepository } from "../../users/infrastructure/user.repository";
+import { AuthSession } from "../domain/session";
 
 export const authService = {
     async loginUser (
-        userCreds: LoginInputModel
+        userCreds: LoginInputModel,
+        deviceName: string,
+        ipAddress: string
     ): Promise<{ accessToken: string, refreshToken: string }> {
+        const deviceId = randomUUID()
         const user = await usersRepository.findByLoginOrEmailField(userCreds.loginOrEmail)
 
         if (!user) {
@@ -30,7 +34,18 @@ export const authService = {
         }
 
         const accessToken = await jwtService.createAccessJWT(user)
-        const refreshToken = await jwtService.createRefreshJWT(user)
+        const { refreshToken, issuedAt, expiredAt } = await jwtService.createRefreshJWT(user, deviceId)
+
+        const sessionForDb: AuthSession = {
+            userId: user._id.toString(),
+            deviceId: deviceId,
+            deviceName: deviceName,
+            expirationDate: expiredAt!,
+            issuedAt: issuedAt!,
+            ip: ipAddress
+        }
+
+        await sessionsRepository.create(sessionForDb)
 
         return { accessToken, refreshToken }
     },
@@ -109,7 +124,7 @@ export const authService = {
 
         const { userId, expirationDate, userById } = await authServiceHelpers.refreshTokenValidation(refreshToken)
 
-        const refreshTokenForDb: RefreshTokenDb = {
+        const refreshTokenForDb: Session = {
             userId: userId,
             expirationDate: expirationDate,
             token: refreshToken
@@ -128,7 +143,7 @@ export const authService = {
     ): Promise<void> {
         const { userId, expirationDate } = await authServiceHelpers.refreshTokenValidation(refreshToken)
 
-        const refreshTokenForDb: RefreshTokenDb = {
+        const refreshTokenForDb: Session = {
             userId: userId,
             expirationDate: expirationDate,
             token: refreshToken

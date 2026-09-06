@@ -1,8 +1,9 @@
 import { WithId } from "mongodb";
 import jwt, { JwtPayload} from 'jsonwebtoken'
 import { SETTINGS } from "../../../settings/config";
-import { randomUUID } from "crypto";
+import { randomUUID, UUID } from "crypto";
 import { IUserDB } from "../../users/domain/iUserDb";
+import { add } from "date-fns";
 
 const JWT_ACCESS_SECRET = SETTINGS.JWT_ACCESS_SECRET
 if (!JWT_ACCESS_SECRET) {
@@ -30,15 +31,25 @@ export const jwtService = {
     },
 
     async createRefreshJWT (
-        user: WithId<IUserDB>
-    ): Promise<string> {
-        const payload = {
+        user: WithId<IUserDB>,
+        deviceId: UUID
+    ): Promise<{ refreshToken: string, issuedAt: number, expiredAt: number}> {
+        const payload: JwtPayload = {
             userId: user._id.toString(),
-            jti: randomUUID()
+            deviceId: deviceId,
+            jti: randomUUID(),
         }
         const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {expiresIn: '20s'})
 
-        return refreshToken
+        const { iat, exp } = jwt.decode(refreshToken) as JwtPayload
+
+        const cretedRefreshJwtInfo = {
+            refreshToken: refreshToken,
+            issuedAt: (iat as number) * 1000, 
+            expiredAt: (exp as number) * 1000
+        }
+
+        return cretedRefreshJwtInfo
     },
 
     async getUserIdByAccessToken(token: string): Promise<{userId: string} | null> {
@@ -62,14 +73,26 @@ export const jwtService = {
     },
 
     async getExpirationDateByRefreshToken(token: string): Promise<Date | null> {
-        const decodedRefreshToken = jwt.decode(token) as JwtPayload | null
+        const decodedJwtPayload = jwt.decode(token) as JwtPayload | null
 
-        if (!decodedRefreshToken || !decodedRefreshToken.exp) {
+        if (!decodedJwtPayload || !decodedJwtPayload.exp) {
             return null
         }
 
-        const expirationDate = new Date(decodedRefreshToken.exp * 1000)
+        const expirationDate = new Date(decodedJwtPayload.exp * 1000)
 
         return expirationDate
+    },
+
+    async getIssuedAtDateByRefreshToken(token: string): Promise<Date | null> {
+        const decodedJwtPayload = jwt.decode(token) as JwtPayload | null
+
+        if (!decodedJwtPayload || !decodedJwtPayload.iat) {
+            return null
+        }
+
+        const issuedAt = new Date(decodedJwtPayload.iat * 1000)
+
+        return issuedAt
     }
 }

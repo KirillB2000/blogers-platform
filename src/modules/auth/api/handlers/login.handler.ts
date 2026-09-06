@@ -9,7 +9,11 @@ export const loginHandler = async (
     req: Request<{}, {}, LoginInputModel>,
     res: Response
 ) => {
-    const {accessToken, refreshToken} = await authService.loginUser(req.body)
+    const loginInput = req.body
+    const deviceName = req.headers['user-agent'] || 'Unknown device'
+    const ipAddress = req.ip || 'Unknown ip address' as string
+
+    const { accessToken, refreshToken } = await authService.loginUser(loginInput, deviceName, ipAddress)
 
     const accessTokenForResponse: LoginSuccessViewModel = { accessToken }
 

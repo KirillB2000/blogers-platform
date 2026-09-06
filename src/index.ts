@@ -10,6 +10,7 @@ import { dbConnectionMiddleware } from "./db/db-connection.middleware";
 const app = express();
 
 app.use(dbConnectionMiddleware);
+app.set('trust proxy', true)
 
 setupApp(app);
 
