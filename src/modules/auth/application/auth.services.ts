@@ -39,9 +39,9 @@ export const authService = {
         const sessionForDb: AuthSession = {
             userId: user._id.toString(),
             deviceId: deviceId,
-            deviceName: deviceName,
+            title: deviceName,
             expirationDate: expiredAt!,
-            issuedAt: issuedAt!,
+            lastActiveDate: issuedAt!,
             ip: ipAddress
         }
 
@@ -122,18 +122,18 @@ export const authService = {
         refreshToken: string
     ): Promise<{ newAccessToken: string, newRefreshToken: string}> {
 
-        const { userId, expirationDate, userById } = await authServiceHelpers.refreshTokenValidation(refreshToken)
+        const { userById, deviceId, issuedAt: issuedAtOld } = await authServiceHelpers.refreshTokenValidation(refreshToken)
 
-        const refreshTokenForDb: Session = {
-            userId: userId,
-            expirationDate: expirationDate,
-            token: refreshToken
+        
+        const { expiredAt: expiredAtNew, refreshToken: newRefreshToken, issuedAt: issuedAtNew } = await jwtService.createRefreshJWT(userById, deviceId)
+
+        const isUpdatedSession = await sessionsRepository.update(issuedAtOld, deviceId, issuedAtNew, expiredAtNew) // Update version of the token (session)
+
+        if (!isUpdatedSession) {
+            throw new UnauthorizedError('Unauthorized')
         }
 
-        await sessionsRepository.create(refreshTokenForDb)
-
         const newAccessToken = await jwtService.createAccessJWT(userById)
-        const newRefreshToken = await jwtService.createRefreshJWT(userById)
 
         return { newAccessToken, newRefreshToken }
     },

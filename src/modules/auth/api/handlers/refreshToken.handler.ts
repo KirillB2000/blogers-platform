@@ -20,5 +20,5 @@ export const refreshTokenHadler = async (
     const newAccessTokenForResponse: LoginSuccessViewModel = { accessToken: newAccessToken }
 
     res.cookie('refreshToken', newRefreshToken, {httpOnly: true, secure: true, sameSite: "strict"})
-    res.status(httpStatuses.Ok).send(newAccessTokenForResponse)
+    res.status(httpStatuses.Ok).json(newAccessTokenForResponse)
 }

@@ -1,28 +1,22 @@
-import { isAfter } from "date-fns"
 import { UnauthorizedError } from "../../../core/exceptions/app-errors.exeption"
 import { jwtService } from "../adapters/jwt.services"
-import { sessionsRepository } from "../infrastructure/sessions.repository"
 import { WithId } from "mongodb"
 import { IUserDB } from "../../users/domain/iUserDb"
 import { usersRepository } from "../../users/infrastructure/user.repository"
+import { UUID } from "crypto"
 
 export const authServiceHelpers = {
     async refreshTokenValidation (
         refreshToken: string
-    ): Promise<{ userId: string, expirationDate: Date, userById: WithId<IUserDB> }> {
-        const blackListedToken = await sessionsRepository.findByToken(refreshToken)
+    ): Promise<{ userId: string, userById: WithId<IUserDB>, deviceId: UUID, issuedAt: number }> {
 
-        if (blackListedToken) {
+        const payload = await jwtService.getUserIdByRefreshToken(refreshToken)
+
+        if (!payload) {
             throw new UnauthorizedError('Unauthorized')
         }
 
-        const jwtServiceResult = await jwtService.getUserIdByRefreshToken(refreshToken)
-
-        if (!jwtServiceResult) {
-            throw new UnauthorizedError('Unauthorized')
-        }
-
-        const { userId } = jwtServiceResult
+        const { userId, iat: issuedAt, deviceId } = payload
 
         const userById = await usersRepository.findById(userId)
 
@@ -30,16 +24,6 @@ export const authServiceHelpers = {
             throw new UnauthorizedError('Unauthorized')
         }
 
-        const expirationDate = await jwtService.getExpirationDateByRefreshToken(refreshToken)
-
-        if (!expirationDate) {
-            throw new UnauthorizedError('Unauthorized')
-        }
-
-        if (isAfter(new Date(), expirationDate)) {
-            throw new UnauthorizedError('Unauthorized')
-        }
-
-        return { userId, expirationDate, userById }
+        return { userId, userById, deviceId, issuedAt }
     }
 }
