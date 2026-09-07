@@ -13,6 +13,8 @@ import { userRouter } from "./modules/users/api/users.router";
 import { USERS_PATH } from "./modules/users/constants/users.paths";
 import { TESTING_PATH } from "./testing/constants/testing.paths";
 import { testingRouter } from "./testing/routers/testing.router";
+import { securityDeviceRouter } from "./modules/securityDevices/api/securityDevices.router";
+import { SECURITY_DEVICES_PATH } from "./modules/securityDevices/constants/securityDevices.paths";
 
 const setupApp = (app: Express) => {
   app.use(express.json());
@@ -24,6 +26,7 @@ const setupApp = (app: Express) => {
   app.use(USERS_PATH, userRouter)
   app.use(AUTH_PATH, authRouter)
   app.use(COMMENTS_PATH, commentsRouter)
+  app.use(SECURITY_DEVICES_PATH, securityDeviceRouter)
 
   app.use(errorsHandler)
 

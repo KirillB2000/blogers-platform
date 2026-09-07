@@ -17,14 +17,27 @@ export const sessionsRepository = {
         issuedAtOld: number, 
         deviceId: UUID,
         issuedAtNew: number, 
-        expiredAtNew: number
+        expiredAtNew: number, 
+        userId: string
     ): Promise <boolean> {
         const updateSessionResult = await sessionsCollection.updateOne(
-            { lastActiveDate: issuedAtOld, deviceId: deviceId},
+            { lastActiveDate: issuedAtOld, deviceId: deviceId, userId: userId },
             { $set: { lastActiveDate: issuedAtNew, expirationDate: expiredAtNew }}
         )
 
         return updateSessionResult.matchedCount > 0
+    },
+
+    async delete(
+        issuedAt: number,
+        deviceId: UUID,
+        userId: string
+    ): Promise<boolean> {
+        const deleteSessionResult = await sessionsCollection.deleteOne(
+            { lastActiveDate: issuedAt, deviceId: deviceId, userId: userId }
+        )
+
+        return deleteSessionResult.deletedCount > 0
     },
 
     async findByToken (

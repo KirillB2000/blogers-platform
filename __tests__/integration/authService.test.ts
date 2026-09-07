@@ -117,7 +117,10 @@ describe('Integration tests for AuthService', () => {
                 password: userIntput.password
             }
 
-            const logedInUser = await authService.loginUser(loginUserCreds)
+            const deviceName = 'Some_device_name'
+            const ipAddress = '111.111.111.11'
+
+            const logedInUser = await authService.loginUser(loginUserCreds, deviceName, ipAddress)
 
             expect(logedInUser)
                 .toEqual({
@@ -132,7 +135,10 @@ describe('Integration tests for AuthService', () => {
                 password: 'funnyPassword'
             }
 
-            await expect(authService.loginUser(loginUserCreds))
+            const deviceName = 'Some_device_name'
+            const ipAddress = '111.111.111.11'
+
+            await expect(authService.loginUser(loginUserCreds, deviceName, ipAddress))
                 .rejects
                 .toThrow(UnauthorizedError)
         })
@@ -146,7 +152,10 @@ describe('Integration tests for AuthService', () => {
                 password: 'Incorrect_password'
             }
 
-            await expect (authService.loginUser(loginUserWithIncorrectPassword))
+            const deviceName = 'Some_device_name'
+            const ipAddress = '111.111.111.11'
+
+            await expect(authService.loginUser(loginUserWithIncorrectPassword, deviceName, ipAddress))
                 .rejects
                 .toThrow(UnauthorizedError)
         })
@@ -243,14 +252,17 @@ describe('Integration tests for AuthService', () => {
                 password: userInput.password
             }
 
-            const { refreshToken, accessToken } = await authService.loginUser(userLoginCreds)
+            const deviceName = 'Some_device_name'
+            const ipAddress = '111.111.111.11'
+
+            const { refreshToken, accessToken } = await authService.loginUser(userLoginCreds, deviceName, ipAddress)
 
             const { newRefreshToken, newAccessToken } = await authService.refreshToken(refreshToken)
 
             const tokenInSessionCollection = await sessionsRepository.findByToken(refreshToken)
 
             expect(tokenInSessionCollection).not.toBe(null)
-            expect(tokenInSessionCollection?.token).toBe(refreshToken)
+            expect(tokenInSessionCollection?.title).toBe(deviceName)
 
             await expect(authService.refreshToken(refreshToken))
                 .rejects
@@ -292,14 +304,17 @@ describe('Integration tests for AuthService', () => {
                 password: userInput.password
             }
 
-            const { refreshToken } = await authService.loginUser(userLoginCreds)
+            const deviceName = 'Some_device_name'
+            const ipAddress = '111.111.111.11'
+
+            const { refreshToken } = await authService.loginUser(userLoginCreds, deviceName, ipAddress)
 
             await authService.logout(refreshToken)
 
             const tokenInSessionCollection = await sessionsRepository.findByToken(refreshToken)
 
             expect(tokenInSessionCollection).not.toBe(null)
-            expect(tokenInSessionCollection?.token).toBe(refreshToken)
+            expect(tokenInSessionCollection?.title).toBe(deviceName)
 
             await expect(authService.logout(refreshToken))
             .rejects

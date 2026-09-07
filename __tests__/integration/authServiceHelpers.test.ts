@@ -49,8 +49,9 @@ describe('Integration tests for AuthServiceHelpers', () => {
 
             expect(rtValidationResult).toEqual({
                 userId: expect.any(String),
-                expirationDate: expect.any(Date),
-                userById: expect.any(Object)
+                userById: expect.any(Object),
+                issuedAt: expect.any(Number),
+                deviceId: expect.any(String)
             })
         })
 

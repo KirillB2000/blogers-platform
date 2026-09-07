@@ -13,7 +13,10 @@ export const testRegisterAndLoginUser = async () => {
         password: userInput.password
     }
 
-    const { refreshToken } = await authService.loginUser(userCreds)
+    const deviceName = 'Some_device_name'
+    const ipAddress = '111.111.111.11'
+
+    const { refreshToken } = await authService.loginUser(userCreds, deviceName, ipAddress)
 
     return { refreshToken, userEmail }
 }

@@ -122,12 +122,12 @@ export const authService = {
         refreshToken: string
     ): Promise<{ newAccessToken: string, newRefreshToken: string}> {
 
-        const { userById, deviceId, issuedAt: issuedAtOld } = await authServiceHelpers.refreshTokenValidation(refreshToken)
+        const { userById, userId, deviceId, issuedAt: issuedAtOld } = await authServiceHelpers.refreshTokenValidation(refreshToken)
 
         
         const { expiredAt: expiredAtNew, refreshToken: newRefreshToken, issuedAt: issuedAtNew } = await jwtService.createRefreshJWT(userById, deviceId)
 
-        const isUpdatedSession = await sessionsRepository.update(issuedAtOld, deviceId, issuedAtNew, expiredAtNew) // Update version of the token (session)
+        const isUpdatedSession = await sessionsRepository.update(issuedAtOld, deviceId, issuedAtNew, expiredAtNew, userId) // Update version of the token (session)
 
         if (!isUpdatedSession) {
             throw new UnauthorizedError('Unauthorized')
@@ -141,14 +141,12 @@ export const authService = {
     async logout (
         refreshToken: string
     ): Promise<void> {
-        const { userId, expirationDate } = await authServiceHelpers.refreshTokenValidation(refreshToken)
+        const { issuedAt, deviceId, userId } = await authServiceHelpers.refreshTokenValidation(refreshToken)
 
-        const refreshTokenForDb: Session = {
-            userId: userId,
-            expirationDate: expirationDate,
-            token: refreshToken
+        const isDeleted = await sessionsRepository.delete(issuedAt, deviceId, userId)
+
+        if(!isDeleted) {
+            throw new UnauthorizedError('Unauthorized')
         }
-
-        await sessionsRepository.create(refreshTokenForDb)
     }
 }
