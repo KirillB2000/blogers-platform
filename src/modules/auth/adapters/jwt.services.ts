@@ -3,7 +3,7 @@ import jwt, { JwtPayload} from 'jsonwebtoken'
 import { SETTINGS } from "../../../settings/config";
 import { randomUUID, UUID } from "crypto";
 import { IUserDB } from "../../users/domain/iUserDb";
-import { JwtPayloadSessions } from "../api/input/jwtPayloadSessions";
+import { RefreshTokenPayload } from "../api/input/jwtPayloadSessions";
 
 const JWT_ACCESS_SECRET = SETTINGS.JWT_ACCESS_SECRET
 if (!JWT_ACCESS_SECRET) {
@@ -33,23 +33,25 @@ export const jwtService = {
     async createRefreshJWT (
         user: WithId<IUserDB>,
         deviceId: UUID
-    ): Promise<{ refreshToken: string, issuedAt: number, expiredAt: number}> {
-        const payload: JwtPayload = {
+    ): Promise<{ refreshToken: string, issuedAt: number, expiredAt: Date}> {
+        const iatSeconds = Math.floor(Date.now() / 1000)
+        const expSeconds = iatSeconds + 20
+
+        const payload: RefreshTokenPayload = {
             userId: user._id.toString(),
             deviceId: deviceId,
             jti: randomUUID(),
+            iat: iatSeconds,
+            exp: expSeconds
         }
-        const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {expiresIn: '20s'})
+        
+        const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET)
 
-        const { iat, exp } = jwt.decode(refreshToken) as JwtPayloadSessions
-
-        const cretedRefreshJwtInfo = {
-            refreshToken: refreshToken,
-            issuedAt: iat * 1000, 
-            expiredAt: exp * 1000
+        return {
+            expiredAt: new Date(expSeconds * 1000),
+            issuedAt: iatSeconds * 1000,
+            refreshToken: refreshToken
         }
-
-        return cretedRefreshJwtInfo
     },
 
     async getUserIdByAccessToken(token: string): Promise<{userId: string} | null> {
@@ -61,16 +63,10 @@ export const jwtService = {
         }
     },
 
-    async getUserIdByRefreshToken(token: string): Promise<JwtPayloadSessions | null> {
+    async getUserIdByRefreshToken(token: string): Promise<RefreshTokenPayload | null> {
 
         try {
-            const payload = jwt.verify(token, JWT_REFRESH_SECRET) as JwtPayloadSessions | null
-
-            if (payload) {
-                payload.iat = payload.iat * 1000
-                payload.exp = payload.exp * 1000
-            }
-
+            const payload = jwt.verify(token, JWT_REFRESH_SECRET) as RefreshTokenPayload | null
             return payload
         } catch (error) {
             return null

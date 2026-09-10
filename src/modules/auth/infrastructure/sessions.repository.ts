@@ -18,7 +18,7 @@ export const sessionsRepository = {
         issuedAtOld: number, 
         deviceId: UUID,
         issuedAtNew: number, 
-        expiredAtNew: number, 
+        expiredAtNew: Date, 
         userId: string
     ): Promise <boolean> {
         const updateSessionResult = await sessionsCollection.updateOne(
@@ -41,12 +41,36 @@ export const sessionsRepository = {
         return deleteSessionResult.deletedCount > 0
     },
 
+    async deleteOne(
+        deviceId: UUID
+    ): Promise<void> {
+        await sessionsCollection.deleteOne({deviceId: deviceId})
+    },
+
+    async deleteOtherSessions(
+        deviceId: UUID, 
+        userId: string
+    ): Promise<void> {
+        await sessionsCollection.deleteMany({ 
+            userId: userId, 
+            deviceId: {$ne: deviceId} 
+        })
+    },
+
     async findSession (
         issuedAt: number,
         deviceId: UUID,
         userId: string
     ): Promise<WithId<AuthSession> | null> {
         const session = await sessionsCollection.findOne({lastActiveDate: issuedAt, deviceId: deviceId, userId: userId})
+
+        return session
+    },
+
+    async findByDeviceId(
+        deviceId: UUID
+    ): Promise<WithId<AuthSession> | null> {
+        const session = await sessionsCollection.findOne({deviceId: deviceId})
 
         return session
     }

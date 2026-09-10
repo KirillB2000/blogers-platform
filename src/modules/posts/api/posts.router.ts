@@ -7,7 +7,7 @@ import { updatePostByIdHandler } from "./handlers/updatePostById.handler";
 import { deletePostByIdHandler } from "./handlers/deletePostById.handler";
 import { catchAsync } from "../../../core/helpers/catchAsync.helper";
 import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validation-result.middleware";
-import { idValidation } from "../../../core/middlewares/validation/params-id.validation.middleware";
+import { idParamsValidation } from "../../../core/middlewares/validation/params-id.validation.middleware";
 import { paginationAndSortingValidation } from "../../../core/middlewares/validation/query-pagination-sorting.validation.middleware";
 import { sanitizeQueryParams } from "../../../core/middlewares/validation/sanitize-query.middleware";
 import { PARAMS_IDS } from "../../../core/types/paramsIds";
@@ -36,7 +36,7 @@ postsRouter
 
   .get(
     POSTS_ROUTES.BY_ID,
-    idValidation(PARAMS_IDS.ID),
+    idParamsValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
     catchAsync(getPostByIdHandler),
   )
@@ -60,7 +60,7 @@ postsRouter
   .delete(
     POSTS_ROUTES.BY_ID,
     superAdminGuardMiddleware,
-    idValidation(PARAMS_IDS.ID),
+    idParamsValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
     catchAsync(deletePostByIdHandler),
   )
@@ -70,7 +70,7 @@ postsRouter
   .post(
     `${POSTS_ROUTES.ROOT}${POSTS_ROUTES.BY_POST_ID}${COMMENTS_PATH}`,
     accessTokenGuardMiddleware,
-    idValidation(PARAMS_IDS.POST_ID),
+    idParamsValidation(PARAMS_IDS.POST_ID),
     commentInputDtoValidation,
     inputValidationResultMiddleware,
     catchAsync(createCommentForSpecificPostHandler)
@@ -78,7 +78,7 @@ postsRouter
 
   .get(
     `${POSTS_ROUTES.ROOT}${POSTS_ROUTES.BY_POST_ID}${COMMENTS_PATH}`,
-    idValidation(PARAMS_IDS.POST_ID),
+    idParamsValidation(PARAMS_IDS.POST_ID),
     paginationAndSortingValidation(CommentSortField),
     inputValidationResultMiddleware,
     sanitizeQueryParams,

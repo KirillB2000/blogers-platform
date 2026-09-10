@@ -4,11 +4,12 @@ import { WithId } from "mongodb"
 import { IUserDB } from "../../users/domain/iUserDb"
 import { usersRepository } from "../../users/infrastructure/user.repository"
 import { UUID } from "crypto"
+import { RefreshTokenPayload } from "../api/input/jwtPayloadSessions"
 
 export const authServiceHelpers = {
     async refreshTokenValidation (
         refreshToken: string
-    ): Promise<{ userId: string, userById: WithId<IUserDB>, deviceId: UUID, issuedAt: number }> {
+    ): Promise<{ userId: string, userById: WithId<IUserDB>, deviceId: UUID, issuedAt: number, expiredAt: Date }> {
 
         const payload = await jwtService.getUserIdByRefreshToken(refreshToken)
 
@@ -16,7 +17,17 @@ export const authServiceHelpers = {
             throw new UnauthorizedError('Unauthorized')
         }
 
-        let { userId, iat: issuedAt, deviceId } = payload
+        const fixedPayload: RefreshTokenPayload = {
+            deviceId: payload.deviceId,
+            exp: payload.exp * 1000,
+            iat: payload.iat * 1000,
+            jti: payload.jti,
+            userId: payload.userId
+        }
+
+        const { exp, iat: issuedAt, deviceId, userId} = fixedPayload
+
+        const expiredAt = new Date(exp)
 
         const userById = await usersRepository.findById(userId)
 
@@ -24,6 +35,6 @@ export const authServiceHelpers = {
             throw new UnauthorizedError('Unauthorized')
         }
 
-        return { userId, userById, deviceId, issuedAt }
+        return { userId, userById, deviceId, issuedAt, expiredAt }
     }
 }

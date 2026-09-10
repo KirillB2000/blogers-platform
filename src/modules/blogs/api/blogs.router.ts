@@ -7,7 +7,7 @@ import {updateBlogByIdHandler } from "./handlers/updateBlogById.handler";
 import { superAdminGuardMiddleware } from "../../auth/api/guards/super-admin.guard.middleware";
 import { catchAsync } from "../../../core/helpers/catchAsync.helper";
 import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validation-result.middleware";
-import { idValidation } from "../../../core/middlewares/validation/params-id.validation.middleware";
+import { idParamsValidation } from "../../../core/middlewares/validation/params-id.validation.middleware";
 import { paginationAndSortingValidation } from "../../../core/middlewares/validation/query-pagination-sorting.validation.middleware";
 import { sanitizeQueryParams } from "../../../core/middlewares/validation/sanitize-query.middleware";
 import { PARAMS_IDS } from "../../../core/types/paramsIds";
@@ -33,7 +33,7 @@ blogsRouter
 
   .get(
     `${BLOGS_ROUTES.BY_BLOG_ID}${POSTS_PATH}`,
-    idValidation('blogId'),
+    idParamsValidation('blogId'),
     paginationAndSortingValidation(PostSortField),
     inputValidationResultMiddleware,
     sanitizeQueryParams,
@@ -42,7 +42,7 @@ blogsRouter
 
   .get(
     BLOGS_ROUTES.BY_ID,
-    idValidation(PARAMS_IDS.ID),
+    idParamsValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
     catchAsync(getBlogByIdHandler),
   )
@@ -58,7 +58,7 @@ blogsRouter
   .post(
     `${BLOGS_ROUTES.BY_BLOG_ID}${POSTS_PATH}`,
     superAdminGuardMiddleware,
-    idValidation(PARAMS_IDS.BLOG_ID),
+    idParamsValidation(PARAMS_IDS.BLOG_ID),
     postBlogInputDtoValidation,
     inputValidationResultMiddleware,
     catchAsync(createPostForSpecificBlogHandler),
@@ -67,7 +67,7 @@ blogsRouter
   .put(
     BLOGS_ROUTES.BY_ID,
     superAdminGuardMiddleware,
-    idValidation(PARAMS_IDS.ID),
+    idParamsValidation(PARAMS_IDS.ID),
     blogInputDtoValidation,
     inputValidationResultMiddleware,
     catchAsync(updateBlogByIdHandler),
@@ -76,7 +76,7 @@ blogsRouter
   .delete(
     BLOGS_ROUTES.BY_ID,
     superAdminGuardMiddleware,
-    idValidation(PARAMS_IDS.ID),
+    idParamsValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
     catchAsync(deleteBlogByIdHandler),
   );

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { getCommentByIdHandler } from "./handlers/getCommentById.handler";
 import { catchAsync } from "../../../core/helpers/catchAsync.helper";
 import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validation-result.middleware";
-import { idValidation } from "../../../core/middlewares/validation/params-id.validation.middleware";
+import { idParamsValidation } from "../../../core/middlewares/validation/params-id.validation.middleware";
 import { PARAMS_IDS } from "../../../core/types/paramsIds";
 import { accessTokenGuardMiddleware } from "../../auth/api/guards/access-token.guard.middleware";
 import { COMMENTS_ROUTES } from "../constants/comments.paths";
@@ -16,7 +16,7 @@ commentsRouter
 
     .get(
         COMMENTS_ROUTES.BY_ID,
-        idValidation(PARAMS_IDS.ID),
+        idParamsValidation(PARAMS_IDS.ID),
         inputValidationResultMiddleware,
         catchAsync(getCommentByIdHandler)
     )
@@ -24,7 +24,7 @@ commentsRouter
     .delete(
         COMMENTS_ROUTES.BY_COMMENT_ID,
         accessTokenGuardMiddleware,
-        idValidation(PARAMS_IDS.COMMENT_ID),
+        idParamsValidation(PARAMS_IDS.COMMENT_ID),
         inputValidationResultMiddleware,
         catchAsync(deleteCommentByIdHandler)
     )
@@ -32,7 +32,7 @@ commentsRouter
     .put(
         COMMENTS_ROUTES.BY_COMMENT_ID,
         accessTokenGuardMiddleware,
-        idValidation(PARAMS_IDS.COMMENT_ID),
+        idParamsValidation(PARAMS_IDS.COMMENT_ID),
         commentInputDtoValidation,
         inputValidationResultMiddleware,
         catchAsync(updateCommentByIdHandler)

@@ -12,7 +12,7 @@ export const refreshTokenHadler = async (
     const { refreshToken } = req.cookies as AuthCookies
 
     if (!refreshToken) {
-        throw new UnauthorizedError('Unauthorized')
+        return res.sendStatus(httpStatuses.Unauthorized)
     }
 
     const { newRefreshToken, newAccessToken } = await authService.refreshToken(refreshToken)

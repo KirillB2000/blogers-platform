@@ -43,3 +43,10 @@ export class UnauthorizedError extends AppError {
         super(message)
     }
 }
+
+export class ForbiddenError extends AppError {
+    readonly statusCode = httpStatuses.Forbidden
+    constructor(message: string) {
+        super(message)
+    }
+}

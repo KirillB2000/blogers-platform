@@ -4,7 +4,7 @@ import { userDtoValidation } from "../validation/user-input.validation";
 import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validation-result.middleware";
 import { createUserHandler } from "./handlers/createUser.handler";
 import { catchAsync } from "../../../core/helpers/catchAsync.helper";
-import { idValidation } from "../../../core/middlewares/validation/params-id.validation.middleware";
+import { idParamsValidation } from "../../../core/middlewares/validation/params-id.validation.middleware";
 import { deleteUserHandler } from "./handlers/deleteUser.handler";
 import { paginationAndSortingValidation } from "../../../core/middlewares/validation/query-pagination-sorting.validation.middleware";
 import { sanitizeQueryParams } from "../../../core/middlewares/validation/sanitize-query.middleware";
@@ -27,7 +27,7 @@ userRouter
     .delete(
         USERS_ROUTING.BY_ID,
         superAdminGuardMiddleware,
-        idValidation(PARAMS_IDS.ID),
+        idParamsValidation(PARAMS_IDS.ID),
         inputValidationResultMiddleware,
         catchAsync(deleteUserHandler)
     )

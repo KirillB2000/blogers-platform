@@ -8,9 +8,9 @@ export const securityDevicesQueryService = {
     async listingActiveSessionDevices(
         refreshToken: string
     ): Promise<DeviceViewModel[]> {
-        const { issuedAt, deviceId, userId } = await authServiceHelpers.refreshTokenValidation(refreshToken)
+        const { userId } = await authServiceHelpers.refreshTokenValidation(refreshToken)
 
-        const listActiveSessionDevicesDb = await sessionsQueryReposiroty.getAcviveSessionDevicesList(issuedAt, deviceId, userId)
+        const listActiveSessionDevicesDb = await sessionsQueryReposiroty.getAcviveSessionDevicesList(userId)
 
         const listActiveSessionDevicesViewModel = mapActiveSessionsDevicesListFromDbToViewModel(listActiveSessionDevicesDb)
 

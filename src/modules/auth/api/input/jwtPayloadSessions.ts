@@ -1,9 +1,9 @@
 import { UUID } from "crypto";
-import { JwtPayload } from "jsonwebtoken";
 
-export type JwtPayloadSessions = JwtPayload & {
+export type RefreshTokenPayload = {
     userId: string,
     deviceId: UUID,
+    jti: string,
     iat: number,
     exp: number
 }

@@ -1,9 +1,8 @@
 import { Request, Response } from "express"
-import { UnauthorizedError } from "../../../../core/exceptions/app-errors.exeption"
-import { authService } from "../../application/auth.services"
 import { httpStatuses } from "../../../../core/types/http-statuses"
+import { securityDevicesServices } from "../../application/commands/securityDevices.services"
 
-export const logoutHandler = async (
+export const deleteAllDeviceSessionsHandler = async (
     req: Request,
     res: Response
 ) => {
@@ -13,12 +12,7 @@ export const logoutHandler = async (
         return res.sendStatus(httpStatuses.Unauthorized)
     }
 
-    await authService.logout(refreshToken)
-    res.clearCookie('refreshToken', {
-        httpOnly: true,  
-        secure: true,
-        sameSite: 'strict'
-    })
+    await securityDevicesServices.deleteAllSessions(refreshToken)
 
     res.sendStatus(httpStatuses.NoContent)
 }
