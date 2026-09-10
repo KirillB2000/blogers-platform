@@ -1,6 +1,7 @@
 import { UUID } from "crypto"
 import { sessionsCollection } from "../../../db/collections"
 import { AuthSession } from "../domain/session"
+import { WithId } from "mongodb"
 
 export const sessionsRepository = {
     async create (
@@ -44,7 +45,7 @@ export const sessionsRepository = {
         issuedAt: number,
         deviceId: UUID,
         userId: string
-    ) {
+    ): Promise<WithId<AuthSession> | null> {
         const session = await sessionsCollection.findOne({lastActiveDate: issuedAt, deviceId: deviceId, userId: userId})
 
         return session

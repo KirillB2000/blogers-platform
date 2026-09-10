@@ -17,6 +17,10 @@ export const loginHandler = async (
 
     const accessTokenForResponse: LoginSuccessViewModel = { accessToken }
 
-    res.cookie('refreshToken', refreshToken, {httpOnly: true, sameSite: 'strict', secure: true})
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true, 
+        secure: true,
+        sameSite: 'strict'
+    })
     res.status(httpStatuses.Ok).json(accessTokenForResponse)
 }

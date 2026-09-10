@@ -1,7 +1,9 @@
 import { Request, Response } from "express"
 import { UnauthorizedError } from "../../../../core/exceptions/app-errors.exeption"
+import { securityDevicesQueryService } from "../../application/queries/securityDevices.queryServices"
+import { httpStatuses } from "../../../../core/types/http-statuses"
 
-export const getSecurityDevicesListHandler = (
+export const getSecurityDevicesListHandler = async (
     req: Request,
     res: Response
 ) => {
@@ -11,5 +13,7 @@ export const getSecurityDevicesListHandler = (
         throw new UnauthorizedError('Unauthorized')
     }
 
-    
+    const activeSessionDevicesList = await securityDevicesQueryService.listingActiveSessionDevices(refreshToken)
+
+    res.status(httpStatuses.Ok).json(activeSessionDevicesList) 
 }

@@ -14,6 +14,11 @@ export const logoutHandler = async (
     }
 
     await authService.logout(refreshToken)
+    res.clearCookie('refreshToken', {
+        httpOnly: true,  
+        secure: true,
+        sameSite: 'strict'
+    })
 
     res.sendStatus(httpStatuses.NoContent)
 }
