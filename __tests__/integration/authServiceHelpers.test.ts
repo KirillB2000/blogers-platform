@@ -1,7 +1,6 @@
 import { MongoClient, Db } from "mongodb"
 import { MongoMemoryServer } from "mongodb-memory-server"
 import { initCollections, sessionsCollection, usersCollection } from "../../src/db/collections"
-import { authService } from "../../src/modules/auth/application/auth.services"
 import { authServiceHelpers } from "../../src/modules/auth/application/auth.serviceHelpers"
 import { testRegisterAndLoginUser } from "./utils/testRegisterAndLoginUser"
 import { UnauthorizedError } from "../../src/core/exceptions/app-errors.exeption"
@@ -31,13 +30,14 @@ describe('Integration tests for AuthServiceHelpers', () => {
     })
 
     afterAll(async () => {
-        if(client) await client.close()
-        if(mongoServer) await mongoServer.stop()
+        jest.restoreAllMocks()
+        if(client) await client.close(true)
+        if(mongoServer) await mongoServer.stop( {doCleanup: true} )
     })
 
     afterEach(async () => {
-        await usersCollection.deleteMany({})
-        await sessionsCollection.deleteMany({})
+        if (usersCollection) await usersCollection.deleteMany({})
+        if (sessionsCollection) await sessionsCollection.deleteMany({})
         jest.clearAllMocks()
     })
 
@@ -53,16 +53,6 @@ describe('Integration tests for AuthServiceHelpers', () => {
                 issuedAt: expect.any(Number),
                 deviceId: expect.any(String)
             })
-        })
-
-        it('Should not validate refresh token because of token already in black list', async () => {
-            const { refreshToken } = await testRegisterAndLoginUser()
-
-            await authService.logout(refreshToken)
-
-            await expect(authServiceHelpers.refreshTokenValidation(refreshToken))
-                .rejects
-                .toThrow(UnauthorizedError)
         })
 
         it('Should not validate refresh token because of incorrect token', async () => {

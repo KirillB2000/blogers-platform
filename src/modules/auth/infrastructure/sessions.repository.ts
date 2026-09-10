@@ -40,11 +40,13 @@ export const sessionsRepository = {
         return deleteSessionResult.deletedCount > 0
     },
 
-    async findByToken (
-        token: string
+    async findSession (
+        issuedAt: number,
+        deviceId: UUID,
+        userId: string
     ) {
-        const tokenInfo = await sessionsCollection.findOne({token: token})
+        const session = await sessionsCollection.findOne({lastActiveDate: issuedAt, deviceId: deviceId, userId: userId})
 
-        return tokenInfo
+        return session
     }
 }

@@ -13,6 +13,8 @@ import jwt from 'jsonwebtoken'
 import { SETTINGS } from "../../src/settings/config"
 import { UserInputModel } from "../../src/modules/users/api/input/dto/userInputModel"
 import { usersRepository } from "../../src/modules/users/infrastructure/user.repository"
+import { jwtService } from "../../src/modules/auth/adapters/jwt.services"
+import { resolve } from "node:dns"
 
 
 describe('Integration tests for AuthService', () => {
@@ -25,6 +27,8 @@ describe('Integration tests for AuthService', () => {
     let mongoServer: MongoMemoryServer
     let client: MongoClient
     let db: Db
+
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
     
     beforeAll(async () => {
         mongoServer = await MongoMemoryServer.create()
@@ -257,12 +261,16 @@ describe('Integration tests for AuthService', () => {
 
             const { refreshToken, accessToken } = await authService.loginUser(userLoginCreds, deviceName, ipAddress)
 
+            await delay(1100) // For different iat in refreshToken and newRefreshToken (tests are working too fast)
+
             const { newRefreshToken, newAccessToken } = await authService.refreshToken(refreshToken)
 
-            const tokenInSessionCollection = await sessionsRepository.findByToken(refreshToken)
+            const payload = await jwtService.getUserIdByRefreshToken(newRefreshToken)
 
-            expect(tokenInSessionCollection).not.toBe(null)
-            expect(tokenInSessionCollection?.title).toBe(deviceName)
+            const existedSession = await sessionsRepository.findSession(payload!.iat, payload!.deviceId, payload!.userId)
+
+            expect(existedSession).not.toBe(null)
+            expect(existedSession!.title).toBe(deviceName)
 
             await expect(authService.refreshToken(refreshToken))
                 .rejects
@@ -311,10 +319,11 @@ describe('Integration tests for AuthService', () => {
 
             await authService.logout(refreshToken)
 
-            const tokenInSessionCollection = await sessionsRepository.findByToken(refreshToken)
+            const payload = await jwtService.getUserIdByRefreshToken(refreshToken)
 
-            expect(tokenInSessionCollection).not.toBe(null)
-            expect(tokenInSessionCollection?.title).toBe(deviceName)
+            const session = await sessionsRepository.findSession(payload!.iat, payload!.deviceId, payload!.userId)
+
+            expect(session).toBe(null)
 
             await expect(authService.logout(refreshToken))
             .rejects

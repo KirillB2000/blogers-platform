@@ -64,7 +64,14 @@ export const jwtService = {
     async getUserIdByRefreshToken(token: string): Promise<JwtPayloadSessions | null> {
 
         try {
-            return jwt.verify(token, JWT_REFRESH_SECRET) as JwtPayloadSessions | null
+            const payload = jwt.verify(token, JWT_REFRESH_SECRET) as JwtPayloadSessions | null
+
+            if (payload) {
+                payload.iat = payload.iat * 1000
+                payload.exp = payload.exp * 1000
+            }
+
+            return payload
         } catch (error) {
             return null
         }

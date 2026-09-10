@@ -16,7 +16,7 @@ export const authServiceHelpers = {
             throw new UnauthorizedError('Unauthorized')
         }
 
-        const { userId, iat: issuedAt, deviceId } = payload
+        let { userId, iat: issuedAt, deviceId } = payload
 
         const userById = await usersRepository.findById(userId)
 

@@ -44,7 +44,7 @@ export const authService = {
             lastActiveDate: issuedAt!,
             ip: ipAddress
         }
-
+        
         await sessionsRepository.create(sessionForDb)
 
         return { accessToken, refreshToken }
