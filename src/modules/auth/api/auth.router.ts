@@ -13,12 +13,14 @@ import { AUTH_ROUTING } from "../constants/auth.paths";
 import { codeDtoValidation } from "../validation/codeInput.validation";
 import { loginDtoValidation } from "../validation/loginInput.validation";
 import { accessTokenGuardMiddleware } from "./guards/access-token.guard.middleware";
+import { rateLimitMiddleware } from "../../../core/middlewares/rateLimiter/rateLimit.middleware";
 
 export const authRouter = Router({})
 
 authRouter
     .post(
         AUTH_ROUTING.LOGIN,
+        rateLimitMiddleware,
         loginDtoValidation,
         inputValidationResultMiddleware,
         catchAsync(loginHandler)
@@ -33,6 +35,7 @@ authRouter
     // User registration
     .post(
         AUTH_ROUTING.REGISTRATION,
+        rateLimitMiddleware,
         userDtoValidation,
         inputValidationResultMiddleware,
         catchAsync(registrationHandler)
@@ -41,6 +44,7 @@ authRouter
     // User confirmation registration
     .post(
         AUTH_ROUTING.REGISTRATION_CONFIRMATION,
+        rateLimitMiddleware,
         codeDtoValidation,
         inputValidationResultMiddleware,
         catchAsync(registrationConfirmationHandler)
@@ -49,6 +53,7 @@ authRouter
     // Resending email to user
     .post(
         AUTH_ROUTING.REGISTRATION_EMAIL_RESENDING,
+        rateLimitMiddleware,
         emailValidation,
         inputValidationResultMiddleware,
         catchAsync(registrationEmailResendingHandler)

@@ -14,7 +14,6 @@ import { UserInputModel } from "../../users/api/input/dto/userInputModel";
 import { IUserDB } from "../../users/domain/iUserDb";
 import { usersRepository } from "../../users/infrastructure/user.repository";
 import { AuthSession } from "../domain/session";
-import { sessionsCollection } from "../../../db/collections";
 
 export const authService = {
     async loginUser (

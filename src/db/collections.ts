@@ -5,6 +5,7 @@ import { CommentDb } from "../modules/comments/domain/comment"
 import { Post } from "../modules/posts/domain/post"
 import { IUserDB } from "../modules/users/domain/iUserDb"
 import { AuthSession } from "../modules/auth/domain/session"
+import { ApiRequestLog as ApiRequestsLog } from "../core/middlewares/rateLimiter/infrastructure/types/apiRequestsLog"
 
 
 export const BLOGS_COLLECTION_NAME = 'blogs'
@@ -12,12 +13,14 @@ export const POSTS_COLLECTION_NAME = 'posts'
 export const USERS_COLLECTION_NAME = 'users'
 export const COMMENTS_COLLECTION_NAME = 'comments'
 export const SESSIONS_COLLECTION_NAME = 'sessions'
+export const API_REQUESTS_COLLECTION_NAME = 'api_requests'
 
 export let blogsCollection: Collection<Blog>
 export let postsCollection: Collection<Post>
 export let usersCollection: Collection<IUserDB>
 export let commentsCollection: Collection<CommentDb>
 export let sessionsCollection: Collection<AuthSession>
+export let requestsLogCollection: Collection<ApiRequestsLog>
 
 export function initCollections(db: Db): void {
     blogsCollection = db.collection<Blog>(BLOGS_COLLECTION_NAME)
@@ -25,4 +28,5 @@ export function initCollections(db: Db): void {
     usersCollection = db.collection<IUserDB>(USERS_COLLECTION_NAME)
     commentsCollection = db.collection<CommentDb>(COMMENTS_COLLECTION_NAME)
     sessionsCollection = db.collection<AuthSession>(SESSIONS_COLLECTION_NAME)
+    requestsLogCollection = db.collection<ApiRequestsLog>(API_REQUESTS_COLLECTION_NAME)
 } 

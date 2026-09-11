@@ -11,7 +11,7 @@ export const loginHandler = async (
 ) => {
     const loginInput = req.body
     const deviceName = req.headers['user-agent'] || 'Unknown device'
-    const ipAddress = req.ip || 'Unknown ip address' as string
+    const ipAddress = req.ip || 'Unknown ip address'
 
     const { accessToken, refreshToken } = await authService.loginUser(loginInput, deviceName, ipAddress)
 
