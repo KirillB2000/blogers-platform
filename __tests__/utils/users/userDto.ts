@@ -4,6 +4,6 @@ export const userDto = (): UserInputModel => {
     return {
         login: 'TestLogin',
         password: 'testPassword',
-        email: 'kiril.byckov.2000@gmail.com'
+        email: 'example_example@example.com'
     }
 }

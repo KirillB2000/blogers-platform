@@ -1,12 +1,12 @@
 import { MongoClient, Db } from "mongodb"
 import { MongoMemoryServer } from "mongodb-memory-server"
-import { initCollections, sessionsCollection, usersCollection } from "../../src/db/collections"
-import { authServiceHelpers } from "../../src/modules/auth/application/auth.serviceHelpers"
-import { testRegisterAndLoginUser } from "./utils/testRegisterAndLoginUser"
-import { UnauthorizedError } from "../../src/core/exceptions/app-errors.exeption"
+import { initCollections, sessionsCollection, usersCollection } from "../../../src/db/collections"
+import { authServiceHelpers } from "../../../src/modules/auth/application/auth.serviceHelpers"
+import { testRegisterAndLoginUser } from "../utils/testRegisterAndLoginUser"
+import { UnauthorizedError } from "../../../src/core/exceptions/app-errors.exeption"
 import jwt from 'jsonwebtoken'
-import { SETTINGS } from "../../src/settings/config"
-import { usersRepository } from "../../src/modules/users/infrastructure/user.repository"
+import { SETTINGS } from "../../../src/settings/config"
+import { usersRepository } from "../../../src/modules/users/infrastructure/user.repository"
 
 describe('Integration tests for AuthServiceHelpers', () => {
 
