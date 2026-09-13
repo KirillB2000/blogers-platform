@@ -1,3 +1,11 @@
+jest.mock('nodemailer', () => {
+    return {
+        createTransport: jest.fn().mockReturnValue({
+            sendMail: jest.fn().mockResolvedValue({ messageId: 'test-id-12345' })
+        })
+    };
+});
+
 import { add } from "date-fns"
 import { MongoClient, Db } from "mongodb"
 import { MongoMemoryServer } from "mongodb-memory-server"
@@ -266,7 +274,7 @@ describe('Integration tests for AuthService', () => {
 
             const payload = await jwtService.getUserIdByRefreshToken(newRefreshToken)
 
-            const existedSession = await sessionsRepository.findSession(payload!.iat, payload!.deviceId, payload!.userId)
+            const existedSession = await sessionsRepository.findSession(payload!.iat * 1000, payload!.deviceId, payload!.userId)
 
             expect(existedSession).not.toBe(null)
             expect(existedSession!.title).toBe(deviceName)

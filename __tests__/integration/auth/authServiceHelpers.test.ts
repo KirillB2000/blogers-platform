@@ -51,7 +51,8 @@ describe('Integration tests for AuthServiceHelpers', () => {
                 userId: expect.any(String),
                 userById: expect.any(Object),
                 issuedAt: expect.any(Number),
-                deviceId: expect.any(String)
+                deviceId: expect.any(String),
+                expiredAt: expect.any(Date)
             })
         })
 
