@@ -6,11 +6,9 @@ export const rateLimitRepository = {
         url: string,
         date: Date
     ): Promise<void> {
-        await requestsLogCollection.insertOne({
-            ip: ipAddress,
-            url: url,
-            date: date
-        })
+        await requestsLogCollection.insertOne(
+            { ip: ipAddress, url: url, date: date},
+        )
     },
 
     async getRequestsCountInTimeWindow(
@@ -18,14 +16,13 @@ export const rateLimitRepository = {
         url: string,
         secondsWindow: number
     ): Promise<number> {
-        const tenSecondsAge = new Date(Date.now() - secondsWindow * 1000)
+
+        const tenSecondsAgo = new Date(Date.now() - secondsWindow * 1000)
 
         const count = await requestsLogCollection
-            .countDocuments({
-                ip: ipAddress,
-                url: url,
-                date: {$gte: tenSecondsAge}
-            })
+            .countDocuments(
+                { ip: ipAddress, url: url, date: { $gte: tenSecondsAgo }},
+            )
 
         return count
     }

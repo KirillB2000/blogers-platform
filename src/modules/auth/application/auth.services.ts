@@ -111,11 +111,13 @@ export const authService = {
 
         await usersRepository.updateConfirmationCode(userId, newCode, newExpirationDate)
 
-        await nodemailerService.sendEmail(
+        nodemailerService
+        .sendEmail(
             user.email,
             newCode,
             emailExamples.registrationEmail
-        ).catch(er => console.error(`Error occured while sending an email: ${er}`))
+        )
+        .catch(er => console.error(`Error occured while sending an email: ${er}`))
     },
 
     async refreshToken (

@@ -13,6 +13,7 @@ import { generateTestAccessJwt } from "../../utils/generateJwt";
 import { UserInputModel } from "../../../src/modules/users/api/input/dto/userInputModel";
 import { userDto } from "../../utils/users/userDto";
 import { LoginInputModel } from "../../../src/modules/auth/api/input/dto/loginInputModel";
+import { RegistrationEmailResendingInputModel } from "../../../src/modules/auth/api/input/dto/registrationEmailResendingInputModel";
 
 describe("Auth API", () => {
     const app = express();
@@ -95,4 +96,37 @@ describe("Auth API", () => {
             .send(userCreds) 
             .expect(httpStatuses.TooManyRequests)
     })
+
+    it('Should return too many request error because of rate limiting middleware; POST /auth/registration-email-resending', async () => {
+        const userInputModel = userDto()
+
+        await request(app)
+            .post(`${AUTH_PATH}${AUTH_ROUTING.REGISTRATION}`)
+            .send(userInputModel)
+            .expect(httpStatuses.NoContent)
+
+        const emailResendingInput: RegistrationEmailResendingInputModel = {
+            email: userInputModel.email
+        }
+
+        for (let i = 0; i < 5; i++) {
+            await request(app)
+                .post(`${AUTH_PATH}${AUTH_ROUTING.REGISTRATION_EMAIL_RESENDING}`)
+                .send(emailResendingInput)
+                .expect(httpStatuses.NoContent)
+        }
+
+        await request(app)
+            .post(`${AUTH_PATH}${AUTH_ROUTING.REGISTRATION_EMAIL_RESENDING}`)
+            .send(emailResendingInput)
+            .expect(httpStatuses.TooManyRequests)
+
+        // After waiting outside the 10 seconds window the endpoint should be available again
+        await new Promise(resolve => setTimeout(resolve, 11000))
+
+        await request(app)
+            .post(`${AUTH_PATH}${AUTH_ROUTING.REGISTRATION_EMAIL_RESENDING}`)
+            .send(emailResendingInput)
+            .expect(httpStatuses.NoContent)
+    }, 30000)
 })

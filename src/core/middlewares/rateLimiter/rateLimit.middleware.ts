@@ -14,6 +14,8 @@ export const rateLimitMiddleware = async (
     
     await rateLimitRepository.create(ipAddress, url, date)
 
+    await new Promise(resolve => setImmediate(resolve));
+
     const requestsCount = await rateLimitRepository.getRequestsCountInTimeWindow(ipAddress, url, seconds)
 
     if (requestsCount > 5) {
