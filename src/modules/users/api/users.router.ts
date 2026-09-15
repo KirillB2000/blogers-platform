@@ -2,16 +2,14 @@ import { RequestHandler, Router } from "express";
 import { USERS_ROUTING } from "../constants/users.paths";
 import { userDtoValidation } from "../validation/user-input.validation";
 import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validation-result.middleware";
-import { createUserHandler } from "./handlers/createUser.handler";
 import { catchAsync } from "../../../core/helpers/catchAsync.helper";
 import { idParamsValidation } from "../../../core/middlewares/validation/params-id.validation.middleware";
-import { deleteUserHandler } from "./handlers/deleteUser.handler";
 import { paginationAndSortingValidation } from "../../../core/middlewares/validation/query-pagination-sorting.validation.middleware";
 import { sanitizeQueryParams } from "../../../core/middlewares/validation/sanitize-query.middleware";
-import { getUserListHandler } from "./handlers/getUserList.handler";
 import { PARAMS_IDS } from "../../../core/types/paramsIds";
 import { superAdminGuardMiddleware } from "../../auth/api/guards/super-admin.guard.middleware";
 import { UserSortFields } from "./input/user-sort-fields";
+import { usersController } from "../../../compostion-root";
 
 export const userRouter = Router({})
 
@@ -21,7 +19,7 @@ userRouter
         superAdminGuardMiddleware,
         userDtoValidation,
         inputValidationResultMiddleware,
-        catchAsync(createUserHandler)
+        catchAsync(usersController.createUserHandler.bind(usersController))
     )
 
     .delete(
@@ -29,7 +27,7 @@ userRouter
         superAdminGuardMiddleware,
         idParamsValidation(PARAMS_IDS.ID),
         inputValidationResultMiddleware,
-        catchAsync(deleteUserHandler)
+        catchAsync(usersController.deleteUserHandler.bind(usersController))
     )
 
     .get(
@@ -37,5 +35,5 @@ userRouter
         superAdminGuardMiddleware,
         paginationAndSortingValidation(UserSortFields),
         sanitizeQueryParams,
-        catchAsync(getUserListHandler as unknown as RequestHandler)
+        catchAsync(usersController.getUserListHandler.bind(usersController) as unknown as RequestHandler)
     )

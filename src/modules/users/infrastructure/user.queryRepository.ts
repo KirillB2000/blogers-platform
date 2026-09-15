@@ -12,7 +12,7 @@ import { mapToUserListPaginatedOutput } from "../mappers/mapToUserListPaginatedO
 import { mapUserDomainToMeViewModel } from "../mappers/mapUserDomainToMeViewModel";
 
 
-export const userQwRepository = {
+export class UsersQwRepository {
     
     async findMany (
         queryInput: UserQueryInput
@@ -60,7 +60,7 @@ export const userQwRepository = {
 
         return userListWithPagination
 
-    },
+    }
 
     async findById (
         id: string | ObjectId
@@ -74,7 +74,7 @@ export const userQwRepository = {
         const userForResponse: UserViewModel = mapUserDomaiToViewModel(user)
 
         return userForResponse
-    },
+    }
 
     async findByIdMe (
         id: string
@@ -88,7 +88,7 @@ export const userQwRepository = {
         const userMeForResponse: MeViewModel = mapUserDomainToMeViewModel(user)
 
         return userMeForResponse
-    },
+    }
 
     async findByConfiramationCode(
         confirmationCode: string
@@ -100,7 +100,7 @@ export const userQwRepository = {
         }
 
         return userByCode
-    },
+    }
 
     async findByEmail(
         email: string

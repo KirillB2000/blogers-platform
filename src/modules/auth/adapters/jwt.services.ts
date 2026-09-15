@@ -1,22 +1,32 @@
 import { WithId } from "mongodb";
-import jwt, { JwtPayload} from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import { SETTINGS } from "../../../settings/config";
 import { randomUUID, UUID } from "crypto";
 import { IUserDB } from "../../users/domain/iUserDb";
 import { RefreshTokenPayload } from "../api/input/jwtPayloadSessions";
 
-const JWT_ACCESS_SECRET = SETTINGS.JWT_ACCESS_SECRET
-if (!JWT_ACCESS_SECRET) {
-    throw new Error("❌ Critical: JWT_ACCESS_SECRET is missing in environment variables!")
-}
 
-const JWT_REFRESH_SECRET = SETTINGS.JWT_REFRESH_SECRET
-if (!JWT_REFRESH_SECRET) {
-    throw new Error("❌ Critical: JWT_REFRESH_SECRET is missing in environment variables!")
-}
+export class JwtService {
 
+    private readonly accessSecret: string;
+    private readonly refreshSecret: string
 
-export const jwtService = {
+    constructor() {
+        const access = SETTINGS.JWT_ACCESS_SECRET
+        const refresh = SETTINGS.JWT_REFRESH_SECRET
+
+        if (!access) {
+            throw new Error("❌ Critical: JWT_ACCESS_SECRET is missing in environment variables!")
+        }
+
+        if (!refresh) {
+            throw new Error("❌ Critical: JWT_REFRESH_SECRET is missing in environment variables!")
+        }
+
+        this.accessSecret = access
+        this.refreshSecret = refresh
+    }
+    
     async createAccessJWT (
         user: WithId<IUserDB>
     ): Promise<string> {
@@ -25,10 +35,10 @@ export const jwtService = {
             jti: randomUUID()
         }
 
-        const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, {expiresIn: '10s'})
+        const accessToken = jwt.sign(payload, this.accessSecret, {expiresIn: '10s'})
 
         return accessToken
-    },
+    }
 
     async createRefreshJWT (
         user: WithId<IUserDB>,
@@ -45,31 +55,31 @@ export const jwtService = {
             exp: expSeconds
         }
         
-        const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET)
+        const refreshToken = jwt.sign(payload, this.refreshSecret)
 
         return {
             expiredAt: new Date(expSeconds * 1000),
             issuedAt: iatSeconds * 1000,
             refreshToken: refreshToken
         }
-    },
+    }
 
     async getUserIdByAccessToken(token: string): Promise<{userId: string} | null> {
 
         try {
-            return jwt.verify(token, JWT_ACCESS_SECRET) as {userId: string}
+            return jwt.verify(token, this.accessSecret) as {userId: string}
         } catch(error) {
             return null
         }
-    },
+    }
 
     async getUserIdByRefreshToken(token: string): Promise<RefreshTokenPayload | null> {
 
         try {
-            const payload = jwt.verify(token, JWT_REFRESH_SECRET) as RefreshTokenPayload | null
+            const payload = jwt.verify(token, this.refreshSecret) as RefreshTokenPayload | null
             return payload
         } catch (error) {
             return null
         }
-    },
+    }
 }

@@ -1,17 +1,23 @@
 import { UnauthorizedError } from "../../../core/exceptions/app-errors.exeption"
-import { jwtService } from "../adapters/jwt.services"
 import { WithId } from "mongodb"
 import { IUserDB } from "../../users/domain/iUserDb"
-import { usersRepository } from "../../users/infrastructure/user.repository"
 import { UUID } from "crypto"
 import { RefreshTokenPayload } from "../api/input/jwtPayloadSessions"
+import { JwtService } from "../adapters/jwt.services"
+import { UsersRepository } from "../../users/infrastructure/user.repository"
 
-export const authServiceHelpers = {
+export class AuthServiceHelpers {
+
+    constructor(
+        private userRepository: UsersRepository,
+        private jwtService: JwtService
+    ) {}
+
     async refreshTokenValidation (
         refreshToken: string
     ): Promise<{ userId: string, userById: WithId<IUserDB>, deviceId: UUID, issuedAt: number, expiredAt: Date }> {
 
-        const payload = await jwtService.getUserIdByRefreshToken(refreshToken)
+        const payload = await this.jwtService.getUserIdByRefreshToken(refreshToken)
 
         if (!payload) {
             throw new UnauthorizedError('Unauthorized')
@@ -29,7 +35,7 @@ export const authServiceHelpers = {
 
         const expiredAt = new Date(exp)
 
-        const userById = await usersRepository.findById(userId)
+        const userById = await this.userRepository.findById(userId)
 
         if (!userById) {
             throw new UnauthorizedError('Unauthorized')

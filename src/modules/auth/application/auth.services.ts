@@ -1,40 +1,49 @@
 import { WithId } from "mongodb";
 import { BadRequestError, UnauthorizedError } from "../../../core/exceptions/app-errors.exeption";
 import { LoginInputModel } from "../api/input/dto/loginInputModel";
-import { bcryptService } from "../adapters/bcrypt.services";
+import { BcryptService } from "../adapters/bcrypt.services";
 import { mapUserInputToIDbType } from "../../users/mappers/mapUserInputToIDbType";
-import { nodemailerService } from "../adapters/nodemailer.services";
+import { NodemailerService } from "../adapters/nodemailer.services";
 import { emailExamples } from "../adapters/emailExamples";
 import { isAfter, add } from "date-fns";
 import { randomUUID } from "node:crypto";
-import { jwtService } from "../adapters/jwt.services";
-import { sessionsRepository } from "../infrastructure/sessions.repository";
-import { authServiceHelpers } from "./auth.serviceHelpers";
 import { UserInputModel } from "../../users/api/input/dto/userInputModel";
 import { IUserDB } from "../../users/domain/iUserDb";
-import { usersRepository } from "../../users/infrastructure/user.repository";
 import { AuthSession } from "../domain/session";
+import { SessionsRepository } from "../infrastructure/sessions.repository";
+import { AuthServiceHelpers } from "./auth.serviceHelpers";
+import { JwtService } from "../adapters/jwt.services";
+import { UsersRepository } from "../../users/infrastructure/user.repository";
 
-export const authService = {
+export class AuthService {
+    constructor(
+        private sessionsRepository: SessionsRepository, 
+        private userRepository: UsersRepository,
+        private authServiceHelpers: AuthServiceHelpers,
+        private jwtService: JwtService,
+        private bcryptService: BcryptService,
+        private nodemailerService: NodemailerService
+    ) {}
+
     async loginUser (
         userCreds: LoginInputModel,
         deviceName: string,
         ipAddress: string
     ): Promise<{ accessToken: string, refreshToken: string }> {
         const deviceId = randomUUID()
-        const user = await usersRepository.findByLoginOrEmailField(userCreds.loginOrEmail)
+        const user = await this.userRepository.findByLoginOrEmailField(userCreds.loginOrEmail)
 
         if (!user) {
             throw new UnauthorizedError('Unauthorized')
         }
 
-        const isPasswordCorrect = await bcryptService.checkPassword(userCreds.password, user.password)
+        const isPasswordCorrect = await this.bcryptService.checkPassword(userCreds.password, user.password)
         if (!isPasswordCorrect) {
             throw new UnauthorizedError('Unauthorized')
         }
 
-        const accessToken = await jwtService.createAccessJWT(user)
-        const { refreshToken, issuedAt, expiredAt } = await jwtService.createRefreshJWT(user, deviceId)
+        const accessToken = await this.jwtService.createAccessJWT(user)
+        const { refreshToken, issuedAt, expiredAt } = await this.jwtService.createRefreshJWT(user, deviceId)
 
         const sessionForDb: AuthSession = {
             userId: user._id.toString(),
@@ -45,39 +54,39 @@ export const authService = {
             ip: ipAddress
         }
         
-        await sessionsRepository.create(sessionForDb)
+        await this.sessionsRepository.create(sessionForDb)
 
         return { accessToken, refreshToken }
-    },
+    }
 
     async registerUser(
         userDto: UserInputModel
     ): Promise<void> {
 
-        const existingUserEmail = await usersRepository.findByEmail(userDto.email)
+        const existingUserEmail = await this.userRepository.findByEmail(userDto.email)
         if (existingUserEmail) {
             throw new BadRequestError([{ message: 'Email must be unique', field: 'email' }])
         }
 
-        const existingUserLogin = await usersRepository.findByLogin(userDto.login)
+        const existingUserLogin = await this.userRepository.findByLogin(userDto.login)
         if (existingUserLogin) {
             throw new BadRequestError([{ message: 'Login must be unique', field: 'login' }])
         }
 
-        const passwordHash = await bcryptService.generateHash(userDto.password)
+        const passwordHash = await this.bcryptService.generateHash(userDto.password)
 
         const dbUser = mapUserInputToIDbType(userDto, passwordHash)
 
-        await usersRepository.create(dbUser)
+        await this.userRepository.create(dbUser)
 
-        nodemailerService
+        this.nodemailerService
         .sendEmail(
             dbUser.email,
             dbUser.emailConfirmation.confirmationCode,
             emailExamples.registrationEmail
         )
         .catch(er => console.error(`Error occured while sending an email: ${er}`))
-    },
+    }
 
     async emailConfirmation(
         user: WithId<IUserDB>
@@ -94,8 +103,8 @@ export const authService = {
 
         const userId = user._id.toString()
 
-        await usersRepository.confirmEmail(userId)
-    },
+        await this.userRepository.confirmEmail(userId)
+    }
 
     async emailResending(
         user: WithId<IUserDB>
@@ -109,43 +118,43 @@ export const authService = {
         const newCode = randomUUID()
         const newExpirationDate = add(new Date(), {minutes: 5})
 
-        await usersRepository.updateConfirmationCode(userId, newCode, newExpirationDate)
+        await this.userRepository.updateConfirmationCode(userId, newCode, newExpirationDate)
 
-        nodemailerService
+        this.nodemailerService
         .sendEmail(
             user.email,
             newCode,
             emailExamples.registrationEmail
         )
         .catch(er => console.error(`Error occured while sending an email: ${er}`))
-    },
+    }
 
     async refreshToken (
         refreshToken: string
     ): Promise<{ newAccessToken: string, newRefreshToken: string}> {
 
-        const { userById, userId, deviceId, issuedAt: issuedAtOld } = await authServiceHelpers.refreshTokenValidation(refreshToken)
+        const { userById, userId, deviceId, issuedAt: issuedAtOld } = await this.authServiceHelpers.refreshTokenValidation(refreshToken)
 
         
-        const { expiredAt: expiredAtNew, refreshToken: newRefreshToken, issuedAt: issuedAtNew } = await jwtService.createRefreshJWT(userById, deviceId)
+        const { expiredAt: expiredAtNew, refreshToken: newRefreshToken, issuedAt: issuedAtNew } = await this.jwtService.createRefreshJWT(userById, deviceId)
 
-        const isUpdatedSession = await sessionsRepository.update(issuedAtOld, deviceId, issuedAtNew, expiredAtNew, userId) // Update version of the token (session)
+        const isUpdatedSession = await this.sessionsRepository.update(issuedAtOld, deviceId, issuedAtNew, expiredAtNew, userId) // Update version of the token (session)
 
         if (!isUpdatedSession) {
             throw new UnauthorizedError('Unauthorized')
         }
 
-        const newAccessToken = await jwtService.createAccessJWT(userById)
+        const newAccessToken = await this.jwtService.createAccessJWT(userById)
 
         return { newAccessToken, newRefreshToken }
-    },
+    }
 
     async logout (
         refreshToken: string
     ): Promise<void> {
-        const { issuedAt, deviceId, userId } = await authServiceHelpers.refreshTokenValidation(refreshToken)
+        const { issuedAt, deviceId, userId } = await this.authServiceHelpers.refreshTokenValidation(refreshToken)
 
-        const isDeleted = await sessionsRepository.delete(issuedAt, deviceId, userId)
+        const isDeleted = await this.sessionsRepository.delete(issuedAt, deviceId, userId)
 
         if(!isDeleted) {
             throw new UnauthorizedError('Unauthorized')

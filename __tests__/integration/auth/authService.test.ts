@@ -11,17 +11,13 @@ import { MongoClient, Db } from "mongodb"
 import { MongoMemoryServer } from "mongodb-memory-server"
 import { BadRequestError, UnauthorizedError } from "../../../src/core/exceptions/app-errors.exeption"
 import { initCollections, usersCollection } from "../../../src/db/collections"
-import { jwtService } from "../../../src/modules/auth/adapters/jwt.services"
-import { nodemailerService } from "../../../src/modules/auth/adapters/nodemailer.services"
-import { LoginInputModel } from "../../../src/modules/auth/api/input/dto/loginInputModel"
-import { authService } from "../../../src/modules/auth/application/auth.services"
-import { sessionsRepository } from "../../../src/modules/auth/infrastructure/sessions.repository"
-import { UserInputModel } from "../../../src/modules/users/api/input/dto/userInputModel"
-import { usersRepository } from "../../../src/modules/users/infrastructure/user.repository"
 import { SETTINGS } from "../../../src/settings/config"
 import { userDto } from "../../utils/users/userDto"
 import { testRegisterAndLoginUser } from "../utils/testRegisterAndLoginUser"
 import jwt from "jsonwebtoken"
+import { nodemailerService, authService, usersRepository, jwtService, sessionsRepository } from "../../../src/compostion-root";
+import { LoginInputModel } from "../../../src/modules/auth/api/input/dto/loginInputModel";
+import { UserInputModel } from "../../../src/modules/users/api/input/dto/userInputModel";
 
 
 describe('Integration tests for AuthService', () => {

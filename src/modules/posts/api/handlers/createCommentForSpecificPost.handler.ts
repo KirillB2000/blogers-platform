@@ -4,7 +4,7 @@ import { commentsService } from "../../../comments/application/comments.services
 import { postsQwRepository } from "../../infrastructure/posts.queryRepository"
 import { commentsQwRepository } from "../../../comments/infrastructure/comments.queryRepository"
 import { httpStatuses } from "../../../../core/types/http-statuses"
-import { userQwRepository } from "../../../users/infrastructure/user.queryRepository"
+import { usersQwRepository } from "../../../../compostion-root"
 
 export const createCommentForSpecificPostHandler = async (
     req: Request<{postId: string}, {}, CommentInputModel>,
@@ -16,7 +16,7 @@ export const createCommentForSpecificPostHandler = async (
 
     if (!userId) return res.sendStatus(httpStatuses.Unauthorized)
 
-    const userById = await userQwRepository.findById(userId)
+    const userById = await usersQwRepository.findById(userId)
     if (!userById) return res.sendStatus(httpStatuses.Unauthorized)
 
     const postById = await postsQwRepository.findById(postId)

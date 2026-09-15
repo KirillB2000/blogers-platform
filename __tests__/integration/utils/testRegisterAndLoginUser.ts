@@ -1,4 +1,4 @@
-import { authService } from "../../../src/modules/auth/application/auth.services"
+import { authService } from "../../../src/compostion-root"
 import { LoginInputModel } from "../../../src/modules/auth/api/input/dto/loginInputModel"
 import { userDto } from "../../utils/users/userDto"
 

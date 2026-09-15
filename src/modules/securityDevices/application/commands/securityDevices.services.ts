@@ -1,16 +1,21 @@
 import { UUID } from "crypto";
-import { authServiceHelpers } from "../../../auth/application/auth.serviceHelpers";
-import { sessionsRepository } from "../../../auth/infrastructure/sessions.repository";
 import { ForbiddenError, NotFoundError } from "../../../../core/exceptions/app-errors.exeption";
+import { AuthServiceHelpers } from "../../../auth/application/auth.serviceHelpers";
+import { SessionsRepository } from "../../../auth/infrastructure/sessions.repository";
 
-export const securityDevicesServices = {
+export class SecurityDevicesService {
+    constructor (
+        private authServiceHelpers: AuthServiceHelpers,
+        private sessionsRepository: SessionsRepository
+    ) {}
+
     async deleteOneSession (
         deviceId: UUID,
         refreshToken: string
     ): Promise<void> {
-        const { userId: userByRefreshToken } = await authServiceHelpers.refreshTokenValidation(refreshToken)
+        const { userId: userByRefreshToken } = await this.authServiceHelpers.refreshTokenValidation(refreshToken)
 
-        const session = await sessionsRepository.findByDeviceId(deviceId)
+        const session = await this.sessionsRepository.findByDeviceId(deviceId)
 
         if(!session) {
             throw new NotFoundError('Session is not found')
@@ -20,14 +25,14 @@ export const securityDevicesServices = {
             throw new ForbiddenError("You don't have permission to terminate this session")
         }
 
-        await sessionsRepository.deleteOne(deviceId) // Earlier we have already checked for the existence of the session
-    },
+        await this.sessionsRepository.deleteOne(deviceId) // Earlier we have already checked for the existence of the session
+    }
 
     async deleteAllSessions (
         refreshToken: string
     ): Promise<void> {
-        const { deviceId, userId } = await authServiceHelpers.refreshTokenValidation(refreshToken)
+        const { deviceId, userId } = await this.authServiceHelpers.refreshTokenValidation(refreshToken)
 
-        await sessionsRepository.deleteOtherSessions(deviceId, userId)
+        await this.sessionsRepository.deleteOtherSessions(deviceId, userId)
     }
 }

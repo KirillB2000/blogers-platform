@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer'
 import { SETTINGS } from '../../../settings/config';
 
-export const nodemailerService = {
+export class NodemailerService {
     async sendEmail (
         email: string,
         code: string,

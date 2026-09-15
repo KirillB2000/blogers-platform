@@ -1,16 +1,22 @@
-import { authServiceHelpers } from "../../../auth/application/auth.serviceHelpers"
-import { sessionsQueryReposiroty } from "../../../auth/infrastructure/sessions.queryRepository"
+import { AuthServiceHelpers } from "../../../auth/application/auth.serviceHelpers"
+import { SessionsQueryReposiroty } from "../../../auth/infrastructure/sessions.queryRepository"
 import { DeviceViewModel } from "../../api/output/sercurityDevicesViewModel"
 import { mapActiveSessionsDevicesListFromDbToViewModel } from "../../mappers/mapActiveSessionDevicesListFromDbToViewModel"
 
 
-export const securityDevicesQueryService = {
+export class SecurityDevicesQueryService {
+    constructor (
+        private sessionsQueryReposiroty: SessionsQueryReposiroty,
+        private authServiceHelpers: AuthServiceHelpers
+    ) {}
+
+    
     async listingActiveSessionDevices(
         refreshToken: string
     ): Promise<DeviceViewModel[]> {
-        const { userId } = await authServiceHelpers.refreshTokenValidation(refreshToken)
+        const { userId } = await this.authServiceHelpers.refreshTokenValidation(refreshToken)
 
-        const listActiveSessionDevicesDb = await sessionsQueryReposiroty.getAcviveSessionDevicesList(userId)
+        const listActiveSessionDevicesDb = await this.sessionsQueryReposiroty.getAcviveSessionDevicesList(userId)
 
         const listActiveSessionDevicesViewModel = mapActiveSessionsDevicesListFromDbToViewModel(listActiveSessionDevicesDb)
 

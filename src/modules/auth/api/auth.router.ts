@@ -1,11 +1,4 @@
 import { Router } from "express";
-import { loginHandler } from "./handlers/login.handler";
-import { meHandler } from "./handlers/me.handler";
-import { registrationHandler } from "./handlers/registration.handler";
-import { registrationConfirmationHandler } from "./handlers/registrationConfirmation.handler";
-import { registrationEmailResendingHandler } from "./handlers/registrationEmailResending.handler";
-import { refreshTokenHadler } from "./handlers/refreshToken.handler";
-import { logoutHandler } from "./handlers/logout.handler";
 import { catchAsync } from "../../../core/helpers/catchAsync.helper";
 import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validation-result.middleware";
 import { userDtoValidation, emailValidation } from "../../users/validation/user-input.validation";
@@ -14,6 +7,7 @@ import { codeDtoValidation } from "../validation/codeInput.validation";
 import { loginDtoValidation } from "../validation/loginInput.validation";
 import { accessTokenGuardMiddleware } from "./guards/access-token.guard.middleware";
 import { rateLimitMiddleware } from "../../../core/middlewares/rateLimiter/rateLimit.middleware";
+import { authController } from "../../../compostion-root";
 
 export const authRouter = Router({})
 
@@ -23,13 +17,13 @@ authRouter
         rateLimitMiddleware,
         loginDtoValidation,
         inputValidationResultMiddleware,
-        catchAsync(loginHandler)
+        catchAsync(authController.loginHandler.bind(authController))
     )
 
     .get(
         AUTH_ROUTING.ME,
         accessTokenGuardMiddleware,
-        catchAsync(meHandler)
+        catchAsync(authController.meHandler.bind(authController))
     )
     
     // User registration
@@ -38,7 +32,7 @@ authRouter
         rateLimitMiddleware,
         userDtoValidation,
         inputValidationResultMiddleware,
-        catchAsync(registrationHandler)
+        catchAsync(authController.registrationHandler.bind(authController))
     )
 
     // User confirmation registration
@@ -47,7 +41,7 @@ authRouter
         rateLimitMiddleware,
         codeDtoValidation,
         inputValidationResultMiddleware,
-        catchAsync(registrationConfirmationHandler)
+        catchAsync(authController.registrationConfirmationHandler.bind(authController))
     )
 
     // Resending email to user
@@ -56,15 +50,15 @@ authRouter
         rateLimitMiddleware,
         emailValidation,
         inputValidationResultMiddleware,
-        catchAsync(registrationEmailResendingHandler)
+        catchAsync(authController.registrationEmailResendingHandler.bind(authController))
     )
 
     .post(
         AUTH_ROUTING.REFRESH_TOKEN,
-        catchAsync(refreshTokenHadler)
+        catchAsync(authController.refreshTokenHandler.bind(authController))
     )
 
     .post(
         AUTH_ROUTING.LOGOUT,
-        catchAsync(logoutHandler)
+        catchAsync(authController.logoutHandler.bind(authController))
     )

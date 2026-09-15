@@ -3,7 +3,7 @@ import { sessionsCollection } from "../../../db/collections"
 import { AuthSession } from "../domain/session"
 import { WithId } from "mongodb"
 
-export const sessionsRepository = {
+export class SessionsRepository {
     async create (
         sessionInfo: AuthSession
     ): Promise<String> {
@@ -12,7 +12,7 @@ export const sessionsRepository = {
         const tokenInfoId = blackListedTokenId.insertedId.toString()
 
         return tokenInfoId
-    },
+    }
 
     async update (
         issuedAtOld: number, 
@@ -27,7 +27,7 @@ export const sessionsRepository = {
         )
 
         return updateSessionResult.matchedCount > 0
-    },
+    }
 
     async delete(
         issuedAt: number,
@@ -39,13 +39,13 @@ export const sessionsRepository = {
         )
 
         return deleteSessionResult.deletedCount > 0
-    },
+    }
 
     async deleteOne(
         deviceId: UUID
     ): Promise<void> {
         await sessionsCollection.deleteOne({deviceId: deviceId})
-    },
+    }
 
     async deleteOtherSessions(
         deviceId: UUID, 
@@ -55,7 +55,7 @@ export const sessionsRepository = {
             userId: userId, 
             deviceId: {$ne: deviceId} 
         })
-    },
+    }
 
     async findSession (
         issuedAt: number,
@@ -65,7 +65,7 @@ export const sessionsRepository = {
         const session = await sessionsCollection.findOne({lastActiveDate: issuedAt, deviceId: deviceId, userId: userId})
 
         return session
-    },
+    }
 
     async findByDeviceId(
         deviceId: UUID

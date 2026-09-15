@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { httpStatuses } from "../../../../core/types/http-statuses";
 import { IdType } from "../../../../core/types/id";
-import { jwtService } from "../../adapters/jwt.services";
+import { jwtService } from "../../../../compostion-root";
 
 
 export const accessTokenGuardMiddleware = async (
