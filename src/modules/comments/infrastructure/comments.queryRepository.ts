@@ -8,7 +8,7 @@ import { CommentViewModel } from "../api/output/commentViewModel";
 import { mapFromCommentDbTypeToViewModel } from "../mappers/mapFromCommentDbTypeToViewModel";
 import { mapToCommentListPaginatedOutput } from "../mappers/mapFromCommentDomainToPaginatedOutput";
 
-export const commentsQwRepository = {
+export class CommentsQwRepository {
     async findById (
         id: string
     ): Promise<CommentViewModel> {
@@ -21,7 +21,7 @@ export const commentsQwRepository = {
         const commentForResponse: CommentViewModel = mapFromCommentDbTypeToViewModel(dbComment)
 
         return commentForResponse
-    },
+    }
 
     async findAll (
         queryDto: CommentQueryInput,

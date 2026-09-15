@@ -1,9 +1,5 @@
 import { RequestHandler, Router } from "express";
-import { getBlogListHandler } from "./handlers/getBlogList.handler";
 import { BLOGS_ROUTES } from "../constants/blogs.paths";
-import { getBlogByIdHandler } from "./handlers/getBlogById.handler";
-import { createBlogHandler } from "./handlers/createBlog.handler";
-import {updateBlogByIdHandler } from "./handlers/updateBlogById.handler";
 import { superAdminGuardMiddleware } from "../../auth/api/guards/super-admin.guard.middleware";
 import { catchAsync } from "../../../core/helpers/catchAsync.helper";
 import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validation-result.middleware";
@@ -15,10 +11,8 @@ import { PostSortField } from "../../posts/api/input/post-sort-fields";
 import { POSTS_PATH } from "../../posts/constants/posts.paths";
 import { postBlogInputDtoValidation } from "../../posts/validation/post-input.validation.middleware";
 import { blogInputDtoValidation } from "../validation/blog-input.validation.middleware";
-import { createPostForSpecificBlogHandler } from "./handlers/createPostForSpecificBlog.handler";
-import { deleteBlogByIdHandler } from "./handlers/deleteBlogById.handler";
-import { getPostListForSpecificBlog } from "./handlers/getPostListForSpecificBlog.handler";
 import { BlogSortField } from "./input/blog-sort-field";
+import { blogsController } from "../../../compostion-root";
 
 export const blogsRouter = Router({});
 
@@ -28,7 +22,7 @@ blogsRouter
     paginationAndSortingValidation(BlogSortField),
     inputValidationResultMiddleware,
     sanitizeQueryParams,
-    catchAsync(getBlogListHandler as unknown as RequestHandler)
+    catchAsync(blogsController.getBlogListHandler.bind(blogsController) as unknown as RequestHandler)
   )
 
   .get(
@@ -37,14 +31,14 @@ blogsRouter
     paginationAndSortingValidation(PostSortField),
     inputValidationResultMiddleware,
     sanitizeQueryParams,
-    catchAsync(getPostListForSpecificBlog as unknown as RequestHandler)
+    catchAsync(blogsController.getPostListForSpecificBlog.bind(blogsController) as unknown as RequestHandler)
   )
 
   .get(
     BLOGS_ROUTES.BY_ID,
     idParamsValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
-    catchAsync(getBlogByIdHandler),
+    catchAsync(blogsController.getBlogByIdHandler.bind(blogsController)),
   )
 
   .post(
@@ -52,7 +46,7 @@ blogsRouter
     superAdminGuardMiddleware,
     blogInputDtoValidation,
     inputValidationResultMiddleware,
-    catchAsync(createBlogHandler),
+    catchAsync(blogsController.createBlogHandler.bind(blogsController)),
   )
 
   .post(
@@ -61,7 +55,7 @@ blogsRouter
     idParamsValidation(PARAMS_IDS.BLOG_ID),
     postBlogInputDtoValidation,
     inputValidationResultMiddleware,
-    catchAsync(createPostForSpecificBlogHandler),
+    catchAsync(blogsController.createPostForSpecificBlogHandler.bind(blogsController)),
   )
 
   .put(
@@ -70,7 +64,7 @@ blogsRouter
     idParamsValidation(PARAMS_IDS.ID),
     blogInputDtoValidation,
     inputValidationResultMiddleware,
-    catchAsync(updateBlogByIdHandler),
+    catchAsync(blogsController.updateBlogByIdHandler.bind(blogsController)),
   )
 
   .delete(
@@ -78,5 +72,5 @@ blogsRouter
     superAdminGuardMiddleware,
     idParamsValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
-    catchAsync(deleteBlogByIdHandler),
+    catchAsync(blogsController.deleteBlogByIdHandler.bind(blogsController)),
   );

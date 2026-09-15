@@ -1,12 +1,12 @@
 import { AuthServiceHelpers } from "../../../auth/application/auth.serviceHelpers"
-import { SessionsQueryReposiroty } from "../../../auth/infrastructure/sessions.queryRepository"
+import { SessionsQwReposiroty } from "../../../auth/infrastructure/sessions.queryRepository"
 import { DeviceViewModel } from "../../api/output/sercurityDevicesViewModel"
 import { mapActiveSessionsDevicesListFromDbToViewModel } from "../../mappers/mapActiveSessionDevicesListFromDbToViewModel"
 
 
-export class SecurityDevicesQueryService {
+export class SecurityDevicesQwService {
     constructor (
-        private sessionsQueryReposiroty: SessionsQueryReposiroty,
+        private sessionsQueryReposiroty: SessionsQwReposiroty,
         private authServiceHelpers: AuthServiceHelpers
     ) {}
 

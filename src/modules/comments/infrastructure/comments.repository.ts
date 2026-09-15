@@ -3,14 +3,14 @@ import { CommentDb } from "../domain/comment";
 import { CommentInputModel } from "../api/input/dto/commentInputModel";
 import { commentsCollection } from "../../../db/collections";
 
-export const commentsRepository = {
+export class CommentsRepository {
     async create (
         comment: CommentDb
     ): Promise<string> {
         const insertResult = await commentsCollection.insertOne(comment)
 
         return insertResult.insertedId.toString()
-    },
+    }
 
     async delete (
         commentId: string
@@ -18,7 +18,7 @@ export const commentsRepository = {
         const deletionResult = await commentsCollection.deleteOne({_id: new ObjectId(commentId)})
         
         return deletionResult.deletedCount > 0
-    },
+    }
 
     async update (
         commentId: string,

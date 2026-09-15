@@ -3,12 +3,12 @@ import { httpStatuses } from "../../../core/types/http-statuses"
 import { SecurityDevicesService } from "../application/commands/securityDevices.services"
 import { UUID } from "crypto"
 import { UnauthorizedError } from "../../../core/exceptions/app-errors.exeption"
-import { SecurityDevicesQueryService } from "../application/queries/securityDevices.queryServices"
+import { SecurityDevicesQwService } from "../application/queries/securityDevices.queryServices"
 
 export class SecurityDevicesController {
     constructor (
         private securityDevicesService: SecurityDevicesService,
-        private securityDevicesQueryService: SecurityDevicesQueryService
+        private securityDevicesQueryService: SecurityDevicesQwService
     ) {}
 
 

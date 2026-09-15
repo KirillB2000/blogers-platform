@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { getCommentByIdHandler } from "./handlers/getCommentById.handler";
 import { catchAsync } from "../../../core/helpers/catchAsync.helper";
 import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validation-result.middleware";
 import { idParamsValidation } from "../../../core/middlewares/validation/params-id.validation.middleware";
@@ -7,8 +6,7 @@ import { PARAMS_IDS } from "../../../core/types/paramsIds";
 import { accessTokenGuardMiddleware } from "../../auth/api/guards/access-token.guard.middleware";
 import { COMMENTS_ROUTES } from "../constants/comments.paths";
 import { commentInputDtoValidation } from "../validation/commentInput.validation";
-import { deleteCommentByIdHandler } from "./handlers/deleteCommentById.handler";
-import { updateCommentByIdHandler } from "./handlers/updateCommentById.handler";
+import { commentsController } from "../../../compostion-root";
 
 export const commentsRouter = Router({})
 
@@ -18,7 +16,7 @@ commentsRouter
         COMMENTS_ROUTES.BY_ID,
         idParamsValidation(PARAMS_IDS.ID),
         inputValidationResultMiddleware,
-        catchAsync(getCommentByIdHandler)
+        catchAsync(commentsController.getCommentByIdHandler.bind(commentsController))
     )
 
     .delete(
@@ -26,7 +24,7 @@ commentsRouter
         accessTokenGuardMiddleware,
         idParamsValidation(PARAMS_IDS.COMMENT_ID),
         inputValidationResultMiddleware,
-        catchAsync(deleteCommentByIdHandler)
+        catchAsync(commentsController.deleteCommentByIdHandler.bind(commentsController))
     )
 
     .put(
@@ -35,5 +33,5 @@ commentsRouter
         idParamsValidation(PARAMS_IDS.COMMENT_ID),
         commentInputDtoValidation,
         inputValidationResultMiddleware,
-        catchAsync(updateCommentByIdHandler)
+        catchAsync(commentsController.updateCommentByIdHandler.bind(commentsController))
     )

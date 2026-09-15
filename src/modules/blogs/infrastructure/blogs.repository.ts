@@ -4,12 +4,12 @@ import { Blog } from "../domain/blog";
 import { blogsCollection, postsCollection } from "../../../db/collections";
 
 
-export const blogsRepository = {
+export class BlogsRepository {
   async create(newBlog: Blog): Promise<string> {
     const createdBlog = await blogsCollection.insertOne(newBlog)
 
     return createdBlog.insertedId.toString()
-  },
+  }
 
   async update(id: string, blog: blogInputModel): Promise<boolean> {
     const updateResult = await blogsCollection.updateOne(
@@ -18,7 +18,7 @@ export const blogsRepository = {
     )
 
     return updateResult.matchedCount > 0
-  },
+  }
 
   async delete(id: string): Promise<boolean> {
 
@@ -29,7 +29,7 @@ export const blogsRepository = {
     )
 
     return deleteResult.deletedCount > 0
-  },
+  }
 
   // For post creation and throwing bad request exeption
   async findById (id: string) : Promise<WithId<Blog> | null> { 

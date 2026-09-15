@@ -3,13 +3,13 @@ import { PostInputModel } from "../api/input/dto/postInputModel";
 import { Post } from "../domain/post";
 import { postsCollection } from "../../../db/collections";
 
-export const postsRepository = {
+export class PostsRepository {
 
   async create(newPost: Post): Promise<ObjectId> {
     const insertResult = await postsCollection.insertOne(newPost)
 
     return insertResult.insertedId
-  },
+  }
 
   async update(id: string, post: PostInputModel): Promise<boolean> {
     const updatedResult = await postsCollection.updateOne(
@@ -18,7 +18,7 @@ export const postsRepository = {
     )
 
     return updatedResult.matchedCount > 0;
-  },
+  }
 
   async delete(id: string): Promise<boolean> {
     const deleteResult = await postsCollection.deleteOne({
@@ -26,5 +26,5 @@ export const postsRepository = {
     })
 
     return deleteResult.deletedCount > 0;
-  },
+  }
 };

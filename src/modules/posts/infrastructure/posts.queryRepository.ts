@@ -6,7 +6,7 @@ import { PostViewModel } from "../api/output/post-data.output"
 import { NotFoundError } from "../../../core/exceptions/app-errors.exeption"
 import { postsCollection } from "../../../db/collections"
 
-export const postsQwRepository = {
+export class PostsQwRepository {
     async findAll(
         queryDto: PostQueryInput,
         blogId?: string
@@ -34,7 +34,7 @@ export const postsQwRepository = {
         const totalCount = await postsCollection.countDocuments(filter)
 
         return { items, totalCount }
-    },
+    }
 
     async findById(id: string | ObjectId): Promise<PostViewModel> {
         const post = await postsCollection.findOne({ _id: new ObjectId(id) })
@@ -46,5 +46,5 @@ export const postsQwRepository = {
         const postForResponse = mapToPostViewModel(post)
 
         return postForResponse
-    },
+    }
 }

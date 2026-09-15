@@ -6,7 +6,7 @@ import { blogsCollection } from "../../../db/collections"
 import { NotFoundError } from "../../../core/exceptions/app-errors.exeption"
 import { mapToBlogViewModel } from "../mappers/map-from-blog-db-type-to-view-model"
 
-export const blogsQwRepository = { // Сделать маппинг здесь
+export class BlogsQwRepository { // Сделать маппинг здесь
     async findMany(
         queryDto: BlogQueryInput
     ): Promise<{ items: WithId<Blog>[], totalCount: number }> {
@@ -35,7 +35,7 @@ export const blogsQwRepository = { // Сделать маппинг здесь
         const totalCount = await blogsCollection.countDocuments(filter)
 
         return { items, totalCount }
-    },
+    }
 
     async findById(id: ObjectId | string): Promise<BlogViewModel> {
         const blogFromDb: WithId<Blog> | null = await blogsCollection.findOne({_id: new ObjectId(id)})
@@ -47,5 +47,5 @@ export const blogsQwRepository = { // Сделать маппинг здесь
         const blogForResponse: BlogViewModel = mapToBlogViewModel(blogFromDb) // Нарушение паттерна CQS 😒
 
         return blogForResponse
-    },
+    }
 }

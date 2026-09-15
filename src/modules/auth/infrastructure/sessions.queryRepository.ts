@@ -1,6 +1,6 @@
 import { sessionsCollection } from "../../../db/collections";
 
-export class SessionsQueryReposiroty {
+export class SessionsQwReposiroty {
     async getAcviveSessionDevicesList (
         userId: string
     ) {

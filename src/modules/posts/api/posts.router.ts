@@ -1,10 +1,5 @@
 import { RequestHandler, Router } from "express";
-import { getPostListHandler } from "./handlers/getPostList.handler";
 import { POSTS_ROUTES } from "../constants/posts.paths";
-import { getPostByIdHandler } from "./handlers/getPostById.handler";
-import { createPostHandler } from "./handlers/createPost.handler";
-import { updatePostByIdHandler } from "./handlers/updatePostById.handler";
-import { deletePostByIdHandler } from "./handlers/deletePostById.handler";
 import { catchAsync } from "../../../core/helpers/catchAsync.helper";
 import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validation-result.middleware";
 import { idParamsValidation } from "../../../core/middlewares/validation/params-id.validation.middleware";
@@ -17,9 +12,8 @@ import { CommentSortField } from "../../comments/api/input/commentSortFields";
 import { COMMENTS_PATH } from "../../comments/constants/comments.paths";
 import { commentInputDtoValidation } from "../../comments/validation/commentInput.validation";
 import { postInputDtoValidation } from "../validation/post-input.validation.middleware";
-import { createCommentForSpecificPostHandler } from "./handlers/createCommentForSpecificPost.handler";
-import { getCommentListForSpecificPostHandler } from "./handlers/getCommentListForSpecificPost.handler";
 import { PostSortField } from "./input/post-sort-fields";
+import { postsController } from "../../../compostion-root";
 
 export const postsRouter = Router({});
 
@@ -31,14 +25,14 @@ postsRouter
     paginationAndSortingValidation(PostSortField),
     inputValidationResultMiddleware,
     sanitizeQueryParams,
-    catchAsync(getPostListHandler as unknown as RequestHandler)
+    catchAsync(postsController.getPostListHandler.bind(postsController) as unknown as RequestHandler)
   )
 
   .get(
     POSTS_ROUTES.BY_ID,
     idParamsValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
-    catchAsync(getPostByIdHandler),
+    catchAsync(postsController.getPostByIdHandler.bind(postsController)),
   )
 
   .post(
@@ -46,7 +40,7 @@ postsRouter
     superAdminGuardMiddleware,
     postInputDtoValidation,
     inputValidationResultMiddleware,
-    catchAsync(createPostHandler),
+    catchAsync(postsController.createPostHandler.bind(postsController)),
   )
 
   .put(
@@ -54,7 +48,7 @@ postsRouter
     superAdminGuardMiddleware,
     postInputDtoValidation,
     inputValidationResultMiddleware,
-    catchAsync(updatePostByIdHandler),
+    catchAsync(postsController.updatePostByIdHandler.bind(postsController)),
   )
 
   .delete(
@@ -62,7 +56,7 @@ postsRouter
     superAdminGuardMiddleware,
     idParamsValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
-    catchAsync(deletePostByIdHandler),
+    catchAsync(postsController.deletePostByIdHandler.bind(postsController)),
   )
 
   // comments
@@ -73,7 +67,7 @@ postsRouter
     idParamsValidation(PARAMS_IDS.POST_ID),
     commentInputDtoValidation,
     inputValidationResultMiddleware,
-    catchAsync(createCommentForSpecificPostHandler)
+    catchAsync(postsController.createCommentForSpecificPostHandler.bind(postsController))
   )
 
   .get(
@@ -82,5 +76,5 @@ postsRouter
     paginationAndSortingValidation(CommentSortField),
     inputValidationResultMiddleware,
     sanitizeQueryParams,
-    catchAsync(getCommentListForSpecificPostHandler as unknown as RequestHandler)
+    catchAsync(postsController.getCommentListForSpecificPostHandler.bind(postsController) as unknown as RequestHandler)
   )
