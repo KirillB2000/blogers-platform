@@ -131,11 +131,6 @@ export class AuthController {
         res: Response
     ) {
         const { email } = req.body
-        const userByEmail = await this.usersRepository.findByEmail(email)
-
-        if (!userByEmail) {
-            return res.sendStatus(httpStatuses.NoContent)
-        }
 
         await this.authService.passwordRecovery(email)
 

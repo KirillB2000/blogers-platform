@@ -6,7 +6,7 @@ jest.mock('nodemailer', () => {
     };
 });
 
-import { add } from "date-fns"
+import { add, sub } from "date-fns"
 import { MongoClient, Db } from "mongodb"
 import { MongoMemoryServer } from "mongodb-memory-server"
 import { BadRequestError, UnauthorizedError } from "../../../src/core/exceptions/app-errors.exeption"
@@ -18,6 +18,7 @@ import jwt from "jsonwebtoken"
 import { nodemailerService, authService, usersRepository, jwtService, sessionsRepository } from "../../../src/compostion-root";
 import { LoginInputModel } from "../../../src/modules/auth/api/input/dto/loginInputModel";
 import { UserInputModel } from "../../../src/modules/users/api/input/dto/userInputModel";
+import { emailExamples } from "../../../src/modules/auth/adapters/emailExamples";
 
 
 describe('Integration tests for AuthService', () => {
@@ -32,6 +33,12 @@ describe('Integration tests for AuthService', () => {
     let db: Db
 
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+    const sendEmailMock = jest // Cross-cutting for each test case
+        .spyOn(nodemailerService, 'sendEmail')
+        .mockImplementation(async () => {
+            return { messageId: 'mocked-id' } as any
+        }) 
     
     beforeAll(async () => {
         mongoServer = await MongoMemoryServer.create()
@@ -43,6 +50,10 @@ describe('Integration tests for AuthService', () => {
         initCollections(db)
     })
 
+    beforeEach(async () => {
+        {sendEmailMock.mockClear()}
+    })
+
     afterAll(async () => {
         if(client) await client.close()
         if(mongoServer) await mongoServer.stop()
@@ -52,12 +63,6 @@ describe('Integration tests for AuthService', () => {
         await usersCollection.deleteMany({})
         jest.clearAllMocks()
     })
-
-    const sendEmailMock = jest
-        .spyOn(nodemailerService, 'sendEmail')
-        .mockImplementation(async () => {
-            return { messageId: 'mocked-id' } as any
-        })
 
     describe('registerUser', () => {
 
@@ -335,6 +340,95 @@ describe('Integration tests for AuthService', () => {
             await expect(authService.refreshToken(refreshToken))
             .rejects
             .toThrow(UnauthorizedError)
+        })
+    })
+
+    describe('passwordRecovery', () => {
+        it('should send password recovery link to the email', async () => {
+            const userInput = userDto()
+            await authService.registerUser(userInput)
+
+            await authService.passwordRecovery(userInput.email)
+
+            const user = await usersCollection.findOne({email: userInput.email })
+
+            expect(user!.passwordRecovery.expirationDate).not.toBe(null)
+            expect(user!.passwordRecovery.recoveryCode).not.toBe(null)
+            expect(user!.passwordRecovery.expirationDate! > new Date()).toBe(true)
+
+            expect(sendEmailMock).toHaveBeenCalledTimes(2) // 2 because of register user erlier 
+            expect(sendEmailMock).toHaveBeenLastCalledWith(
+                userInput.email,
+                user!.passwordRecovery.recoveryCode,
+                emailExamples.recoveryPasswordEmail
+            )
+        })
+        
+        it('should not to send password recovery link to the email because of no user by email', async () => {
+            const userInput = userDto()
+            await authService.registerUser(userInput)
+
+            const nonExisteUserEmail = 'emailNonExistedUser@example.com'
+
+            await authService.passwordRecovery(nonExisteUserEmail)
+
+            const user = await usersCollection.findOne({ email: nonExisteUserEmail })
+
+            expect(user).toBe(null)
+        })
+    })
+
+    describe('updatePassword', () => {
+        it('should update password by new password and recovery code', async () => {
+            const userInput = userDto()
+            await authService.registerUser(userInput)
+
+            await authService.passwordRecovery(userInput.email)
+
+            const userWithOldPassword = await usersCollection.findOne({ email: userInput.email })
+            
+            const newPassword = '123123123'
+            const recoveryCode = userWithOldPassword!.passwordRecovery.recoveryCode as string
+
+            await authService.updatePassword(newPassword, recoveryCode)
+
+            const userWithNewPassword = await usersCollection.findOne({ email: userInput.email })
+
+            expect(userWithOldPassword!.password !== userWithNewPassword!.password).toBe(true)
+            expect(userWithNewPassword!.passwordRecovery.expirationDate).toBe(null)
+            expect(userWithNewPassword!.passwordRecovery.recoveryCode).toBe(null)
+        }),
+
+        it('Should not to update password by new password and recovery code because of no user by recovery code', async () => {
+            const userInput = userDto()
+            await authService.registerUser(userInput)
+
+            await authService.passwordRecovery(userInput.email)
+
+            const newPassword = '123123123'
+            const recoveryCode = 'bad_code_bad_code_bad_code_bad_code_bad_code'
+
+            await expect (authService.updatePassword(newPassword, recoveryCode))
+                .rejects
+                .toThrow(BadRequestError)
+        })
+
+        it('Should not to update password by new password and recovery code because of recovery code is expired', async () => {
+            const userInput = userDto()
+            await authService.registerUser(userInput)
+
+            await authService.passwordRecovery(userInput.email)
+
+            const user = await usersCollection.findOne({ email: userInput.email })
+
+            const newPassword = '123123123'
+            const recoveryCode = user!.passwordRecovery.recoveryCode!
+
+            await usersRepository.updateRecoveryPasswordCode(userInput.email, recoveryCode, sub(new Date(), {minutes: 5}))
+
+            await expect (authService.updatePassword(newPassword, recoveryCode as string))
+                .rejects
+                .toThrow(BadRequestError)
         })
     })
 })

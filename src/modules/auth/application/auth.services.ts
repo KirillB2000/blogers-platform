@@ -6,7 +6,7 @@ import { mapUserInputToIDbType } from "../../users/mappers/mapUserInputToIDbType
 import { NodemailerService } from "../adapters/nodemailer.services";
 import { emailExamples } from "../adapters/emailExamples";
 import { isAfter, add } from "date-fns";
-import { randomUUID, randomUUIDv7 } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { UserInputModel } from "../../users/api/input/dto/userInputModel";
 import { IUserDB } from "../../users/domain/iUserDb";
 import { AuthSession } from "../domain/session";
@@ -18,7 +18,7 @@ import { UsersRepository } from "../../users/infrastructure/user.repository";
 export class AuthService {
     constructor(
         private sessionsRepository: SessionsRepository, 
-        private userRepository: UsersRepository,
+        private usersRepository: UsersRepository,
         private authServiceHelpers: AuthServiceHelpers,
         private jwtService: JwtService,
         private bcryptService: BcryptService,
@@ -31,7 +31,7 @@ export class AuthService {
         ipAddress: string
     ): Promise<{ accessToken: string, refreshToken: string }> {
         const deviceId = randomUUID()
-        const user = await this.userRepository.findByLoginOrEmailField(userCreds.loginOrEmail)
+        const user = await this.usersRepository.findByLoginOrEmailField(userCreds.loginOrEmail)
 
         if (!user) {
             throw new UnauthorizedError('Unauthorized')
@@ -63,12 +63,12 @@ export class AuthService {
         userDto: UserInputModel
     ): Promise<void> {
 
-        const existingUserEmail = await this.userRepository.findByEmail(userDto.email)
+        const existingUserEmail = await this.usersRepository.findByEmail(userDto.email)
         if (existingUserEmail) {
             throw new BadRequestError([{ message: 'Email must be unique', field: 'email' }])
         }
 
-        const existingUserLogin = await this.userRepository.findByLogin(userDto.login)
+        const existingUserLogin = await this.usersRepository.findByLogin(userDto.login)
         if (existingUserLogin) {
             throw new BadRequestError([{ message: 'Login must be unique', field: 'login' }])
         }
@@ -77,7 +77,7 @@ export class AuthService {
 
         const dbUser = mapUserInputToIDbType(userDto, passwordHash)
 
-        await this.userRepository.create(dbUser)
+        await this.usersRepository.create(dbUser)
 
         this.nodemailerService
         .sendEmail(
@@ -103,7 +103,7 @@ export class AuthService {
 
         const userId = user._id.toString()
 
-        await this.userRepository.confirmEmail(userId)
+        await this.usersRepository.confirmEmail(userId)
     }
 
     async emailResending(
@@ -118,7 +118,7 @@ export class AuthService {
         const newCode = randomUUID()
         const newExpirationDate = add(new Date(), {minutes: 5})
 
-        await this.userRepository.updateConfirmationCode(userId, newCode, newExpirationDate)
+        await this.usersRepository.updateConfirmationCode(userId, newCode, newExpirationDate)
 
         this.nodemailerService
         .sendEmail(
@@ -164,10 +164,17 @@ export class AuthService {
     async passwordRecovery (
         email: string
     ): Promise<void> {
-        const recoveryCode = randomUUIDv7()
+
+        const userByEmail = await this.usersRepository.findByEmail(email)
+
+        if (!userByEmail) {
+            return
+        }
+
+        const recoveryCode = randomUUID()
         const expirationDate = add(new Date(), { minutes: 5 })
 
-        await this.userRepository.updateRecoveryPasswordCode(email, recoveryCode, expirationDate)
+        await this.usersRepository.updateRecoveryPasswordCode(email, recoveryCode, expirationDate)
 
         this.nodemailerService
             .sendEmail(
@@ -183,7 +190,7 @@ export class AuthService {
         recoveryCode: string
     ): Promise<void> {
 
-        const user = await  this.userRepository.findByRecoveryCode(recoveryCode)
+        const user = await  this.usersRepository.findByRecoveryCode(recoveryCode)
 
         if (!user) {
             throw new BadRequestError([{ message: 'Invalid recovery code', field: 'recoveryCode'}])
@@ -196,6 +203,6 @@ export class AuthService {
         const userId = user._id.toString()
         const newHashedPassword = await this.bcryptService.generateHash(newPassword)
 
-        await this.userRepository.updatePasswordAndRecoveryPassword(newHashedPassword, userId)
+        await this.usersRepository.updatePasswordAndRecoveryPassword(newHashedPassword, userId)
     }
 }
