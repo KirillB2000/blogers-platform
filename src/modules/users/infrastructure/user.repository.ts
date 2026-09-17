@@ -1,6 +1,7 @@
 import { ObjectId, WithId } from "mongodb";
 import { usersCollection } from "../../../db/collections";
 import { IUserDB } from "../domain/iUserDb";
+import { UUID } from "crypto";
 
 
 export class UsersRepository {
@@ -51,6 +52,41 @@ export class UsersRepository {
         await usersCollection.updateOne(
             {_id: new ObjectId(userId)},
             { $set: { "emailConfirmation.confirmationCode": confirmationCode, "emailConfirmation.expirationDate": expirationDate}}
+        )
+    }
+
+    async updateRecoveryPasswordCode(
+        email: string,
+        recoveryCode: UUID,
+        expirationDate: Date
+    ): Promise<void> {
+        await usersCollection.updateOne(
+            { email: email },
+            { $set: { 'passwordRecovery.recoveryCode': recoveryCode, 'passwordRecovery.expirationDate': expirationDate }}
+        )
+    }
+
+    async findByRecoveryCode (
+        recoveryCode: string
+    ): Promise<WithId<IUserDB> | null> {
+        const user = usersCollection.findOne(
+            { 'passwordRecovery.recoveryCode': recoveryCode }
+        )
+
+        return user
+    }
+
+    async updatePasswordAndRecoveryPassword (
+        newPassword: string, 
+        userId: string
+    ) {
+        await usersCollection.updateOne(
+            {_id: new ObjectId(userId)},
+            {$set: {
+                password: newPassword,
+                'passwordRecovery.recoveryCode': null,
+                'passwordRecovery.expirationDate': null
+            }}
         )
     }
 }

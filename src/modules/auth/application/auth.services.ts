@@ -6,7 +6,7 @@ import { mapUserInputToIDbType } from "../../users/mappers/mapUserInputToIDbType
 import { NodemailerService } from "../adapters/nodemailer.services";
 import { emailExamples } from "../adapters/emailExamples";
 import { isAfter, add } from "date-fns";
-import { randomUUID } from "node:crypto";
+import { randomUUID, randomUUIDv7 } from "node:crypto";
 import { UserInputModel } from "../../users/api/input/dto/userInputModel";
 import { IUserDB } from "../../users/domain/iUserDb";
 import { AuthSession } from "../domain/session";
@@ -159,5 +159,43 @@ export class AuthService {
         if(!isDeleted) {
             throw new UnauthorizedError('Unauthorized')
         }
+    }
+
+    async passwordRecovery (
+        email: string
+    ): Promise<void> {
+        const recoveryCode = randomUUIDv7()
+        const expirationDate = add(new Date(), { minutes: 5 })
+
+        await this.userRepository.updateRecoveryPasswordCode(email, recoveryCode, expirationDate)
+
+        this.nodemailerService
+            .sendEmail(
+                email,
+                recoveryCode,
+                emailExamples.recoveryPasswordEmail
+            )
+            .catch(er => console.error(`Error occured while sending an email: ${er}`))
+    }
+
+    async updatePassword (
+        newPassword: string, 
+        recoveryCode: string
+    ): Promise<void> {
+
+        const user = await  this.userRepository.findByRecoveryCode(recoveryCode)
+
+        if (!user) {
+            throw new BadRequestError([{ message: 'Invalid recovery code', field: 'recoveryCode'}])
+        }
+
+        if(user.passwordRecovery.expirationDate! < new Date()) {
+            throw new BadRequestError([{ message: 'Recovery code is expired', field: 'recoveryCode'}])
+        }
+
+        const userId = user._id.toString()
+        const newHashedPassword = await this.bcryptService.generateHash(newPassword)
+
+        await this.userRepository.updatePasswordAndRecoveryPassword(newHashedPassword, userId)
     }
 }

@@ -76,7 +76,7 @@ export const blogsService = new BlogsService(blogsRepository)
 
 export const usersController = new UsersController(usersService, usersQwRepository)
 
-export const authController = new AuthController(authService, usersQwRepository)
+export const authController = new AuthController(authService, usersQwRepository, usersRepository)
 
 export const securityDevicesController = new SecurityDevicesController(securityDevicesService, securityDevicesQwService)
 

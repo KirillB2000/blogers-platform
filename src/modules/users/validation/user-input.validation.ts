@@ -11,7 +11,7 @@ const loginValidation = body('login')
     .matches(/^[a-zA-Z0-9_-]*$/)
     .withMessage('Login contains invalid characters')
 
-const passwordValidation = body('password')
+export const passwordValidation = body('password')
     .isString()
     .withMessage('Password must be a string')
     .trim()

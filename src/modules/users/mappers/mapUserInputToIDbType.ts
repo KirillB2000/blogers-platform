@@ -16,6 +16,10 @@ export const mapUserInputToIDbType = (
             confirmationCode: randomUUID(),
             expirationDate: add(new Date(), { minutes: 5 }),
             isConfirmed: false
+        },
+        passwordRecovery: {
+            recoveryCode: null,
+            expirationDate: null
         }
     }
 }

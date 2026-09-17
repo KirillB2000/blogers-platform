@@ -8,5 +8,7 @@ export const AUTH_ROUTING = {
     REGISTRATION_CONFIRMATION: '/registration-confirmation',
     REGISTRATION_EMAIL_RESENDING: '/registration-email-resending',
     REFRESH_TOKEN: '/refresh-token',
-    LOGOUT: '/logout'
+    LOGOUT: '/logout',
+    PASSWORD_RECOVERY: '/password-recovery',
+    NEW_PASSWORD: '/new-password'
 } as const

@@ -7,13 +7,17 @@ import { UsersQwRepository } from "../../users/infrastructure/user.queryReposito
 import { UserInputModel } from "../../users/api/input/dto/userInputModel";
 import { RegistrationConfirmationCodeInputModel } from "./input/dto/registrationConfirmationCodeInputModel";
 import { RegistrationEmailResendingInputModel } from "./input/dto/registrationEmailResendingInputModel";
+import { PasswordRecoveryInputModel } from "./input/dto/passwordRecoveryInputModel";
+import { UsersRepository } from "../../users/infrastructure/user.repository";
+import { newPasswordRecoveryInputModel } from "./input/dto/newPasswordRecoveryInputModel";
 
 
 export class AuthController {
 
     constructor (
         private authService: AuthService,
-        private usersQwRepository: UsersQwRepository
+        private usersQwRepository: UsersQwRepository,
+        private usersRepository: UsersRepository
     ) {}
 
     async loginHandler (
@@ -118,6 +122,33 @@ export class AuthController {
         const userByEmail = await this.usersQwRepository.findByEmail(email)
 
         await this.authService.emailResending(userByEmail)
+
+        res.sendStatus(httpStatuses.NoContent)
+    }
+
+    async passwordRecoveryHandler (
+        req: Request<{}, {}, PasswordRecoveryInputModel>,
+        res: Response
+    ) {
+        const { email } = req.body
+        const userByEmail = await this.usersRepository.findByEmail(email)
+
+        if (!userByEmail) {
+            return res.sendStatus(httpStatuses.NoContent)
+        }
+
+        await this.authService.passwordRecovery(email)
+
+        res.sendStatus(httpStatuses.NoContent)
+    }
+
+    async updatePasswordHandler (
+        req: Request<{}, {}, newPasswordRecoveryInputModel>,
+        res: Response
+    ) {
+        const { newPassword, recoveryCode } = req.body
+
+        await this.authService.updatePassword(newPassword, recoveryCode)
 
         res.sendStatus(httpStatuses.NoContent)
     }
