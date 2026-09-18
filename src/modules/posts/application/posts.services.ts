@@ -6,12 +6,14 @@ import { Blog } from "../../blogs/domain/blog";
 import { NotFoundError, BadRequestError } from "../../../core/exceptions/app-errors.exeption";
 import { PostsRepository } from "../infrastructure/posts.repository";
 import { BlogsRepository } from "../../blogs/infrastructure/blogs.repository";
+import { injectable, inject } from "inversify";
 
+@injectable()
 export class PostsService {
 
     constructor(
-        private postsRepository: PostsRepository,
-        private blogsRepository: BlogsRepository
+        @inject(PostsRepository) private postsRepository: PostsRepository,
+        @inject(BlogsRepository) private blogsRepository: BlogsRepository
     ) {}
 
     async create(dto: PostInputModel): Promise<ObjectId> {

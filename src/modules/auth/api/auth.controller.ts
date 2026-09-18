@@ -8,16 +8,16 @@ import { UserInputModel } from "../../users/api/input/dto/userInputModel";
 import { RegistrationConfirmationCodeInputModel } from "./input/dto/registrationConfirmationCodeInputModel";
 import { RegistrationEmailResendingInputModel } from "./input/dto/registrationEmailResendingInputModel";
 import { PasswordRecoveryInputModel } from "./input/dto/passwordRecoveryInputModel";
-import { UsersRepository } from "../../users/infrastructure/user.repository";
 import { newPasswordRecoveryInputModel } from "./input/dto/newPasswordRecoveryInputModel";
+import { inject, injectable } from "inversify";
 
 
+@injectable()
 export class AuthController {
 
     constructor (
-        private authService: AuthService,
-        private usersQwRepository: UsersQwRepository,
-        private usersRepository: UsersRepository
+        @inject(AuthService) private authService: AuthService,
+        @inject(UsersQwRepository) private usersQwRepository: UsersQwRepository
     ) {}
 
     async loginHandler (

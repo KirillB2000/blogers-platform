@@ -3,10 +3,12 @@ import { blogInputModel } from "../api/input/dto/blogInputModel"
 import { NotFoundError } from "../../../core/exceptions/app-errors.exeption"
 import { mapBlogInputDtoToDbType } from "../mappers/map-from-blog-input-dto-to-db-type"
 import { BlogsRepository } from "../infrastructure/blogs.repository"
+import { injectable, inject } from "inversify"
 
+@injectable()
 export class BlogsService {
     constructor (
-        private blogsRepository: BlogsRepository
+        @inject(BlogsRepository) private blogsRepository: BlogsRepository
     ) {}
 
     async create(dto: blogInputModel): Promise<string> {

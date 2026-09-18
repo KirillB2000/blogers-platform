@@ -13,9 +13,13 @@ import { COMMENTS_PATH } from "../../comments/constants/comments.paths";
 import { commentInputDtoValidation } from "../../comments/validation/commentInput.validation";
 import { postInputDtoValidation } from "../validation/post-input.validation.middleware";
 import { PostSortField } from "./input/post-sort-fields";
-import { postsController } from "../../../compostion-root";
+import { container } from "../../../compostion-root";
+import { PostsController } from "./posts.controller";
 
 export const postsRouter = Router({});
+
+const postsController = container.get(PostsController)
+
 
 postsRouter
   //posts

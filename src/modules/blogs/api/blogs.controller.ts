@@ -19,13 +19,15 @@ import { PostQueryInput } from "../../posts/api/input/post-query.input";
 import { PostListPaginatorOutput } from "../../posts/api/output/post-list-paginator.output";
 import { Post } from "../../posts/domain/post";
 import { mapToPostListPaginatedOutput } from "../../posts/mappers/map-from-post-domain-to-post-paginated-output";
+import { injectable, inject } from "inversify";
 
+@injectable()
 export class BlogsController {
     constructor (
-        private blogsService: BlogsService,
-        private postsService: PostsService,
-        private postsQwRepository: PostsQwRepository,
-        private blogsQwRepository: BlogsQwRepository
+        @inject(BlogsService) private blogsService: BlogsService,
+        @inject(PostsService) private postsService: PostsService,
+        @inject(PostsQwRepository) private postsQwRepository: PostsQwRepository,
+        @inject(BlogsQwRepository) private blogsQwRepository: BlogsQwRepository
     ) {}
 
     async createBlogHandler (

@@ -5,7 +5,9 @@ import { mapToPostViewModel } from "../mappers/map-from-post-db-type-to-view-mod
 import { PostViewModel } from "../api/output/post-data.output"
 import { NotFoundError } from "../../../core/exceptions/app-errors.exeption"
 import { postsCollection } from "../../../db/collections"
+import { injectable } from "inversify"
 
+@injectable()
 export class PostsQwRepository {
     async findAll(
         queryDto: PostQueryInput,

@@ -5,7 +5,9 @@ import { UUID } from "crypto"
 import { RefreshTokenPayload } from "../api/input/jwtPayloadSessions"
 import { JwtService } from "../adapters/jwt.services"
 import { UsersRepository } from "../../users/infrastructure/user.repository"
+import { injectable } from "inversify"
 
+@injectable()
 export class AuthServiceHelpers {
 
     constructor(

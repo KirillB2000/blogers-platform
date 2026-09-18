@@ -7,7 +7,9 @@ import { CommentListPaginatorOutput } from "../api/output/commentListPaginatorOu
 import { CommentViewModel } from "../api/output/commentViewModel";
 import { mapFromCommentDbTypeToViewModel } from "../mappers/mapFromCommentDbTypeToViewModel";
 import { mapToCommentListPaginatedOutput } from "../mappers/mapFromCommentDomainToPaginatedOutput";
+import { injectable } from "inversify";
 
+@injectable()
 export class CommentsQwRepository {
     async findById (
         id: string

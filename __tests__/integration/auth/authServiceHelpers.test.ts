@@ -1,13 +1,19 @@
 import { MongoClient, Db } from "mongodb"
 import { MongoMemoryServer } from "mongodb-memory-server"
 import { initCollections, sessionsCollection, usersCollection } from "../../../src/db/collections"
-import { authServiceHelpers, usersRepository } from "../../../src/compostion-root"
+import { container } from "../../../src/compostion-root"
 import { UnauthorizedError } from "../../../src/core/exceptions/app-errors.exeption"
 import { SETTINGS } from "../../../src/settings/config"
 import { testRegisterAndLoginUser } from "../utils/testRegisterAndLoginUser"
 import jwt from 'jsonwebtoken'
+import { AuthServiceHelpers } from "../../../src/modules/auth/application/auth.serviceHelpers"
+import { UsersRepository } from "../../../src/modules/users/infrastructure/user.repository"
 
 describe('Integration tests for AuthServiceHelpers', () => {
+
+    // Create classes instance by ioc
+    const authServiceHelpers = container.get(AuthServiceHelpers)
+    const usersRepository = container.get(UsersRepository)
 
     const JWT_REFRESH_SECRET = SETTINGS.JWT_REFRESH_SECRET
     if (!JWT_REFRESH_SECRET) {

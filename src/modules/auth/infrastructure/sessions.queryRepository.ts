@@ -1,5 +1,7 @@
+import { injectable } from "inversify";
 import { sessionsCollection } from "../../../db/collections";
 
+@injectable()
 export class SessionsQwReposiroty {
     async getAcviveSessionDevicesList (
         userId: string

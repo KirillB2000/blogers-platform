@@ -4,8 +4,10 @@ import { SETTINGS } from "../../../settings/config";
 import { randomUUID, UUID } from "crypto";
 import { IUserDB } from "../../users/domain/iUserDb";
 import { RefreshTokenPayload } from "../api/input/jwtPayloadSessions";
+import { injectable } from "inversify";
 
 
+@injectable()
 export class JwtService {
 
     private readonly accessSecret: string;

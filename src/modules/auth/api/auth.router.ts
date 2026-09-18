@@ -6,11 +6,14 @@ import { AUTH_ROUTING } from "../constants/auth.paths";
 import { loginDtoValidation } from "../validation/loginInput.validation";
 import { accessTokenGuardMiddleware } from "./guards/access-token.guard.middleware";
 import { rateLimitMiddleware } from "../../../core/middlewares/rateLimiter/rateLimit.middleware";
-import { authController } from "../../../compostion-root";
+import { container } from "../../../compostion-root";
 import { codeDtoValidation } from "../validation/codeInput.validation";
 import { CODE_NAMES } from "../../../core/types/codeNames";
+import { AuthController } from "./auth.controller";
 
 export const authRouter = Router({})
+
+const authController = container.get(AuthController)
 
 authRouter
     .post(

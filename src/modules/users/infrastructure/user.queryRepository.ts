@@ -10,8 +10,10 @@ import { UserViewModel } from "../api/output/userViewModel";
 import { IUserDB } from "../domain/iUserDb";
 import { mapToUserListPaginatedOutput } from "../mappers/mapToUserListPaginatedOutput";
 import { mapUserDomainToMeViewModel } from "../mappers/mapUserDomainToMeViewModel";
+import { injectable } from "inversify";
 
 
+@injectable()
 export class UsersQwRepository {
     
     async findMany (

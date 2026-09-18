@@ -5,7 +5,9 @@ import { UserInputModel } from "../api/input/dto/userInputModel";
 import { IUserDB } from "../domain/iUserDb";
 import { UsersRepository } from "../infrastructure/user.repository";
 import { BcryptService } from "../../auth/adapters/bcrypt.services";
+import { injectable } from "inversify";
 
+@injectable()
 export class UsersService {
 
     constructor (

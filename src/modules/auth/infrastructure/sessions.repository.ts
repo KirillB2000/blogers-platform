@@ -2,7 +2,9 @@ import { UUID } from "crypto"
 import { sessionsCollection } from "../../../db/collections"
 import { AuthSession } from "../domain/session"
 import { WithId } from "mongodb"
+import { injectable } from "inversify"
 
+@injectable()
 export class SessionsRepository {
     async create (
         sessionInfo: AuthSession

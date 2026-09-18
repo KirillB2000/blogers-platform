@@ -1,6 +1,9 @@
-import { authService } from "../../../src/compostion-root"
+import { container } from "../../../src/compostion-root"
 import { LoginInputModel } from "../../../src/modules/auth/api/input/dto/loginInputModel"
+import { AuthService } from "../../../src/modules/auth/application/auth.services"
 import { userDto } from "../../utils/users/userDto"
+
+const authService = container.get(AuthService)
 
 export const testRegisterAndLoginUser = async () => {
     const userInput = userDto()

@@ -2,7 +2,9 @@ import { ObjectId } from "mongodb";
 import { CommentDb } from "../domain/comment";
 import { CommentInputModel } from "../api/input/dto/commentInputModel";
 import { commentsCollection } from "../../../db/collections";
+import { injectable } from "inversify";
 
+@injectable()
 export class CommentsRepository {
     async create (
         comment: CommentDb

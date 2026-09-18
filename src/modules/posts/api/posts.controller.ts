@@ -19,15 +19,17 @@ import { PagindatedOutput } from "../../../core/types/paginated.output";
 import { Post } from "../domain/post";
 import { mapToPostListPaginatedOutput } from "../mappers/map-from-post-domain-to-post-paginated-output";
 import { PostListPaginatorOutput } from "./output/post-list-paginator.output";
+import { injectable, inject } from "inversify";
 
+@injectable()
 export class PostsController {
     constructor (
-        private postsService: PostsService,
-        private commentsService: CommentsService,
-        private commentsQwRepository: CommentsQwRepository,
-        private usersQwRepository: UsersQwRepository,
-        private postsQwRepository: PostsQwRepository,
-        private blogsQwRepository: BlogsQwRepository
+        @inject(PostsService) private postsService: PostsService,
+        @inject(CommentsService) private commentsService: CommentsService,
+        @inject(CommentsQwRepository) private commentsQwRepository: CommentsQwRepository,
+        @inject(UsersQwRepository) private usersQwRepository: UsersQwRepository,
+        @inject(PostsQwRepository) private postsQwRepository: PostsQwRepository,
+        @inject(BlogsQwRepository) private blogsQwRepository: BlogsQwRepository
     ) {}
 
     async createCommentForSpecificPostHandler (

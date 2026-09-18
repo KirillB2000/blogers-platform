@@ -3,9 +3,12 @@ import { SEC_DEV_ROUTES } from "../constants/securityDevices.paths";
 import { catchAsync } from "../../../core/helpers/catchAsync.helper";
 import { PARAMS_IDS } from "../../../core/types/paramsIds";
 import { uuidParamsValidation } from "../../../core/middlewares/validation/params-uuid.validation.middleware";
-import { securityDevicesController } from "../../../compostion-root";
+import { SecurityDevicesController } from "./securityDevices.controller";
+import { container } from "../../../compostion-root";
 
 export const securityDeviceRouter = Router()
+
+const securityDevicesController = container.get(SecurityDevicesController)
 
 securityDeviceRouter
     .get(

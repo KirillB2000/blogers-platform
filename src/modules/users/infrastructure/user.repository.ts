@@ -2,8 +2,10 @@ import { ObjectId, WithId } from "mongodb";
 import { usersCollection } from "../../../db/collections";
 import { IUserDB } from "../domain/iUserDb";
 import { UUID } from "crypto";
+import { injectable } from "inversify";
 
 
+@injectable()
 export class UsersRepository {
     async create (userDomain: IUserDB) {
         const user = await usersCollection.insertOne(userDomain)

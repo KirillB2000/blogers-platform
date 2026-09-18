@@ -2,8 +2,10 @@ import { blogInputModel } from "../api/input/dto/blogInputModel";
 import { ObjectId, WithId } from "mongodb";
 import { Blog } from "../domain/blog";
 import { blogsCollection, postsCollection } from "../../../db/collections";
+import { injectable } from "inversify";
 
 
+@injectable()
 export class BlogsRepository {
   async create(newBlog: Blog): Promise<string> {
     const createdBlog = await blogsCollection.insertOne(newBlog)

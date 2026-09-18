@@ -6,9 +6,13 @@ import { PARAMS_IDS } from "../../../core/types/paramsIds";
 import { accessTokenGuardMiddleware } from "../../auth/api/guards/access-token.guard.middleware";
 import { COMMENTS_ROUTES } from "../constants/comments.paths";
 import { commentInputDtoValidation } from "../validation/commentInput.validation";
-import { commentsController } from "../../../compostion-root";
+import { container } from "../../../compostion-root";
+import { CommentsController } from "./comments.controller";
 
 export const commentsRouter = Router({})
+
+const commentsController = container.get(CommentsController)
+
 
 commentsRouter
 

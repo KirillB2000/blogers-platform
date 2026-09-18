@@ -7,11 +7,13 @@ import { UsersService } from "../application/users.services"
 import { UsersQwRepository } from "../infrastructure/user.queryRepository"
 import { UserQueryInput } from "./input/user-query.input"
 import { UserListPaginatorOutput } from "./output/userListPaginatorOutput"
+import { injectable, inject } from "inversify"
 
+@injectable()
 export class UsersController {
     constructor (
-        private usersService: UsersService,
-        private usersQwRepository: UsersQwRepository
+        @inject(UsersService) private usersService: UsersService,
+        @inject(UsersQwRepository) private usersQwRepository: UsersQwRepository
     ) {}
 
     async createUserHandler (

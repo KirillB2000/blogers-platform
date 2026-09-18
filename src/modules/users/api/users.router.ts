@@ -9,9 +9,12 @@ import { sanitizeQueryParams } from "../../../core/middlewares/validation/saniti
 import { PARAMS_IDS } from "../../../core/types/paramsIds";
 import { superAdminGuardMiddleware } from "../../auth/api/guards/super-admin.guard.middleware";
 import { UserSortFields } from "./input/user-sort-fields";
-import { usersController } from "../../../compostion-root";
+import { container } from "../../../compostion-root";
+import { UsersController } from "./users.controller";
 
 export const userRouter = Router({})
+
+const usersController = container.get(UsersController)
 
 userRouter
     .post(

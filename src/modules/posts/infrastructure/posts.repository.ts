@@ -2,7 +2,9 @@ import { ObjectId } from "mongodb";
 import { PostInputModel } from "../api/input/dto/postInputModel";
 import { Post } from "../domain/post";
 import { postsCollection } from "../../../db/collections";
+import { injectable } from "inversify";
 
+@injectable()
 export class PostsRepository {
 
   async create(newPost: Post): Promise<ObjectId> {

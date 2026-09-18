@@ -2,7 +2,9 @@ import { UUID } from "crypto";
 import { ForbiddenError, NotFoundError } from "../../../../core/exceptions/app-errors.exeption";
 import { AuthServiceHelpers } from "../../../auth/application/auth.serviceHelpers";
 import { SessionsRepository } from "../../../auth/infrastructure/sessions.repository";
+import { injectable } from "inversify";
 
+@injectable()
 export class SecurityDevicesService {
     constructor (
         private authServiceHelpers: AuthServiceHelpers,

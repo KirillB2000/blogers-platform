@@ -5,7 +5,9 @@ import { BlogViewModel } from "../api/output/blog-data.output"
 import { blogsCollection } from "../../../db/collections"
 import { NotFoundError } from "../../../core/exceptions/app-errors.exeption"
 import { mapToBlogViewModel } from "../mappers/map-from-blog-db-type-to-view-model"
+import { injectable } from "inversify"
 
+@injectable()
 export class BlogsQwRepository { // Сделать маппинг здесь
     async findMany(
         queryDto: BlogQueryInput

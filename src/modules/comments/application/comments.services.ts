@@ -3,10 +3,12 @@ import { CommentInputModel } from "../api/input/dto/commentInputModel";
 import { NotFoundError } from "../../../core/exceptions/app-errors.exeption";
 import { UserViewModel } from "../../users/api/output/userViewModel";
 import { CommentsRepository } from "../infrastructure/comments.repository";
+import { injectable, inject } from "inversify";
 
+@injectable()
 export class CommentsService {
     constructor(
-        private commentsRepository: CommentsRepository
+        @inject(CommentsRepository) private commentsRepository: CommentsRepository
     ){}
 
 

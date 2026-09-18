@@ -15,13 +15,24 @@ import { SETTINGS } from "../../../src/settings/config"
 import { userDto } from "../../utils/users/userDto"
 import { testRegisterAndLoginUser } from "../utils/testRegisterAndLoginUser"
 import jwt from "jsonwebtoken"
-import { nodemailerService, authService, usersRepository, jwtService, sessionsRepository } from "../../../src/compostion-root";
+import { container } from "../../../src/compostion-root";
 import { LoginInputModel } from "../../../src/modules/auth/api/input/dto/loginInputModel";
 import { UserInputModel } from "../../../src/modules/users/api/input/dto/userInputModel";
 import { emailExamples } from "../../../src/modules/auth/adapters/emailExamples";
-
+import { NodemailerService } from "../../../src/modules/auth/adapters/nodemailer.services";
+import { AuthService } from "../../../src/modules/auth/application/auth.services";
+import { UsersRepository } from "../../../src/modules/users/infrastructure/user.repository";
+import { JwtService } from "../../../src/modules/auth/adapters/jwt.services";
+import { SessionsRepository } from "../../../src/modules/auth/infrastructure/sessions.repository";
 
 describe('Integration tests for AuthService', () => {
+
+    // Create classes instance by ioc
+    const nodemailerService = container.get(NodemailerService)
+    const authService = container.get(AuthService)
+    const usersRepository = container.get(UsersRepository)
+    const jwtService = container.get(JwtService)
+    const sessionsRepository = container.get(SessionsRepository)
 
     const JWT_REFRESH_SECRET = SETTINGS.JWT_REFRESH_SECRET
     if (!JWT_REFRESH_SECRET) {

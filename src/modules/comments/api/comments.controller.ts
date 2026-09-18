@@ -3,11 +3,13 @@ import { httpStatuses } from "../../../core/types/http-statuses"
 import { CommentsService } from "../application/comments.services"
 import { CommentsQwRepository } from "../infrastructure/comments.queryRepository"
 import { CommentInputModel } from "./input/dto/commentInputModel"
+import { injectable, inject } from "inversify"
 
+@injectable()
 export class CommentsController {
     constructor (
-        private commentsService: CommentsService,
-        private commentsQwRepository: CommentsQwRepository
+        @inject(CommentsService) private commentsService: CommentsService,
+        @inject(CommentsQwRepository) private commentsQwRepository: CommentsQwRepository
     ) {}
 
     async deleteCommentByIdHandler (

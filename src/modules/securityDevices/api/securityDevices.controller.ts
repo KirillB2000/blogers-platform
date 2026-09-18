@@ -4,11 +4,13 @@ import { SecurityDevicesService } from "../application/commands/securityDevices.
 import { UUID } from "crypto"
 import { UnauthorizedError } from "../../../core/exceptions/app-errors.exeption"
 import { SecurityDevicesQwService } from "../application/queries/securityDevices.queryServices"
+import { inject, injectable } from "inversify"
 
+@injectable()
 export class SecurityDevicesController {
     constructor (
-        private securityDevicesService: SecurityDevicesService,
-        private securityDevicesQueryService: SecurityDevicesQwService
+        @inject(SecurityDevicesService) private securityDevicesService: SecurityDevicesService,
+        @inject(SecurityDevicesQwService)  private securityDevicesQueryService: SecurityDevicesQwService
     ) {}
 
 

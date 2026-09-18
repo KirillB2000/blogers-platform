@@ -12,9 +12,12 @@ import { POSTS_PATH } from "../../posts/constants/posts.paths";
 import { postBlogInputDtoValidation } from "../../posts/validation/post-input.validation.middleware";
 import { blogInputDtoValidation } from "../validation/blog-input.validation.middleware";
 import { BlogSortField } from "./input/blog-sort-field";
-import { blogsController } from "../../../compostion-root";
+import { container } from "../../../compostion-root";
+import { BlogsController } from "./blogs.controller";
 
 export const blogsRouter = Router({});
+
+const blogsController = container.get(BlogsController)
 
 blogsRouter
   .get(

@@ -1,3 +1,6 @@
+import 'reflect-metadata'
+import { Container } from 'inversify'
+
 import { BcryptService } from "./modules/auth/adapters/bcrypt.services";
 import { JwtService } from "./modules/auth/adapters/jwt.services";
 import { NodemailerService } from "./modules/auth/adapters/nodemailer.services";
@@ -26,74 +29,45 @@ import { UsersService } from "./modules/users/application/users.services";
 import { UsersQwRepository } from "./modules/users/infrastructure/user.queryRepository";
 import { UsersRepository } from "./modules/users/infrastructure/user.repository";
 
-// === Reposistories ===
+export const container: Container = new Container()
 
-export const usersRepository = new UsersRepository()
-export const usersQwRepository = new UsersQwRepository()
+// Global services
+container.bind(BcryptService).to(BcryptService)
+container.bind(JwtService).to(JwtService)
+container.bind(NodemailerService).to(NodemailerService)
 
-export const sessionsRepository = new SessionsRepository()
-export const sessionQwRepository = new SessionsQwReposiroty()
+// Auth
+container.bind(AuthController).to(AuthController)
+container.bind(AuthService).to(AuthService)
+container.bind(AuthServiceHelpers).to(AuthServiceHelpers)
+container.bind(SessionsRepository).to(SessionsRepository)
+container.bind(SessionsQwReposiroty).to(SessionsQwReposiroty)
 
-export const commentsRepository = new CommentsRepository()
-export const commentsQwRepository = new CommentsQwRepository()
+// Security devices
+container.bind(SecurityDevicesController).to(SecurityDevicesController)
+container.bind(SecurityDevicesService).to(SecurityDevicesService)
+container.bind(SecurityDevicesQwService).to(SecurityDevicesQwService)
 
-export const postsRepository = new PostsRepository()
-export const postsQwRepository = new PostsQwRepository()
+// Users
+container.bind(UsersController).to(UsersController)
+container.bind(UsersService).to(UsersService)
+container.bind(UsersRepository).to(UsersRepository)
+container.bind(UsersQwRepository).to(UsersQwRepository)
 
-const blogsRepository = new BlogsRepository()
-const blogQwRepository = new BlogsQwRepository()
+// Comments
+container.bind(CommentsController).to(CommentsController)
+container.bind(CommentsService).to(CommentsService)
+container.bind(CommentsRepository).to(CommentsRepository)
+container.bind(CommentsQwRepository).to(CommentsQwRepository)
 
-// === Infrastructure services ===
+// Posts
+container.bind(PostsController).to(PostsController)
+container.bind(PostsService).to(PostsService)
+container.bind(PostsRepository).to(PostsRepository)
+container.bind(PostsQwRepository).to(PostsQwRepository)
 
-export const bcryptService = new BcryptService()
-export const nodemailerService = new NodemailerService()
-export const jwtService = new JwtService()
-
-// === Application services ===
-
-export const usersService = new UsersService(usersRepository, bcryptService)
-
-export const authServiceHelpers = new AuthServiceHelpers(usersRepository, jwtService)
-export const authService = new AuthService(
-    sessionsRepository, 
-    usersRepository, 
-    authServiceHelpers, 
-    jwtService, 
-    bcryptService, 
-    nodemailerService
-)
-
-export const securityDevicesService = new SecurityDevicesService(authServiceHelpers, sessionsRepository)
-export const securityDevicesQwService = new SecurityDevicesQwService(sessionQwRepository, authServiceHelpers)
-
-export const commentsService = new CommentsService(commentsRepository)
-
-export const postsService = new PostsService(postsRepository, blogsRepository)
-
-export const blogsService = new BlogsService(blogsRepository)
-
-// === Controllers ===
-
-export const usersController = new UsersController(usersService, usersQwRepository)
-
-export const authController = new AuthController(authService, usersQwRepository, usersRepository)
-
-export const securityDevicesController = new SecurityDevicesController(securityDevicesService, securityDevicesQwService)
-
-export const commentsController = new CommentsController(commentsService, commentsQwRepository)
-
-export const postsController = new PostsController(
-    postsService, 
-    commentsService, 
-    commentsQwRepository, 
-    usersQwRepository, 
-    postsQwRepository, 
-    blogQwRepository
-)
-
-export const blogsController = new BlogsController (
-    blogsService,
-    postsService,
-    postsQwRepository,
-    blogQwRepository
-)
+// Blogs
+container.bind(BlogsController).to(BlogsController)
+container.bind(BlogsService).to(BlogsService)
+container.bind(BlogsRepository).to(BlogsRepository)
+container.bind(BlogsQwRepository).to(BlogsQwRepository)

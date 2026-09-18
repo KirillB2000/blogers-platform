@@ -14,15 +14,17 @@ import { SessionsRepository } from "../infrastructure/sessions.repository";
 import { AuthServiceHelpers } from "./auth.serviceHelpers";
 import { JwtService } from "../adapters/jwt.services";
 import { UsersRepository } from "../../users/infrastructure/user.repository";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class AuthService {
     constructor(
-        private sessionsRepository: SessionsRepository, 
-        private usersRepository: UsersRepository,
-        private authServiceHelpers: AuthServiceHelpers,
-        private jwtService: JwtService,
-        private bcryptService: BcryptService,
-        private nodemailerService: NodemailerService
+        @inject(SessionsRepository) private sessionsRepository: SessionsRepository, 
+        @inject(UsersRepository) private usersRepository: UsersRepository,
+        @inject(AuthServiceHelpers) private authServiceHelpers: AuthServiceHelpers,
+        @inject(JwtService) private jwtService: JwtService,
+        @inject(BcryptService) private bcryptService: BcryptService,
+        @inject(NodemailerService) private nodemailerService: NodemailerService
     ) {}
 
     async loginUser (
