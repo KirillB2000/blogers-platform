@@ -28,11 +28,11 @@ import { SessionsRepository } from "../../../src/modules/auth/infrastructure/ses
 describe('Integration tests for AuthService', () => {
 
     // Create classes instance by ioc
-    const nodemailerService = container.get(NodemailerService)
     const authService = container.get(AuthService)
     const usersRepository = container.get(UsersRepository)
     const jwtService = container.get(JwtService)
     const sessionsRepository = container.get(SessionsRepository)
+    const nodemailerService = container.get(NodemailerService)
 
     const JWT_REFRESH_SECRET = SETTINGS.JWT_REFRESH_SECRET
     if (!JWT_REFRESH_SECRET) {
