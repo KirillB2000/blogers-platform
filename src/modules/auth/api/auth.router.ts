@@ -1,15 +1,16 @@
 import { Router } from "express";
 import { catchAsync } from "../../../core/helpers/catchAsync.helper";
 import { inputValidationResultMiddleware } from "../../../core/middlewares/validation/input-validation-result.middleware";
-import { userDtoValidation, emailValidation, passwordValidation } from "../../users/validation/user-input.validation";
+import { userDtoValidation, emailValidation } from "../../users/validation/user-input.validation";
 import { AUTH_ROUTING } from "../constants/auth.paths";
 import { loginDtoValidation } from "../validation/loginInput.validation";
 import { accessTokenGuardMiddleware } from "./guards/access-token.guard.middleware";
 import { rateLimitMiddleware } from "../../../core/middlewares/rateLimiter/rateLimit.middleware";
 import { container } from "../../../compostion-root";
-import { codeDtoValidation } from "../validation/codeInput.validation";
 import { CODE_NAMES } from "../../../core/types/codeNames";
 import { AuthController } from "./auth.controller";
+import { newPasswordRecoveryInputValidation } from "../validation/newPasswordRecoveryInput.validation";
+import { codeDtoValidation } from "../validation/codeInput.validation";
 
 export const authRouter = Router({})
 
@@ -71,13 +72,14 @@ authRouter
         AUTH_ROUTING.PASSWORD_RECOVERY,
         rateLimitMiddleware,
         emailValidation,
+        inputValidationResultMiddleware,
         catchAsync(authController.passwordRecoveryHandler.bind(authController))
     )
 
     .post(
         AUTH_ROUTING.NEW_PASSWORD,
         rateLimitMiddleware,
-        codeDtoValidation(CODE_NAMES.RECOVERY_CODE),
-        passwordValidation,
+        newPasswordRecoveryInputValidation,
+        inputValidationResultMiddleware,
         catchAsync(authController.updatePasswordHandler.bind(authController))
     )

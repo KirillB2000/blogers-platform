@@ -34,7 +34,7 @@ export const container: Container = new Container()
 // Global services
 container.bind(BcryptService).to(BcryptService)
 container.bind(JwtService).to(JwtService)
-container.bind(NodemailerService).to(NodemailerService).inSingletonScope()
+container.bind(NodemailerService).to(NodemailerService).inSingletonScope() // Singleton for auth integration tests and mock function in it
 
 // Auth
 container.bind(AuthController).to(AuthController)
