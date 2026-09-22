@@ -1,4 +1,3 @@
-import { UUID } from "crypto";
 import { ForbiddenError, NotFoundError } from "../../../../core/exceptions/app-errors.exeption";
 import { AuthServiceHelpers } from "../../../auth/application/auth.serviceHelpers";
 import { SessionsRepository } from "../../../auth/infrastructure/sessions.repository";
@@ -12,7 +11,7 @@ export class SecurityDevicesService {
     ) {}
 
     async deleteOneSession (
-        deviceId: UUID,
+        deviceId: string,
         refreshToken: string
     ): Promise<void> {
         const { userId: userByRefreshToken } = await this.authServiceHelpers.refreshTokenValidation(refreshToken)

@@ -1,30 +1,27 @@
-import { UUID } from "crypto"
-import { sessionsCollection } from "../../../db/collections"
-import { AuthSession } from "../domain/session"
-import { WithId } from "mongodb"
 import { injectable } from "inversify"
+import { AuthSessionsDocument, AuthSessionsModel, AuthSessionsType } from "./sessions.model"
 
 @injectable()
 export class SessionsRepository {
     async create (
-        sessionInfo: AuthSession
+        sessionInfo: AuthSessionsType
     ): Promise<String> {
-        const blackListedTokenId = await sessionsCollection.insertOne(sessionInfo)
+        const blackListedTokenId = await AuthSessionsModel.insertOne(sessionInfo)
 
-        const tokenInfoId = blackListedTokenId.insertedId.toString()
+        const tokenInfoId = blackListedTokenId.id
 
         return tokenInfoId
     }
 
     async update (
         issuedAtOld: number, 
-        deviceId: UUID,
+        deviceId: string,
         issuedAtNew: number, 
         expiredAtNew: Date, 
         userId: string
     ): Promise <boolean> {
-        const updateSessionResult = await sessionsCollection.updateOne(
-            { lastActiveDate: issuedAtOld, deviceId: deviceId, userId: userId },
+        const updateSessionResult = await AuthSessionsModel.updateOne(
+            { deviceId: deviceId, userId: userId, lastActiveDate: issuedAtOld },
             { $set: { lastActiveDate: issuedAtNew, expirationDate: expiredAtNew }}
         )
 
@@ -33,27 +30,27 @@ export class SessionsRepository {
 
     async delete(
         issuedAt: number,
-        deviceId: UUID,
+        deviceId: string,
         userId: string
     ): Promise<boolean> {
-        const deleteSessionResult = await sessionsCollection.deleteOne(
-            { lastActiveDate: issuedAt, deviceId: deviceId, userId: userId }
+        const deleteSessionResult = await AuthSessionsModel.deleteOne(
+            { deviceId: deviceId, userId: userId, lastActiveDate: issuedAt }
         )
 
         return deleteSessionResult.deletedCount > 0
     }
 
     async deleteOne(
-        deviceId: UUID
+        deviceId: string
     ): Promise<void> {
-        await sessionsCollection.deleteOne({deviceId: deviceId})
+        await AuthSessionsModel.deleteOne({deviceId: deviceId})
     }
 
     async deleteOtherSessions(
-        deviceId: UUID, 
+        deviceId: string, 
         userId: string
     ): Promise<void> {
-        await sessionsCollection.deleteMany({ 
+        await AuthSessionsModel.deleteMany({ 
             userId: userId, 
             deviceId: {$ne: deviceId} 
         })
@@ -61,18 +58,18 @@ export class SessionsRepository {
 
     async findSession (
         issuedAt: number,
-        deviceId: UUID,
+        deviceId: string,
         userId: string
-    ): Promise<WithId<AuthSession> | null> {
-        const session = await sessionsCollection.findOne({lastActiveDate: issuedAt, deviceId: deviceId, userId: userId})
+    ): Promise<AuthSessionsDocument | null> {
+        const session = await AuthSessionsModel.findOne({lastActiveDate: issuedAt, deviceId: deviceId, userId: userId})
 
         return session
     }
 
     async findByDeviceId(
-        deviceId: UUID
-    ): Promise<WithId<AuthSession> | null> {
-        const session = await sessionsCollection.findOne({deviceId: deviceId})
+        deviceId: string
+    ): Promise<AuthSessionsDocument | null> {
+        const session = await AuthSessionsModel.findOne({deviceId: deviceId})
 
         return session
     }

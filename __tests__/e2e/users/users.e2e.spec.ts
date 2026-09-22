@@ -1,13 +1,12 @@
 import express from 'express'
 import setupApp from '../../../src/setup-app'
-import { runDB, stopDb } from '../../../src/db/mongo.db'
-import { SETTINGS } from '../../../src/settings/config'
 import { createUserDto } from '../../utils/users/createUserDto'
-import { usersCollection } from '../../../src/db/collections'
 import request from 'supertest'
 import { USERS_PATH } from '../../../src/modules/users/constants/users.paths'
 import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken'
 import { httpStatuses } from '../../../src/core/types/http-statuses'
+import { stopDb, runDb } from '../../../src/db/mongoose.db'
+import { UsersModel } from '../../../src/modules/users/infrastructure/users.model'
 
 describe('Users API', () => {
     const app = express()
@@ -16,11 +15,11 @@ describe('Users API', () => {
     const adminToken = generateBasicAuthToken()
 
     beforeAll(async () => {
-        await runDB(SETTINGS.MONGO_URL)
+        await runDb()
     })
 
     beforeEach(async () => {
-        await usersCollection.deleteMany({})
+        await UsersModel.deleteMany({})
     })
 
     afterAll(async () => {

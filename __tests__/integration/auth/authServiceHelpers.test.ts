@@ -1,6 +1,4 @@
-import { MongoClient, Db } from "mongodb"
 import { MongoMemoryServer } from "mongodb-memory-server"
-import { initCollections, sessionsCollection, usersCollection } from "../../../src/db/collections"
 import { container } from "../../../src/compostion-root"
 import { UnauthorizedError } from "../../../src/core/exceptions/app-errors.exeption"
 import { SETTINGS } from "../../../src/settings/config"
@@ -8,6 +6,10 @@ import { testRegisterAndLoginUser } from "../utils/testRegisterAndLoginUser"
 import jwt from 'jsonwebtoken'
 import { AuthServiceHelpers } from "../../../src/modules/auth/application/auth.serviceHelpers"
 import { UsersRepository } from "../../../src/modules/users/infrastructure/user.repository"
+import { UsersModel } from "../../../src/modules/users/infrastructure/users.model"
+import { AuthSessionsModel } from "../../../src/modules/auth/infrastructure/sessions.model"
+import mongoose from "mongoose"
+import os from "os"
 
 describe('Integration tests for AuthServiceHelpers', () => {
 
@@ -21,31 +23,30 @@ describe('Integration tests for AuthServiceHelpers', () => {
     }
 
     let mongoServer: MongoMemoryServer
-    let client: MongoClient
-    let db: Db
     
     beforeAll(async () => {
+        await mongoose.disconnect();
+
         mongoServer = await MongoMemoryServer.create()
         const mongoUri = mongoServer.getUri()
-
-        client = new MongoClient(mongoUri)
-        await client.connect()
-        db = client.db('test-database')
-        initCollections(db)
-    })
-
-    afterAll(async () => {
-        jest.restoreAllMocks()
-        if(client) await client.close(true)
-        if(mongoServer) await mongoServer.stop( {doCleanup: true} )
+        await mongoose.connect(mongoUri, { autoIndex: false, runtimeAdapters: { os } })
     })
 
     afterEach(async () => {
-        if (usersCollection) await usersCollection.deleteMany({})
-        if (sessionsCollection) await sessionsCollection.deleteMany({})
+        if (mongoose.connection.readyState === 1) {
+            await UsersModel.deleteMany({})
+            await AuthSessionsModel.deleteMany({})
+        }
         jest.clearAllMocks()
     })
 
+
+    afterAll(async () => {
+        await mongoose.disconnect()
+        if(mongoServer) await mongoServer.stop( {doCleanup: true} )
+        jest.restoreAllMocks()
+    })
+    
     describe('refreshTokenValidation', () => {
         it('Should return userId, expirationDate and userById', async () => {
             const { refreshToken } = await testRegisterAndLoginUser()

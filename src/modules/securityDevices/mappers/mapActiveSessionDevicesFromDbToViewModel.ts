@@ -1,9 +1,8 @@
-import { WithId } from "mongodb";
-import { AuthSession } from "../../auth/domain/session";
 import { DeviceViewModel } from "../api/output/sercurityDevicesViewModel";
+import { AuthSessionsDocument } from "../../auth/infrastructure/sessions.model";
 
 export const mapActiveSessionDevicesFromDbToViewModel = (
-    session: WithId<AuthSession>
+    session: AuthSessionsDocument
 ): DeviceViewModel => {
     return {
         ip: session.ip,

@@ -1,26 +1,26 @@
 import { ObjectId } from "mongodb";
 import { NotFoundError } from "../../../core/exceptions/app-errors.exeption";
 import { PagindatedOutput } from "../../../core/types/paginated.output";
-import { commentsCollection } from "../../../db/collections";
 import { CommentQueryInput } from "../api/input/commentQueryInput";
 import { CommentListPaginatorOutput } from "../api/output/commentListPaginatorOutput";
 import { CommentViewModel } from "../api/output/commentViewModel";
 import { mapFromCommentDbTypeToViewModel } from "../mappers/mapFromCommentDbTypeToViewModel";
 import { mapToCommentListPaginatedOutput } from "../mappers/mapFromCommentDomainToPaginatedOutput";
 import { injectable } from "inversify";
+import { CommentsModel } from "./comments.model";
 
 @injectable()
 export class CommentsQwRepository {
     async findById (
         id: string
     ): Promise<CommentViewModel> {
-        const dbComment = await commentsCollection.findOne({_id: new ObjectId(id)})
+        const commentDocument = await CommentsModel.findOne({_id: new ObjectId(id)})
 
-        if (!dbComment) {
+        if (!commentDocument) {
             throw new NotFoundError('Comment not found')
         }
 
-        const commentForResponse: CommentViewModel = mapFromCommentDbTypeToViewModel(dbComment)
+        const commentForResponse: CommentViewModel = mapFromCommentDbTypeToViewModel(commentDocument)
 
         return commentForResponse
     }
@@ -39,14 +39,13 @@ export class CommentsQwRepository {
         const skip = (pageNumber - 1) * pageSize
         const filter = {postId: postId}
 
-        const items = await commentsCollection
+        const items = await CommentsModel
             .find(filter)
             .sort({[sortBy]: sortDirection})
             .skip(skip)
             .limit(pageSize)
-            .toArray()
         
-        const totalCount = await commentsCollection.countDocuments(filter)
+        const totalCount = await CommentsModel.countDocuments(filter)
 
         const meta: PagindatedOutput = {
             pagesCount: Math.ceil(totalCount / pageSize),

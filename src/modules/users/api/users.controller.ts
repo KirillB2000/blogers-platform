@@ -20,7 +20,7 @@ export class UsersController {
         req: Request<{}, {}, UserInputModel>,
         res: Response
     ) {
-        const createdUserId: ObjectId = await this.usersService.create(req.body)
+        const createdUserId = await this.usersService.create(req.body)
 
         const userForResponse: UserViewModel = await this.usersQwRepository.findById(createdUserId)
 

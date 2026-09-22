@@ -1,8 +1,7 @@
-import { UUID } from "crypto";
 
 export type RefreshTokenPayload = {
     userId: string,
-    deviceId: UUID,
+    deviceId: string,
     jti: string,
     iat: number,
     exp: number

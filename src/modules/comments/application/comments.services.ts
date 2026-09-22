@@ -1,9 +1,9 @@
-import { CommentDb } from "../domain/comment";
 import { CommentInputModel } from "../api/input/dto/commentInputModel";
 import { NotFoundError } from "../../../core/exceptions/app-errors.exeption";
 import { UserViewModel } from "../../users/api/output/userViewModel";
 import { CommentsRepository } from "../infrastructure/comments.repository";
 import { injectable, inject } from "inversify";
+import { CommentsType } from "../infrastructure/comments.model";
 
 @injectable()
 export class CommentsService {
@@ -17,14 +17,14 @@ export class CommentsService {
         postId: string,
         commentDto: CommentInputModel
     ): Promise<string> {
-        const commentDomain: CommentDb = {
+        const commentDomain: CommentsType = {
             postId: postId,
             content: commentDto.content,
             createdAt: new Date(),
             commentatorInfo: {
                 userId: user.id,
                 userLogin: user.login
-            }
+            },
         }
 
         const commentId = await this.commentsRepository.create(commentDomain)

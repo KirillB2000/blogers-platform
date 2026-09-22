@@ -1,5 +1,4 @@
-import { ObjectId, WithId } from "mongodb";
-import { usersCollection } from "../../../db/collections";
+import { ObjectId } from "mongodb";
 import { mapUserDomaiToViewModel } from "../mappers/mapUserDomaiToViewModel";
 import { BadRequestError, NotFoundError, UnauthorizedError } from "../../../core/exceptions/app-errors.exeption";
 import { PagindatedOutput } from "../../../core/types/paginated.output";
@@ -7,10 +6,10 @@ import { MeViewModel } from "../../auth/api/output/me-output.type";
 import { UserQueryInput } from "../api/input/user-query.input";
 import { UserListPaginatorOutput } from "../api/output/userListPaginatorOutput";
 import { UserViewModel } from "../api/output/userViewModel";
-import { IUserDB } from "../domain/iUserDb";
 import { mapToUserListPaginatedOutput } from "../mappers/mapToUserListPaginatedOutput";
 import { mapUserDomainToMeViewModel } from "../mappers/mapUserDomainToMeViewModel";
 import { injectable } from "inversify";
+import { UsersDocument, UsersModel } from "./users.model";
 
 
 @injectable()
@@ -41,14 +40,13 @@ export class UsersQwRepository {
             }
         }
 
-        const items = await usersCollection
+        const items = await UsersModel
             .find(filter)
             .sort({[sortBy]: sortDirection})
             .skip(skip)
             .limit(pageSize)
-            .toArray()
 
-        const totalCount = await usersCollection.countDocuments(filter)
+        const totalCount = await UsersModel.countDocuments(filter)
         const pageCount = Math.ceil(totalCount / pageSize)
 
         const meta: PagindatedOutput = {
@@ -65,9 +63,9 @@ export class UsersQwRepository {
     }
 
     async findById (
-        id: string | ObjectId
+        id: string
     ): Promise<UserViewModel> {
-        const user = await usersCollection.findOne({_id: new ObjectId(id)})
+        const user = await UsersModel.findOne({_id: new ObjectId(id)})
 
         if(!user) {
             throw new NotFoundError('User not found')
@@ -81,7 +79,7 @@ export class UsersQwRepository {
     async findByIdMe (
         id: string
     ): Promise<MeViewModel> {
-        const user = await usersCollection.findOne({_id: new ObjectId(id)})
+        const user = await UsersModel.findOne({_id: new ObjectId(id)})
 
         if(!user) {
             throw new UnauthorizedError('Unauthorized')
@@ -95,7 +93,7 @@ export class UsersQwRepository {
     async findByConfiramationCode(
         confirmationCode: string
     ) {
-        const userByCode = await usersCollection.findOne({"emailConfirmation.confirmationCode": confirmationCode})
+        const userByCode = await UsersModel.findOne({"emailConfirmation.confirmationCode": confirmationCode})
 
         if (!userByCode) {
             throw new BadRequestError([{ message: 'Code should be correct and exist in the system', field: 'code'}])
@@ -106,8 +104,8 @@ export class UsersQwRepository {
 
     async findByEmail(
         email: string
-    ): Promise<WithId<IUserDB>> {
-        const userByEmail = await usersCollection.findOne({email: email})
+    ): Promise<UsersDocument> {
+        const userByEmail = await UsersModel.findOne({email: email})
 
         if (!userByEmail) {
             throw new BadRequestError([{message: 'Email should be correct and exist in the system', field: 'email'}])

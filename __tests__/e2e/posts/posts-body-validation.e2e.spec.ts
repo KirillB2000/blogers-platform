@@ -4,11 +4,10 @@ import setupApp from "../../../src/setup-app";
 import { clearDb } from "../../utils/clearDb";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
-import { runDB, stopDb } from "../../../src/db/mongo.db";
-import { SETTINGS } from "../../../src/settings/config";
 import { blogDto } from "../../utils/blogs/blogDto";
 import { BLOGS_PATH } from "../../../src/modules/blogs/constants/blogs.paths";
 import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths";
+import { runDb, stopDb } from "../../../src/db/mongoose.db";
 
 describe("Posts API body validation check", () => {
   const app = express();
@@ -19,7 +18,7 @@ describe("Posts API body validation check", () => {
   let validBlogId: string;
 
   beforeAll(async () => {
-    await runDB(SETTINGS.MONGO_URL)
+    await runDb()
     await clearDb(app);
 
     // Создаем блог напрямую через API для получения валидного blogId

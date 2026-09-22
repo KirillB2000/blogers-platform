@@ -7,10 +7,8 @@ jest.mock('nodemailer', () => {
 });
 
 import { add, sub } from "date-fns"
-import { MongoClient, Db } from "mongodb"
 import { MongoMemoryServer } from "mongodb-memory-server"
 import { BadRequestError, UnauthorizedError } from "../../../src/core/exceptions/app-errors.exeption"
-import { initCollections, usersCollection } from "../../../src/db/collections"
 import { SETTINGS } from "../../../src/settings/config"
 import { userDto } from "../../utils/users/userDto"
 import { testRegisterAndLoginUser } from "../utils/testRegisterAndLoginUser"
@@ -24,6 +22,9 @@ import { AuthService } from "../../../src/modules/auth/application/auth.services
 import { UsersRepository } from "../../../src/modules/users/infrastructure/user.repository";
 import { JwtService } from "../../../src/modules/auth/adapters/jwt.services";
 import { SessionsRepository } from "../../../src/modules/auth/infrastructure/sessions.repository";
+import { UsersModel } from "../../../src/modules/users/infrastructure/users.model";
+import mongoose from "mongoose";
+import os from "os";
 
 describe('Integration tests for AuthService', () => {
 
@@ -40,8 +41,6 @@ describe('Integration tests for AuthService', () => {
     }
 
     let mongoServer: MongoMemoryServer
-    let client: MongoClient
-    let db: Db
 
     const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -52,27 +51,27 @@ describe('Integration tests for AuthService', () => {
         }) 
     
     beforeAll(async () => {
+        await mongoose.disconnect();
+
         mongoServer = await MongoMemoryServer.create()
         const mongoUri = mongoServer.getUri()
-
-        client = new MongoClient(mongoUri)
-        await client.connect()
-        db = client.db('test-database')
-        initCollections(db)
+        await mongoose.connect(mongoUri, { autoIndex: false, serverSelectionTimeoutMS: 5000, runtimeAdapters: { os } })
     })
 
     beforeEach(async () => {
-        {sendEmailMock.mockClear()}
-    })
-
-    afterAll(async () => {
-        if(client) await client.close()
-        if(mongoServer) await mongoServer.stop()
+        sendEmailMock.mockClear()
     })
 
     afterEach(async () => {
-        await usersCollection.deleteMany({})
+        if (mongoose.connection.readyState === 1) {
+            await UsersModel.deleteMany({})
+        }
         jest.clearAllMocks()
+    })
+
+    afterAll(async () => {
+        await mongoose.disconnect()
+        if (mongoServer) await mongoServer.stop()
     })
 
     describe('registerUser', () => {
@@ -95,7 +94,7 @@ describe('Integration tests for AuthService', () => {
             const result = await authService.registerUser(userDto())
             expect(result).toBe(undefined)
 
-            const userInDb = await usersCollection.findOne({email: userDto().email})
+            const userInDb = await UsersModel.findOne({email: userDto().email})
             expect(userInDb).not.toBeNull()
         })
 
@@ -361,7 +360,7 @@ describe('Integration tests for AuthService', () => {
 
             await authService.passwordRecovery(userInput.email)
 
-            const user = await usersCollection.findOne({email: userInput.email })
+            const user = await UsersModel.findOne({email: userInput.email })
 
             expect(user!.passwordRecovery.expirationDate).not.toBe(null)
             expect(user!.passwordRecovery.recoveryCode).not.toBe(null)
@@ -383,7 +382,7 @@ describe('Integration tests for AuthService', () => {
 
             await authService.passwordRecovery(nonExisteUserEmail)
 
-            const user = await usersCollection.findOne({ email: nonExisteUserEmail })
+            const user = await UsersModel.findOne({ email: nonExisteUserEmail })
 
             expect(user).toBe(null)
         })
@@ -396,14 +395,14 @@ describe('Integration tests for AuthService', () => {
 
             await authService.passwordRecovery(userInput.email)
 
-            const userWithOldPassword = await usersCollection.findOne({ email: userInput.email })
+            const userWithOldPassword = await UsersModel.findOne({ email: userInput.email })
             
             const newPassword = '123123123'
             const recoveryCode = userWithOldPassword!.passwordRecovery.recoveryCode as string
 
             await authService.updatePassword(newPassword, recoveryCode)
 
-            const userWithNewPassword = await usersCollection.findOne({ email: userInput.email })
+            const userWithNewPassword = await UsersModel.findOne({ email: userInput.email })
 
             expect(userWithOldPassword!.password !== userWithNewPassword!.password).toBe(true)
             expect(userWithNewPassword!.passwordRecovery.expirationDate).toBe(null)
@@ -430,7 +429,7 @@ describe('Integration tests for AuthService', () => {
 
             await authService.passwordRecovery(userInput.email)
 
-            const user = await usersCollection.findOne({ email: userInput.email })
+            const user = await UsersModel.findOne({ email: userInput.email })
 
             const newPassword = '123123123'
             const recoveryCode = user!.passwordRecovery.recoveryCode!

@@ -1,11 +1,9 @@
 import { UnauthorizedError } from "../../../core/exceptions/app-errors.exeption"
-import { WithId } from "mongodb"
-import { IUserDB } from "../../users/domain/iUserDb"
-import { UUID } from "crypto"
 import { RefreshTokenPayload } from "../api/input/jwtPayloadSessions"
 import { JwtService } from "../adapters/jwt.services"
 import { UsersRepository } from "../../users/infrastructure/user.repository"
 import { injectable } from "inversify"
+import { UsersDocument } from "../../users/infrastructure/users.model"
 
 @injectable()
 export class AuthServiceHelpers {
@@ -17,7 +15,7 @@ export class AuthServiceHelpers {
 
     async refreshTokenValidation (
         refreshToken: string
-    ): Promise<{ userId: string, userById: WithId<IUserDB>, deviceId: UUID, issuedAt: number, expiredAt: Date }> {
+    ): Promise<{ userId: string, userById: UsersDocument, deviceId: string, issuedAt: number, expiredAt: Date }> {
 
         const payload = await this.jwtService.getUserIdByRefreshToken(refreshToken)
 

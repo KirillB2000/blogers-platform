@@ -9,9 +9,7 @@ jest.mock('nodemailer', () => {
 import request from "supertest";
 import express from 'express'
 import setupApp from "../../../src/setup-app";
-import { requestsLogCollection, sessionsCollection, usersCollection } from "../../../src/db/collections";
-import { runDB, stopDb } from "../../../src/db/mongo.db";
-import { SETTINGS } from "../../../src/settings/config";
+import { runDb, stopDb } from "../../../src/db/mongoose.db";
 import { clearDb } from "../../utils/clearDb";
 import { userDto } from "../../utils/users/userDto";
 import { createUserDto } from "../../utils/users/createUserDto";
@@ -20,14 +18,17 @@ import { LoginInputModel } from "../../../src/modules/auth/api/input/dto/loginIn
 import { SECURITY_DEVICES_PATH } from "../../../src/modules/securityDevices/constants/securityDevices.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { randomUUID } from "crypto";
+import { UsersModel } from "../../../src/modules/users/infrastructure/users.model";
+import { AuthSessionsModel } from "../../../src/modules/auth/infrastructure/sessions.model";
+import { ApiRequestLogModel } from "../../../src/core/middlewares/rateLimiter/infrastructure/rateLimitModel";
 
 describe('securityDevice API', () => {
     const app = express()
     setupApp(app)
 
     beforeAll(async () => {
-        await runDB(SETTINGS.MONGO_URL)
-        await sessionsCollection.deleteMany({})
+        await runDb()
+        await AuthSessionsModel.deleteMany({})
     });
     
     afterAll(async () => {
@@ -36,9 +37,9 @@ describe('securityDevice API', () => {
     })
 
     beforeEach(async () => {
-        await usersCollection.deleteMany({})
-        await sessionsCollection.deleteMany({})
-        await requestsLogCollection.deleteMany({})
+        await UsersModel.deleteMany({})
+        await AuthSessionsModel.deleteMany({})
+        await ApiRequestLogModel.deleteMany({})
     })
 
     describe('DELETE /security/devices/{deviceId}', () => {
@@ -55,13 +56,13 @@ describe('securityDevice API', () => {
                 .set('user-agent', 'Chrome')
                 .send(userCreds)    
             const cookie = loginRes.headers['set-cookie']   
-            const session = await sessionsCollection.findOne({})
+            const session = await AuthSessionsModel.findOne({})
             const diviceId = session!.deviceId  
             await request(app)
                 .delete(`${SECURITY_DEVICES_PATH}/${diviceId}`)
                 .set('Cookie', cookie)
                 .expect(httpStatuses.NoContent) 
-            const deletedSession = await sessionsCollection.findOne({})
+            const deletedSession = await AuthSessionsModel.findOne({})
             expect(deletedSession).toBeNull()
         }),
 
@@ -98,7 +99,7 @@ describe('securityDevice API', () => {
                 .set('user-agent', 'Mozilla')
                 .send(userCreds2)   
             const cookieUser1 = loginRes1.headers['set-cookie'] 
-            const [, sessionUser2] = await sessionsCollection.find({}).toArray() // Save user2 second, second in array  
+            const [, sessionUser2] = await AuthSessionsModel.find({}) // Save user2 second, second in array  
             const deviceIdUser2 = sessionUser2.deviceId 
             await request(app)
                 .delete(`${SECURITY_DEVICES_PATH}/${deviceIdUser2}`)
@@ -154,7 +155,7 @@ describe('securityDevice API', () => {
                 }
             }
 
-            const totalCountCollectionBeforDeleteAllSession = await sessionsCollection.countDocuments({})
+            const totalCountCollectionBeforDeleteAllSession = await AuthSessionsModel.countDocuments({})
 
             expect(totalCountCollectionBeforDeleteAllSession).toBe(4)
 
@@ -163,7 +164,7 @@ describe('securityDevice API', () => {
                 .set('Cookie', cookie!)
                 .expect(httpStatuses.NoContent)
 
-            const totalCountCollectionAfterDeleteAllSession = await sessionsCollection.countDocuments({})
+            const totalCountCollectionAfterDeleteAllSession = await AuthSessionsModel.countDocuments({})
 
             expect(totalCountCollectionAfterDeleteAllSession).toBe(1)
         })

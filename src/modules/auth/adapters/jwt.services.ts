@@ -1,10 +1,9 @@
-import { WithId } from "mongodb";
 import jwt from 'jsonwebtoken'
 import { SETTINGS } from "../../../settings/config";
 import { randomUUID, UUID } from "crypto";
-import { IUserDB } from "../../users/domain/iUserDb";
 import { RefreshTokenPayload } from "../api/input/jwtPayloadSessions";
 import { injectable } from "inversify";
+import { UsersDocument } from "../../users/infrastructure/users.model";
 
 
 @injectable()
@@ -30,7 +29,7 @@ export class JwtService {
     }
     
     async createAccessJWT (
-        user: WithId<IUserDB>
+        user: UsersDocument
     ): Promise<string> {
         const payload = { 
             userId: user._id.toString(),
@@ -43,8 +42,8 @@ export class JwtService {
     }
 
     async createRefreshJWT (
-        user: WithId<IUserDB>,
-        deviceId: UUID
+        user: UsersDocument,
+        deviceId: string
     ): Promise<{ refreshToken: string, issuedAt: number, expiredAt: Date}> {
         const iatSeconds = Math.floor(Date.now() / 1000)
         const expSeconds = iatSeconds + 20

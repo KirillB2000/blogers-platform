@@ -1,13 +1,12 @@
 import { AUTH_PATH, AUTH_ROUTING } from "../../../src/modules/auth/constants/auth.paths";
 import { LoginInputModel } from "../../../src/modules/auth/api/input/dto/loginInputModel";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
-import { usersCollection } from "../../../src/db/collections";
-import { runDB, stopDb } from "../../../src/db/mongo.db";
-import { SETTINGS } from "../../../src/settings/config";
 import setupApp from "../../../src/setup-app";
 import { clearDb } from "../../utils/clearDb";
 import express from 'express'
 import request from "supertest";
+import { runDb, stopDb } from "../../../src/db/mongoose.db";
+import { UsersModel } from "../../../src/modules/users/infrastructure/users.model";
 
 describe("Auth API body validation check", () => {
     const app = express();
@@ -19,8 +18,8 @@ describe("Auth API body validation check", () => {
     }
 
     beforeAll(async () => {
-        await runDB(SETTINGS.MONGO_URL)
-        await usersCollection.deleteMany({})
+        await runDb()
+        await UsersModel.deleteMany({})
     });
     
     afterAll(async () => {

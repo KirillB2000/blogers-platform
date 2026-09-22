@@ -1,7 +1,6 @@
 import { Request, Response } from "express"
 import { httpStatuses } from "../../../core/types/http-statuses"
 import { SecurityDevicesService } from "../application/commands/securityDevices.services"
-import { UUID } from "crypto"
 import { UnauthorizedError } from "../../../core/exceptions/app-errors.exeption"
 import { SecurityDevicesQwService } from "../application/queries/securityDevices.queryServices"
 import { inject, injectable } from "inversify"
@@ -30,7 +29,7 @@ export class SecurityDevicesController {
     }
 
     async deleteSpecificDeviceSessionHandler (
-        req: Request<{ deviceId: UUID }>,
+        req: Request<{ deviceId: string }>,
         res: Response
     ) {
         const { deviceId } = req.params

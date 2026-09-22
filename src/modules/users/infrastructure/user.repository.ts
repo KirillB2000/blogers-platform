@@ -1,46 +1,44 @@
 import { ObjectId, WithId } from "mongodb";
-import { usersCollection } from "../../../db/collections";
-import { IUserDB } from "../domain/iUserDb";
-import { UUID } from "crypto";
 import { injectable } from "inversify";
+import { UsersDocument, UsersModel, UsersType } from "./users.model";
 
 
 @injectable()
 export class UsersRepository {
-    async create (userDomain: IUserDB) {
-        const user = await usersCollection.insertOne(userDomain)
+    async create (userDomain: UsersType) {
+        const user = await UsersModel.insertOne(userDomain)
 
-        return user.insertedId
+        return user.id
     }
 
     async findByLogin(loginDto: string) {
-        return await usersCollection.findOne({ login: loginDto })
+        return await UsersModel.findOne({ login: loginDto })
     }
 
     async findByEmail(emailDto: string) {
-        return await usersCollection.findOne({ email: emailDto })
+        return await UsersModel.findOne({ email: emailDto })
     }
 
     async findById(
         userId: string
-    ): Promise<WithId<IUserDB> | null> {
-        return await usersCollection.findOne({_id: new ObjectId(userId)})
+    ): Promise<UsersDocument | null> {
+        return await UsersModel.findOne({_id: new ObjectId(userId)})
     }
 
     async findByLoginOrEmailField(loginOrEmail: string) {
-        return await usersCollection.findOne({
+        return await UsersModel.findOne({
             $or: [{email: loginOrEmail}, {login: loginOrEmail}]
         })
     }
 
     async delete (id: string): Promise<boolean> {
-        const deletedCount = await usersCollection.deleteOne({_id: new ObjectId(id)})
+        const deletedCount = await UsersModel.deleteOne({_id: new ObjectId(id)})
 
         return deletedCount.deletedCount > 0
     }
 
     async confirmEmail(id: string): Promise<void> {
-        await usersCollection.updateOne(
+        await UsersModel.updateOne(
             {_id: new ObjectId(id)},
             { $set: {"emailConfirmation.isConfirmed": true}}
         )
@@ -51,7 +49,7 @@ export class UsersRepository {
         confirmationCode: string,
         expirationDate: Date
     ): Promise<void> {
-        await usersCollection.updateOne(
+        await UsersModel.updateOne(
             {_id: new ObjectId(userId)},
             { $set: { "emailConfirmation.confirmationCode": confirmationCode, "emailConfirmation.expirationDate": expirationDate}}
         )
@@ -59,10 +57,10 @@ export class UsersRepository {
 
     async updateRecoveryPasswordCode(
         email: string,
-        recoveryCode: UUID,
+        recoveryCode: string,
         expirationDate: Date
     ): Promise<void> {
-        await usersCollection.updateOne(
+        await UsersModel.updateOne(
             { email: email },
             { $set: { 'passwordRecovery.recoveryCode': recoveryCode, 'passwordRecovery.expirationDate': expirationDate }}
         )
@@ -70,8 +68,8 @@ export class UsersRepository {
 
     async findByRecoveryCode (
         recoveryCode: string
-    ): Promise<WithId<IUserDB> | null> {
-        const user = usersCollection.findOne(
+    ): Promise<UsersDocument | null> {
+        const user = UsersModel.findOne(
             { 'passwordRecovery.recoveryCode': recoveryCode }
         )
 
@@ -82,7 +80,7 @@ export class UsersRepository {
         newPassword: string, 
         userId: string
     ) {
-        await usersCollection.updateOne(
+        await UsersModel.updateOne(
             {_id: new ObjectId(userId)},
             {$set: {
                 password: newPassword,

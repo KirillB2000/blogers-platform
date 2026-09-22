@@ -16,10 +16,10 @@ import { CommentQueryInput } from "../../comments/api/input/commentQueryInput";
 import { CommentListPaginatorOutput } from "../../comments/api/output/commentListPaginatorOutput";
 import { PostQueryInput } from "./input/post-query.input";
 import { PagindatedOutput } from "../../../core/types/paginated.output";
-import { Post } from "../domain/post";
 import { mapToPostListPaginatedOutput } from "../mappers/map-from-post-domain-to-post-paginated-output";
 import { PostListPaginatorOutput } from "./output/post-list-paginator.output";
 import { injectable, inject } from "inversify";
+import { PostsDocument } from "../infrastructure/posts.model";
 
 @injectable()
 export class PostsController {
@@ -65,7 +65,7 @@ export class PostsController {
             throw new BadRequestError([{ message: 'Blog should exist', field: 'blogId' }])
         }
 
-        const createdPostId: ObjectId = await this.postsService.create(req.body);
+        const createdPostId = await this.postsService.create(req.body);
 
         const createdPostForResponse: PostViewModel = await this.postsQwRepository.findById(createdPostId)
 
@@ -111,7 +111,7 @@ export class PostsController {
         res: Response
     ) {
         const queryInput = req.query
-        const posts: { items: WithId<Post>[], totalCount: number } = await this.postsQwRepository.findAll(queryInput)
+        const posts: { items: PostsDocument[], totalCount: number } = await this.postsQwRepository.findAll(queryInput)
 
         const pagesCount = Math.ceil(posts.totalCount / queryInput.pageSize)
         const meta: PagindatedOutput = {

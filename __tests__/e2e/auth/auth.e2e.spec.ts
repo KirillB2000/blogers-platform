@@ -1,27 +1,28 @@
 import { AUTH_PATH, AUTH_ROUTING } from "../../../src/modules/auth/constants/auth.paths";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
-import { runDB, stopDb } from "../../../src/db/mongo.db";
-import { SETTINGS } from "../../../src/settings/config";
 import setupApp from "../../../src/setup-app";
 import { clearDb } from "../../utils/clearDb";
 import express from 'express'
 import request from "supertest";
 import { createUserDto } from "../../utils/users/createUserDto";
 import { authDto } from "../../utils/auth/authDto";
-import { requestsLogCollection, sessionsCollection, usersCollection } from "../../../src/db/collections";
 import { generateTestAccessJwt } from "../../utils/generateJwt";
 import { UserInputModel } from "../../../src/modules/users/api/input/dto/userInputModel";
 import { userDto } from "../../utils/users/userDto";
 import { LoginInputModel } from "../../../src/modules/auth/api/input/dto/loginInputModel";
 import { RegistrationEmailResendingInputModel } from "../../../src/modules/auth/api/input/dto/registrationEmailResendingInputModel";
+import { runDb, stopDb } from "../../../src/db/mongoose.db";
+import { UsersModel } from "../../../src/modules/users/infrastructure/users.model";
+import { AuthSessionsModel } from "../../../src/modules/auth/infrastructure/sessions.model";
+import { ApiRequestLogModel } from "../../../src/core/middlewares/rateLimiter/infrastructure/rateLimitModel";
 
 describe("Auth API", () => {
     const app = express();
     setupApp(app);
 
     beforeAll(async () => {
-        await runDB(SETTINGS.MONGO_URL)
-        await usersCollection.deleteMany({})
+        await runDb()
+        await UsersModel.deleteMany({})
     });
 
     afterAll(async () => {
@@ -30,9 +31,9 @@ describe("Auth API", () => {
     })
 
     beforeEach(async () => {
-        await usersCollection.deleteMany({})
-        await sessionsCollection.deleteMany({})
-        await requestsLogCollection.deleteMany({})
+        await UsersModel.deleteMany({})
+        await AuthSessionsModel.deleteMany({})
+        await ApiRequestLogModel.deleteMany({})
     })
 
     it('Should log in with correct input data and existing user; POST /auth/login', async () => {

@@ -7,14 +7,13 @@ import { blogDto } from "../../utils/blogs/blogDto";
 import { createBlogDto } from "../../utils/blogs/createBlogDto";
 import { clearDb } from "../../utils/clearDb";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
-import { runDB, stopDb } from "../../../src/db/mongo.db";
-import { SETTINGS } from "../../../src/settings/config";
 
 import { postForBlogDto } from "../../utils/posts/postForBlogDto";
 import { BLOGS_PATH } from "../../../src/modules/blogs/constants/blogs.paths";
 import { blogInputModel } from "../../../src/modules/blogs/api/input/dto/blogInputModel";
 import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths";
 import { PostBlogInputModel } from "../../../src/modules/posts/api/input/dto/postBlogInputModel";
+import { runDb, stopDb } from "../../../src/db/mongoose.db";
 
 describe("Blogs API", () => {
   const app = express();
@@ -23,7 +22,7 @@ describe("Blogs API", () => {
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
-    await runDB(SETTINGS.MONGO_URL)
+    await runDb()
     await clearDb(app);
   });
 

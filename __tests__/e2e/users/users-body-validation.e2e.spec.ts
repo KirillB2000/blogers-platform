@@ -1,13 +1,12 @@
 import express from 'express'
 import setupApp from '../../../src/setup-app';
-import { runDB, stopDb } from '../../../src/db/mongo.db';
-import { usersCollection } from '../../../src/db/collections';
-import { SETTINGS } from '../../../src/settings/config';
 import request from 'supertest'
 import { USERS_PATH } from '../../../src/modules/users/constants/users.paths';
 import { httpStatuses } from '../../../src/core/types/http-statuses';
 import { generateBasicAuthToken } from '../../utils/generateBasicAuthToken';
 import { UserInputModel } from '../../../src/modules/users/api/input/dto/userInputModel';
+import { runDb, stopDb } from '../../../src/db/mongoose.db';
+import { UsersModel } from '../../../src/modules/users/infrastructure/users.model';
 
 describe("Blogs API body validation check", () => {
     const app = express();
@@ -20,12 +19,12 @@ describe("Blogs API body validation check", () => {
     };
 
     beforeAll(async () => {
-        await runDB(SETTINGS.MONGO_URL)
-        await usersCollection.deleteMany({})
+        await runDb()
+        await UsersModel.deleteMany({})
     });
 
     afterAll(async () => {
-        await usersCollection.deleteMany({})
+        await UsersModel.deleteMany({})
         await stopDb()
     })
 

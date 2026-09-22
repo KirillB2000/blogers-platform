@@ -1,8 +1,5 @@
 import express from 'express'
 import setupApp from '../../../src/setup-app'
-import { runDB, stopDb } from '../../../src/db/mongo.db'
-import { SETTINGS } from '../../../src/settings/config'
-import { commentsCollection, postsCollection, usersCollection } from '../../../src/db/collections'
 import request from 'supertest'
 import { httpStatuses } from '../../../src/core/types/http-statuses'
 import { createPostDto } from '../../utils/posts/createPostDto'
@@ -11,19 +8,23 @@ import { createCommentDto } from '../../utils/comments/createCommentDto'
 import { commentDto } from '../../utils/comments/commentDto'
 import { COMMENTS_PATH } from '../../../src/modules/comments/constants/comments.paths'
 import { CommentInputModel } from '../../../src/modules/comments/api/input/dto/commentInputModel'
+import { runDb, stopDb } from '../../../src/db/mongoose.db'
+import { PostsModel } from '../../../src/modules/posts/infrastructure/posts.model'
+import { UsersModel } from '../../../src/modules/users/infrastructure/users.model'
+import { CommentsModel } from '../../../src/modules/comments/infrastructure/comments.model'
 
 describe('Users API', () => {
     const app = express()
     setupApp(app)
 
     beforeAll( async () => {
-        await runDB(SETTINGS.MONGO_URL)
+        await runDb()
     })
 
     beforeEach(async () => {
-        await commentsCollection.deleteMany({})
-        await usersCollection.deleteMany({})
-        await postsCollection.deleteMany({})
+        await CommentsModel.deleteMany({})
+        await UsersModel.deleteMany({})
+        await PostsModel.deleteMany({})
     })
 
     afterAll(async () => {

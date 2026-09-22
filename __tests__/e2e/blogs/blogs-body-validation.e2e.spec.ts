@@ -5,10 +5,9 @@ import { clearDb } from "../../utils/clearDb";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { createBlogDto } from "../../utils/blogs/createBlogDto";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
-import { runDB, stopDb } from "../../../src/db/mongo.db";
-import { SETTINGS } from "../../../src/settings/config";
 import { BLOGS_PATH } from "../../../src/modules/blogs/constants/blogs.paths";
 import { blogInputModel } from "../../../src/modules/blogs/api/input/dto/blogInputModel";
+import { runDb, stopDb } from "../../../src/db/mongoose.db";
 
 describe("Blogs API body validation check", () => {
   const app = express();
@@ -21,7 +20,7 @@ describe("Blogs API body validation check", () => {
   };
 
   beforeAll(async () => {
-    await runDB(SETTINGS.MONGO_URL)
+    await runDb()
     await clearDb(app);
   });
 

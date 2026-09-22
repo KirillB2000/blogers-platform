@@ -1,9 +1,8 @@
-import { WithId } from "mongodb";
 import { MeViewModel } from "../../auth/api/output/me-output.type";
-import { IUserDB } from "../domain/iUserDb";
+import { UsersDocument } from "../infrastructure/users.model";
 
 export const mapUserDomainToMeViewModel = (
-    userDomain: WithId<IUserDB> 
+    userDomain: UsersDocument
 ): MeViewModel => {
     return {
         email: userDomain.email,

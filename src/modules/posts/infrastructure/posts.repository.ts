@@ -1,20 +1,19 @@
 import { ObjectId } from "mongodb";
 import { PostInputModel } from "../api/input/dto/postInputModel";
-import { Post } from "../domain/post";
-import { postsCollection } from "../../../db/collections";
 import { injectable } from "inversify";
+import { PostsModel, PostsType } from "./posts.model";
 
 @injectable()
 export class PostsRepository {
 
-  async create(newPost: Post): Promise<ObjectId> {
-    const insertResult = await postsCollection.insertOne(newPost)
+  async create(newPost: PostsType): Promise<string> {
+    const insertResult = await PostsModel.insertOne(newPost)
 
-    return insertResult.insertedId
+    return insertResult.id
   }
 
   async update(id: string, post: PostInputModel): Promise<boolean> {
-    const updatedResult = await postsCollection.updateOne(
+    const updatedResult = await PostsModel.updateOne(
       {_id: new ObjectId(id)},
       {$set: post}
     )
@@ -23,7 +22,7 @@ export class PostsRepository {
   }
 
   async delete(id: string): Promise<boolean> {
-    const deleteResult = await postsCollection.deleteOne({
+    const deleteResult = await PostsModel.deleteOne({
       _id: new ObjectId(id)
     })
 

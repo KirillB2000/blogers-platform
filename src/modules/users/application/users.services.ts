@@ -1,11 +1,10 @@
-import { ObjectId } from "mongodb";
 import { BadRequestError, NotFoundError } from "../../../core/exceptions/app-errors.exeption";
 import { mapUserInputToIDbType } from "../mappers/mapUserInputToIDbType";
 import { UserInputModel } from "../api/input/dto/userInputModel";
-import { IUserDB } from "../domain/iUserDb";
 import { UsersRepository } from "../infrastructure/user.repository";
 import { BcryptService } from "../../auth/adapters/bcrypt.services";
 import { injectable } from "inversify";
+import { UsersType } from "../infrastructure/users.model";
 
 @injectable()
 export class UsersService {
@@ -17,7 +16,7 @@ export class UsersService {
 
     async create (
         dto: UserInputModel
-    ): Promise<ObjectId> {
+    ): Promise<string> {
 
         const existingUserEmail = await this.usersRepository.findByEmail(dto.email)
         if (existingUserEmail) {
@@ -31,9 +30,9 @@ export class UsersService {
 
         const hashedPassword = await this.bcryptService.generateHash(dto.password)
 
-        const dbUser: IUserDB = mapUserInputToIDbType(dto, hashedPassword)
+        const dbUser: UsersType = mapUserInputToIDbType(dto, hashedPassword)
 
-        const userId = await this.usersRepository.create(dbUser)
+        const userId = (await this.usersRepository.create(dbUser)).toString()
 
         return userId
     }

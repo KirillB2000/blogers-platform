@@ -1,12 +1,12 @@
 import { randomUUID } from "crypto";
 import { add } from "date-fns";
 import { UserInputModel } from "../api/input/dto/userInputModel";
-import { IUserDB } from "../domain/iUserDb";
+import { UsersType } from "../infrastructure/users.model";
 
 export const mapUserInputToIDbType = (
     userDto: UserInputModel,
     passwordHash: string
-): IUserDB => {
+): UsersType => {
     return {
         login: userDto.login,
         email: userDto.email,

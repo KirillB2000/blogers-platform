@@ -17,9 +17,9 @@ import { BlogQueryInput } from "./input/blog-query.input";
 import { NotFoundError } from "../../../core/exceptions/app-errors.exeption";
 import { PostQueryInput } from "../../posts/api/input/post-query.input";
 import { PostListPaginatorOutput } from "../../posts/api/output/post-list-paginator.output";
-import { Post } from "../../posts/domain/post";
 import { mapToPostListPaginatedOutput } from "../../posts/mappers/map-from-post-domain-to-post-paginated-output";
 import { injectable, inject } from "inversify";
+import { PostsDocument } from "../../posts/infrastructure/posts.model";
 
 @injectable()
 export class BlogsController {
@@ -47,7 +47,7 @@ export class BlogsController {
         const blogId = req.params.blogId
         const postInputDto: PostInputModel = { blogId, ...req.body }    
 
-        const createdPostId: ObjectId = await this.postsService.create(postInputDto)
+        const createdPostId = await this.postsService.create(postInputDto)
         const createdPost: PostViewModel = await this.postsQwRepository.findById(createdPostId) 
         
         res.status(httpStatuses.Created).json(createdPost)
@@ -106,7 +106,7 @@ export class BlogsController {
             throw new NotFoundError('Blog not found')
         }
 
-        const posts: { items: WithId<Post>[], totalCount: number } = await this.postsQwRepository.findAll(queryInput, blogId)
+        const posts: { items: PostsDocument[], totalCount: number } = await this.postsQwRepository.findAll(queryInput, blogId)
 
         const pagesCount = Math.ceil(posts.totalCount / queryInput.pageSize)
 

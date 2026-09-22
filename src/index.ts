@@ -4,12 +4,9 @@ dotenv.config()
 import { SETTINGS } from "./settings/config";
 import express from "express";
 import setupApp from "./setup-app";
-import { runDB } from "./db/mongo.db";
-import { dbConnectionMiddleware } from "./db/db-connection.middleware";
+import { runDb } from './db/mongoose.db';
 
-const app = express();
-
-app.use(dbConnectionMiddleware);
+export const app = express();
 app.set('trust proxy', true)
 
 setupApp(app);
@@ -17,15 +14,10 @@ setupApp(app);
 const PORT = SETTINGS.PORT;
 
 const startApp = async () => {
-  if (!SETTINGS.VERCEL) {
-    await runDB(SETTINGS.MONGO_URL)
-
-    app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
-    });
-  }
+  await runDb()
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
 }
 
 startApp()
-
-export default app;

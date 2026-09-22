@@ -1,20 +1,20 @@
 import { blogInputModel } from "../api/input/dto/blogInputModel";
-import { ObjectId, WithId } from "mongodb";
-import { Blog } from "../domain/blog";
-import { blogsCollection, postsCollection } from "../../../db/collections";
+import { ObjectId } from "mongodb";
 import { injectable } from "inversify";
+import { BlogsDocument, BlogsModel, BlogsType } from "./blogs.model";
+import { PostsModel } from "../../posts/infrastructure/posts.model";
 
 
 @injectable()
 export class BlogsRepository {
-  async create(newBlog: Blog): Promise<string> {
-    const createdBlog = await blogsCollection.insertOne(newBlog)
+  async create(newBlog: BlogsType): Promise<string> {
+    const createdBlog = await BlogsModel.insertOne(newBlog)
 
-    return createdBlog.insertedId.toString()
+    return createdBlog.id
   }
 
   async update(id: string, blog: blogInputModel): Promise<boolean> {
-    const updateResult = await blogsCollection.updateOne(
+    const updateResult = await BlogsModel.updateOne(
       {_id: new ObjectId(id)},
       {$set: blog}
     )
@@ -24,9 +24,9 @@ export class BlogsRepository {
 
   async delete(id: string): Promise<boolean> {
 
-    await postsCollection.deleteMany({blogId: id})
+    await PostsModel.deleteMany({blogId: id})
 
-    const deleteResult = await blogsCollection.deleteOne(
+    const deleteResult = await BlogsModel.deleteOne(
       {_id: new ObjectId(id)}
     )
 
@@ -34,8 +34,8 @@ export class BlogsRepository {
   }
 
   // For post creation and throwing bad request exeption
-  async findById (id: string) : Promise<WithId<Blog> | null> { 
-    const blog = await blogsCollection.findOne({_id: new ObjectId(id)})
+  async findById (id: string) : Promise<BlogsDocument | null> { 
+    const blog = await BlogsModel.findOne({_id: new ObjectId(id)})
 
     return blog
   }

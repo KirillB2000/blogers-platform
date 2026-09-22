@@ -1,9 +1,8 @@
-import { WithId } from "mongodb";
-import { CommentDb } from "../domain/comment";
 import { CommentViewModel } from "../api/output/commentViewModel";
+import { CommentsDocument } from "../infrastructure/comments.model";
 
 export const mapFromCommentDbTypeToViewModel = (
-    dbComment: WithId<CommentDb>
+    dbComment: CommentsDocument
 ): CommentViewModel => {
     return {
         id: dbComment._id.toString(),

@@ -4,15 +4,16 @@ import request from "supertest";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { clearDb } from "../../utils/clearDb";
 import { generateBasicAuthToken } from "../../utils/generateBasicAuthToken";
-import { runDB, stopDb } from "../../../src/db/mongo.db";
-import { SETTINGS } from "../../../src/settings/config";
 import { createBlogDto } from "../../utils/blogs/createBlogDto";
 import { createPostDto } from "../../utils/posts/createPostDto";
 import { createUserDto } from "../../utils/users/createUserDto";
 import { createCommentDto } from "../../utils/comments/createCommentDto";
-import { commentsCollection, postsCollection, usersCollection } from "../../../src/db/collections";
 import { COMMENTS_PATH } from "../../../src/modules/comments/constants/comments.paths";
 import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths";
+import { runDb, stopDb } from "../../../src/db/mongoose.db";
+import { PostsModel } from "../../../src/modules/posts/infrastructure/posts.model";
+import { UsersModel } from "../../../src/modules/users/infrastructure/users.model";
+import { CommentsModel } from "../../../src/modules/comments/infrastructure/comments.model";
 
 describe("Posts API", () => {
   const app = express();
@@ -21,13 +22,13 @@ describe("Posts API", () => {
   const adminToken = generateBasicAuthToken();
 
   beforeAll(async () => {
-    await runDB(SETTINGS.MONGO_URL)
+    await runDb()
   })
 
   beforeEach(async () => {
-    await commentsCollection.deleteMany({})
-    await usersCollection.deleteMany({})
-    await postsCollection.deleteMany({})
+    await CommentsModel.deleteMany({})
+    await UsersModel.deleteMany({})
+    await PostsModel.deleteMany({})
   })
 
   afterAll(async () => {

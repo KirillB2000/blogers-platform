@@ -1,4 +1,3 @@
-import { WithId } from "mongodb";
 import { BadRequestError, UnauthorizedError } from "../../../core/exceptions/app-errors.exeption";
 import { LoginInputModel } from "../api/input/dto/loginInputModel";
 import { BcryptService } from "../adapters/bcrypt.services";
@@ -8,13 +7,13 @@ import { emailExamples } from "../adapters/emailExamples";
 import { isAfter, add } from "date-fns";
 import { randomUUID } from "node:crypto";
 import { UserInputModel } from "../../users/api/input/dto/userInputModel";
-import { IUserDB } from "../../users/domain/iUserDb";
-import { AuthSession } from "../domain/session";
 import { SessionsRepository } from "../infrastructure/sessions.repository";
 import { AuthServiceHelpers } from "./auth.serviceHelpers";
 import { JwtService } from "../adapters/jwt.services";
 import { UsersRepository } from "../../users/infrastructure/user.repository";
 import { inject, injectable } from "inversify";
+import { UsersDocument } from "../../users/infrastructure/users.model";
+import { AuthSessionsType } from "../infrastructure/sessions.model";
 
 @injectable()
 export class AuthService {
@@ -47,7 +46,7 @@ export class AuthService {
         const accessToken = await this.jwtService.createAccessJWT(user)
         const { refreshToken, issuedAt, expiredAt } = await this.jwtService.createRefreshJWT(user, deviceId)
 
-        const sessionForDb: AuthSession = {
+        const sessionForDb: AuthSessionsType = {
             userId: user._id.toString(),
             deviceId: deviceId,
             title: deviceName,
@@ -91,7 +90,7 @@ export class AuthService {
     }
 
     async emailConfirmation(
-        user: WithId<IUserDB>
+        user: UsersDocument
     ): Promise<void> {
         const expiryDate = user.emailConfirmation.expirationDate
         if (isAfter(new Date(), expiryDate)) {
@@ -109,7 +108,7 @@ export class AuthService {
     }
 
     async emailResending(
-        user: WithId<IUserDB>
+        user: UsersDocument
     ): Promise<void> {
         const isConfirmed = user.emailConfirmation.isConfirmed
         if (isConfirmed) {

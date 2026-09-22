@@ -1,4 +1,4 @@
-import { requestsLogCollection } from "../../../../db/collections"
+import { ApiRequestLogModel } from "./rateLimitModel"
 
 export const rateLimitRepository = {
     async create(
@@ -6,7 +6,7 @@ export const rateLimitRepository = {
         url: string,
         date: Date
     ): Promise<void> {
-        await requestsLogCollection.insertOne(
+        await ApiRequestLogModel.insertOne(
             { ip: ipAddress, url: url, date: date},
         )
     },
@@ -19,7 +19,7 @@ export const rateLimitRepository = {
 
         const tenSecondsAgo = new Date(Date.now() - secondsWindow * 1000)
 
-        const count = await requestsLogCollection
+        const count = await ApiRequestLogModel
             .countDocuments(
                 { ip: ipAddress, url: url, date: { $gte: tenSecondsAgo }},
             )
