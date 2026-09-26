@@ -4,6 +4,7 @@ import { CommentsService } from "../application/comments.services"
 import { CommentsQwRepository } from "../infrastructure/comments.queryRepository"
 import { CommentInputModel } from "./input/dto/commentInputModel"
 import { injectable, inject } from "inversify"
+import { LikeInputModel } from "./input/dto/likeInputModel"
 
 @injectable()
 export class CommentsController {
@@ -55,5 +56,18 @@ export class CommentsController {
         await this.commentsService.update(commentId, content)
 
         res.sendStatus(httpStatuses.NoContent)
+    }
+
+    async updateLikeStatusHandler (
+        req: Request<{ commentId: string }, {}, LikeInputModel>,
+        res: Response
+    ) {
+        const userId = req.user?.id as string
+        if (!userId) return res.sendStatus(httpStatuses.Unauthorized)
+        
+        const { commentId } = req.params
+        const { likeStatus } = req.body
+
+        await this.commentsService.updateLikeStatus(userId, commentId, likeStatus)
     }
 }

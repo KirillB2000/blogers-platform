@@ -1,7 +1,6 @@
-import { ObjectId } from "mongodb";
 import { CommentInputModel } from "../api/input/dto/commentInputModel";
 import { injectable } from "inversify";
-import { CommentsModel, CommentsType } from "./comments.model";
+import { CommentsDocument, CommentsModel, CommentsType } from "./comments.model";
 
 @injectable()
 export class CommentsRepository {
@@ -16,7 +15,7 @@ export class CommentsRepository {
     async delete (
         commentId: string
     ): Promise<boolean> {
-        const deletionResult = await CommentsModel.deleteOne({_id: new ObjectId(commentId)})
+        const deletionResult = await CommentsModel.deleteOne({ _id: commentId })
         
         return deletionResult.deletedCount > 0
     }
@@ -26,10 +25,31 @@ export class CommentsRepository {
         content: CommentInputModel
     ) {
         const updateResult = await CommentsModel.updateOne(
-            {_id: new ObjectId(commentId)},
+            { _id: commentId },
             { $set: content}
         )
 
         return updateResult.matchedCount > 0
+    }
+
+    async findById (
+        commentId: string
+    ): Promise<CommentsDocument | null> {
+        const commentDocument = await CommentsModel.findById(commentId)
+
+        return commentDocument
+    }
+
+    async updateLikesAndDislikes (
+        likesNumber: number,
+        dislikesNumber: number,
+        commentId: string
+    ): Promise<void> {
+        await CommentsModel.updateOne(
+            { _id: commentId },
+            { 
+                $inc: { 'likesInfo.likesCount': likesNumber, 'likesInfo.dislikesCount': dislikesNumber }
+            }
+        )
     }
 }

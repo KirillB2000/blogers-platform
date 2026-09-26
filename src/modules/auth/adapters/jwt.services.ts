@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { SETTINGS } from "../../../settings/config";
-import { randomUUID, UUID } from "crypto";
+import { randomUUID } from "crypto";
 import { RefreshTokenPayload } from "../api/input/jwtPayloadSessions";
 import { injectable } from "inversify";
 import { UsersDocument } from "../../users/infrastructure/users.model";
@@ -36,7 +36,7 @@ export class JwtService {
             jti: randomUUID()
         }
 
-        const accessToken = jwt.sign(payload, this.accessSecret, {expiresIn: '10s'})
+        const accessToken = jwt.sign(payload, this.accessSecret, {expiresIn: '10m'})
 
         return accessToken
     }
@@ -46,7 +46,7 @@ export class JwtService {
         deviceId: string
     ): Promise<{ refreshToken: string, issuedAt: number, expiredAt: Date}> {
         const iatSeconds = Math.floor(Date.now() / 1000)
-        const expSeconds = iatSeconds + 20
+        const expSeconds = iatSeconds + 1800
 
         const payload: RefreshTokenPayload = {
             userId: user._id.toString(),

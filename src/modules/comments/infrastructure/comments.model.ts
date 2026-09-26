@@ -1,4 +1,5 @@
 import mongoose, { model } from "mongoose"
+import { LikesInfoType } from "./likesStatus.model"
 
 export type CommentatorInfoType = {
     userId: string
@@ -10,21 +11,30 @@ export type CommentsType = {
     content: string
     commentatorInfo: CommentatorInfoType
     createdAt: Date
+    likesInfo: LikesInfoType
 }
 
 type CommentsModel = mongoose.Model<CommentsType>
 export type CommentsDocument = mongoose.HydratedDocument<CommentsType>
+
 
 const CommentatorInfoSchema = new mongoose.Schema<CommentatorInfoType>({ 
     userId: { type: String, required: true },
     userLogin: { type: String, required: true }
 }, {_id: false})
 
+const LikesInfoSchema = new mongoose.Schema<Omit<LikesInfoType, 'myStatus'>>({
+    likesCount: {type: Number, required: true},
+    dislikesCount: {type: Number, required: true}
+}, {_id: false})
+
+
 const CommentsSchema = new mongoose.Schema<CommentsType>({ 
     postId: { type: String, required: true },
     content: { type: String, required: true, max: 1000 },
     commentatorInfo: { type: CommentatorInfoSchema, required: true },
     createdAt: { type: Date, required: true },
+    likesInfo: { type: LikesInfoSchema, required: true }
 })
 
 CommentsSchema.index({ postId: 1 })

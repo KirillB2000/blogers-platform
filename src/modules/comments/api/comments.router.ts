@@ -8,6 +8,7 @@ import { COMMENTS_ROUTES } from "../constants/comments.paths";
 import { commentInputDtoValidation } from "../validation/commentInput.validation";
 import { container } from "../../../compostion-root";
 import { CommentsController } from "./comments.controller";
+import { likeStatusValidation } from "../validation/likeStatusInput.validation";
 
 export const commentsRouter = Router({})
 
@@ -38,4 +39,13 @@ commentsRouter
         commentInputDtoValidation,
         inputValidationResultMiddleware,
         catchAsync(commentsController.updateCommentByIdHandler.bind(commentsController))
+    )
+
+    .put(
+        `${COMMENTS_ROUTES.BY_COMMENT_ID}${COMMENTS_ROUTES.LIKE_STATUS}`,
+        accessTokenGuardMiddleware,
+        idParamsValidation(PARAMS_IDS.COMMENT_ID),
+        likeStatusValidation,
+        inputValidationResultMiddleware,
+        catchAsync(commentsController.updateLikeStatusHandler.bind(commentsController))
     )
