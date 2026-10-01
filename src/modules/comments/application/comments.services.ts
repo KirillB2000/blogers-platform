@@ -1,5 +1,5 @@
 import { CommentInputModel } from "../api/input/dto/commentInputModel";
-import { BadRequestError, NotFoundError, UnauthorizedError } from "../../../core/exceptions/app-errors.exeption";
+import { BadRequestError, NotFoundError } from "../../../core/exceptions/app-errors.exeption";
 import { UserViewModel } from "../../users/api/output/userViewModel";
 import { CommentsRepository } from "../infrastructure/comments.repository";
 import { injectable, inject } from "inversify";
@@ -7,6 +7,7 @@ import { CommentsType } from "../infrastructure/comments.model";
 import { LikeStatus } from "../infrastructure/likesStatus.model";
 import { UsersRepository } from "../../users/infrastructure/user.repository";
 import { LikesStatusCommentsRepository } from "../infrastructure/likesStatusComments.repository";
+import { LIKES_MATCH } from "../constants/likesMatch";
 
 @injectable()
 export class CommentsService {
@@ -85,6 +86,7 @@ export class CommentsService {
         const likeStatusDb = await this.likesStatusCommentsRepository.findLikeStatusForSpecificComment(userId, commentId)
 
         if (!likeStatusDb) {
+            if (likeStatus === LikeStatus.None) return
             await this.likesStatusCommentsRepository.saveLikeStatus(userId, commentId, likeStatus)
             likeStatus === LikeStatus.Like ? likesNumber = 1 : dislikesNubmer = 1
 

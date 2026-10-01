@@ -11,7 +11,7 @@ export const createUserDto = async (
   app: Express,
   inputForUser?: UserInputModel,
 ): Promise<UserViewModel> => {
-    const testUserData: UserInputModel = { ...userDto(), ...inputForUser };
+  const testUserData: UserInputModel = { ...userDto(), ...inputForUser };
 
   const createdUserResponse = await request(app)
     .post(USERS_PATH)

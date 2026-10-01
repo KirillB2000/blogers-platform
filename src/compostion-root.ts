@@ -28,6 +28,7 @@ import { UsersController } from "./modules/users/api/users.controller";
 import { UsersService } from "./modules/users/application/users.services";
 import { UsersQwRepository } from "./modules/users/infrastructure/user.queryRepository";
 import { UsersRepository } from "./modules/users/infrastructure/user.repository";
+import { LikesStatusCommentsRepository } from './modules/comments/infrastructure/likesStatusComments.repository';
 
 export const container: Container = new Container()
 
@@ -59,6 +60,7 @@ container.bind(CommentsController).to(CommentsController)
 container.bind(CommentsService).to(CommentsService)
 container.bind(CommentsRepository).to(CommentsRepository)
 container.bind(CommentsQwRepository).to(CommentsQwRepository)
+container.bind(LikesStatusCommentsRepository).to(LikesStatusCommentsRepository)
 
 // Posts
 container.bind(PostsController).to(PostsController)

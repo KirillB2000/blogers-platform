@@ -9,12 +9,15 @@ export class LikesStatusCommentsRepository {
         commentId: string,
         likeStatus: LikeStatus
     ): Promise<void> {
-        const likeStatusDb = new LikesStatusModel()
-        likeStatusDb.userId = userId
-        likeStatusDb.commentId = commentId
-        likeStatusDb.myStatus = likeStatus
+        let likeStatusD = await LikesStatusModel.findOne({ userId: userId, commentId: commentId })
 
-        await likeStatusDb.save()
+        if (!likeStatusD) {
+            likeStatusD = new LikesStatusModel({ userId, commentId })
+        }
+
+        likeStatusD.myStatus = likeStatus
+
+        await likeStatusD.save()
     }
 
     async findLikeStatusForSpecificComment (

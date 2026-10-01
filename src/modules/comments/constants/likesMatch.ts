@@ -1,4 +1,4 @@
-const LIKES_MATCH = {
+export const LIKES_MATCH = {
     LIKE_TO_DISLIKE: 'dislikelike',
     DISLIKE_TO_LIKE: 'likedislike',
     LIKE_TO_NONE: 'nonelike',

@@ -71,5 +71,7 @@ export class CommentsController {
         const { likeStatus } = req.body
 
         await this.commentsService.updateLikeStatus(userId, commentId, likeStatus)
+
+        res.sendStatus(httpStatuses.NoContent)
     }
 }

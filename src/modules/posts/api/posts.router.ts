@@ -15,6 +15,7 @@ import { postInputDtoValidation } from "../validation/post-input.validation.midd
 import { PostSortField } from "./input/post-sort-fields";
 import { container } from "../../../compostion-root";
 import { PostsController } from "./posts.controller";
+import { softAuthMiddleware } from "../../../core/middlewares/softAuth.middleware";
 
 export const postsRouter = Router({});
 
@@ -80,5 +81,6 @@ postsRouter
     paginationAndSortingValidation(CommentSortField),
     inputValidationResultMiddleware,
     sanitizeQueryParams,
+    softAuthMiddleware,
     catchAsync(postsController.getCommentListForSpecificPostHandler.bind(postsController) as unknown as RequestHandler)
   )

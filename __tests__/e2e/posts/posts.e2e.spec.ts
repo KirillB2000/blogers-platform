@@ -8,12 +8,16 @@ import { createBlogDto } from "../../utils/blogs/createBlogDto";
 import { createPostDto } from "../../utils/posts/createPostDto";
 import { createUserDto } from "../../utils/users/createUserDto";
 import { createCommentDto } from "../../utils/comments/createCommentDto";
-import { COMMENTS_PATH } from "../../../src/modules/comments/constants/comments.paths";
+import { COMMENTS_PATH, COMMENTS_ROUTES } from "../../../src/modules/comments/constants/comments.paths";
 import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths";
 import { runDb, stopDb } from "../../../src/db/mongoose.db";
 import { PostsModel } from "../../../src/modules/posts/infrastructure/posts.model";
 import { UsersModel } from "../../../src/modules/users/infrastructure/users.model";
 import { CommentsModel } from "../../../src/modules/comments/infrastructure/comments.model";
+import { LikeInputModel } from "../../../src/modules/comments/api/input/dto/likeInputModel";
+import { LikeStatus } from "../../../src/modules/comments/infrastructure/likesStatus.model";
+import { generateTestAccessJwt } from "../../utils/generateJwt";
+import { CommentViewModel } from "../../../src/modules/comments/api/output/commentViewModel";
 
 describe("Posts API", () => {
   const app = express();
@@ -227,7 +231,7 @@ describe("Posts API", () => {
     const existedPost = await createPostDto(app)
     const existedUser = await createUserDto(app)
 
-    const {body: comment, token} = await createCommentDto(app, existedPost.id, existedUser)
+    const { body: comment } = await createCommentDto(app, existedPost.id, existedUser)
 
     expect(comment).toEqual({
       id: expect.any(String),
@@ -236,21 +240,64 @@ describe("Posts API", () => {
         userId: existedUser.id,
         userLogin: existedUser.login
       },
-      createdAt: expect.any(String)
+      createdAt: expect.any(String),
+      likesInfo: {
+        likesCount: comment.likesInfo.likesCount,
+        dislikesCount: comment.likesInfo.dislikesCount,
+        myStatus: comment.likesInfo.myStatus
+      }
     })
 
   }),
 
-    it("Should get comments list for specific post; GET /post/:postId/comments", async () => {
-      const existedPost = await createPostDto(app)
-      const existedUser = await createUserDto(app)
+  it("Should get comments list for specific post; GET /post/:postId/comments", async () => {
+    const existedPost = await createPostDto(app)
+    const existedUser = await createUserDto(app)
+    const { body: comment1 } = await createCommentDto(app, existedPost.id, existedUser)
+    const { body: comment2 } = await createCommentDto(app, existedPost.id, existedUser)
+    const { body: comment3 } = await createCommentDto(app, existedPost.id, existedUser)
+    const userToLike1 = await createUserDto(
+      app,
+      {
+        email: 'UserToLike@example.com',
+        login: 'UserToLike',
+        password: '123123123123'
+      }
+    )
+    const userToLikeToken1 = generateTestAccessJwt(userToLike1)
+    let likeStatusInput: LikeInputModel = {
+      likeStatus: LikeStatus.Like
+    }
+    // Like first comment
+    await request(app)
+      .put(`${COMMENTS_PATH}/${comment1.id}${COMMENTS_ROUTES.LIKE_STATUS}`)
+      .set('Authorization', `Bearer ${userToLikeToken1}`)
+      .send(likeStatusInput)
+      .expect(httpStatuses.NoContent)
+      // Dislike second comment
+    likeStatusInput.likeStatus = LikeStatus.Dislike
+    await request(app)
+      .put(`${COMMENTS_PATH}/${comment2.id}${COMMENTS_ROUTES.LIKE_STATUS}`)
+      .set('Authorization', `Bearer ${userToLikeToken1}`)
+      .send(likeStatusInput)
+      .expect(httpStatuses.NoContent)
+    const response = await request(app)
+      .get(`${POSTS_PATH}/${existedPost.id}${COMMENTS_PATH}`)
+      .set('Authorization', `Bearer ${userToLikeToken1}`)
+      .expect(httpStatuses.Ok)
 
-      await createCommentDto(app, existedPost.id, existedUser)
-      await createCommentDto(app, existedPost.id, existedUser)
-      await createCommentDto(app, existedPost.id, existedUser)
+    const comment1LikeStatus: CommentViewModel = response.body.items.find((comm: CommentViewModel) => comm.id === comment1.id)
+    const comment2LikeStatus: CommentViewModel = response.body.items.find((comm: CommentViewModel) => comm.id === comment2.id)
+    const comment3LikeStatus: CommentViewModel = response.body.items.find((comm: CommentViewModel) => comm.id === comment3.id)
 
-      const response = await request(app)
-        .get(`${POSTS_PATH}/${existedPost.id}${COMMENTS_PATH}`)
-        .expect(httpStatuses.Ok)
-    })
+    expect(comment1LikeStatus.likesInfo.likesCount).toBe(1)
+    expect(comment1LikeStatus.likesInfo.myStatus).toBe(LikeStatus.Like)
+
+    expect(comment2LikeStatus.likesInfo.dislikesCount).toBe(1)
+    expect(comment2LikeStatus.likesInfo.myStatus).toBe(LikeStatus.Dislike)
+    
+    expect(comment3LikeStatus.likesInfo.likesCount).toBe(0)
+    expect(comment3LikeStatus.likesInfo.dislikesCount).toBe(0)
+    expect(comment3LikeStatus.likesInfo.myStatus).toBe(LikeStatus.None)
+  })
 });

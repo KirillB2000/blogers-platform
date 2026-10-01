@@ -6,7 +6,6 @@ import { PostsQwRepository } from "../infrastructure/posts.queryRepository";
 import { CommentsQwRepository } from "../../comments/infrastructure/comments.queryRepository";
 import { CommentsService } from "../../comments/application/comments.services";
 import { BadRequestError } from "../../../core/exceptions/app-errors.exeption";
-import { ObjectId, WithId } from "mongodb";
 import { BlogViewModel } from "../../blogs/api/output/blog-data.output";
 import { PostInputModel } from "./input/dto/postInputModel";
 import { PostViewModel } from "./output/post-data.output";
