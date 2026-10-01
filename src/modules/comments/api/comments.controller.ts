@@ -34,8 +34,10 @@ export class CommentsController {
         req: Request<{ id: string }>,
         res: Response
     ) {
+        const userId = req.user?.id || null
+
         const commentId = req.params.id
-        const comment = await this.commentsQwRepository.findById(commentId)
+        const comment = await this.commentsQwRepository.findById(commentId, userId)
 
         res.status(httpStatuses.Ok).json(comment)
     }

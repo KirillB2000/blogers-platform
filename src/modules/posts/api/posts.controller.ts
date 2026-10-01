@@ -88,9 +88,11 @@ export class PostsController {
         const { postId } = req.params
         const queryInput = req.query
 
+        const userId = req.user?.id || null
+
         await this.postsQwRepository.findById(postId) // throw 404 внутри repo
 
-        const comments: CommentListPaginatorOutput = await this.commentsQwRepository.findAll(queryInput, postId)
+        const comments: CommentListPaginatorOutput = await this.commentsQwRepository.findAll(queryInput, postId, userId)
 
         res.status(httpStatuses.Ok).json(comments)
     }

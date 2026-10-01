@@ -8,9 +8,9 @@ const jwtService = container.get(JwtService)
 
 
 export const accessTokenGuardMiddleware = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
+    req: Request,
+    res: Response,
+    next: NextFunction,
 ) => {
     if (!req.headers.authorization) return res.sendStatus(httpStatuses.Unauthorized)
 

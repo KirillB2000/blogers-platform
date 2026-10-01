@@ -6,12 +6,6 @@ export enum LikeStatus {
     Dislike = 'Dislike'
 }
 
-export type LikesInfoType = {
-    likesCount: number
-    dislikesCount: number
-    myStatus: LikeStatus
-}
-
 export type LikesStatusType = {
     commentId: string,
     userId: string ,
@@ -27,6 +21,6 @@ export const LikesStatusSchema = new mongoose.Schema<LikesStatusType>({
     myStatus: { type: String, required: true, enum: Object.values(LikeStatus) }
 })
 
-LikesStatusSchema.index({ userId: 1, commentId: 1 }, { unique: true }) // Likes dublicate guard
+LikesStatusSchema.index({ userId: 1, commentId: 1 }, { unique: true }) // Likes dublicate guard (unique field) and fast search
 
 export const LikesStatusModel = model<LikesStatusType, LikesStatusModel>('likes_status', LikesStatusSchema)

@@ -1,9 +1,13 @@
 import mongoose, { model } from "mongoose"
-import { LikesInfoType } from "./likesStatus.model"
 
 export type CommentatorInfoType = {
     userId: string
     userLogin: string
+}
+
+export type LikesInfoDbCommentType = {
+    likesCount: number
+    dislikesCount: number
 }
 
 export type CommentsType = {
@@ -11,7 +15,7 @@ export type CommentsType = {
     content: string
     commentatorInfo: CommentatorInfoType
     createdAt: Date
-    likesInfo: LikesInfoType
+    likesInfo: LikesInfoDbCommentType
 }
 
 type CommentsModel = mongoose.Model<CommentsType>
@@ -23,7 +27,7 @@ const CommentatorInfoSchema = new mongoose.Schema<CommentatorInfoType>({
     userLogin: { type: String, required: true }
 }, {_id: false})
 
-const LikesInfoSchema = new mongoose.Schema<Omit<LikesInfoType, 'myStatus'>>({
+const LikesInfoSchema = new mongoose.Schema<LikesInfoDbCommentType>({
     likesCount: {type: Number, required: true},
     dislikesCount: {type: Number, required: true}
 }, {_id: false})

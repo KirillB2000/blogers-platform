@@ -9,6 +9,7 @@ import { commentInputDtoValidation } from "../validation/commentInput.validation
 import { container } from "../../../compostion-root";
 import { CommentsController } from "./comments.controller";
 import { likeStatusValidation } from "../validation/likeStatusInput.validation";
+import { softAuthMiddleware } from "../../../core/middlewares/softAuth.middleware";
 
 export const commentsRouter = Router({})
 
@@ -21,6 +22,7 @@ commentsRouter
         COMMENTS_ROUTES.BY_ID,
         idParamsValidation(PARAMS_IDS.ID),
         inputValidationResultMiddleware,
+        softAuthMiddleware,
         catchAsync(commentsController.getCommentByIdHandler.bind(commentsController))
     )
 

@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { NotFoundError } from "../../../core/exceptions/app-errors.exeption";
 import { PagindatedOutput } from "../../../core/types/paginated.output";
 import { CommentQueryInput } from "../api/input/commentQueryInput";
@@ -8,26 +7,38 @@ import { mapFromCommentDbTypeToViewModel } from "../mappers/mapFromCommentDbType
 import { mapToCommentListPaginatedOutput } from "../mappers/mapFromCommentDomainToPaginatedOutput";
 import { injectable } from "inversify";
 import { CommentsModel } from "./comments.model";
+import { LikesStatusModel, LikeStatus } from "./likesStatus.model";
 
 @injectable()
 export class CommentsQwRepository {
     async findById (
-        id: string
+        commentId: string,
+        userId?: string | null
     ): Promise<CommentViewModel> {
-        const commentDocument = await CommentsModel.findOne({_id: new ObjectId(id)})
+        let likeStatus = LikeStatus.None
+        if(userId) {
+            const likeStatusDb = await LikesStatusModel.findOne(
+                { userId: userId, commentId: commentId }
+            )
+
+            if (likeStatusDb) likeStatus = likeStatusDb.myStatus
+        }
+
+        let commentDocument = await CommentsModel.findOne({ _id: commentId })
 
         if (!commentDocument) {
             throw new NotFoundError('Comment not found')
         }
 
-        const commentForResponse: CommentViewModel = mapFromCommentDbTypeToViewModel(commentDocument)
+        const commentForResponse: CommentViewModel = mapFromCommentDbTypeToViewModel(commentDocument, likeStatus)
 
         return commentForResponse
     }
 
     async findAll (
         queryDto: CommentQueryInput,
-        postId: string
+        postId: string,
+        userId?: string | null
     ): Promise<CommentListPaginatorOutput> {
         const {
             pageNumber,
@@ -54,7 +65,18 @@ export class CommentsQwRepository {
             totalCount: totalCount
         }
 
-        const commentsWithPagination: CommentListPaginatorOutput = mapToCommentListPaginatedOutput(items, meta) // Антипаттерн 😒
+        let likesMap: Record<string, LikeStatus> = {}
+
+        if (userId) {
+            const likeStatusesDocuments = await LikesStatusModel
+                .find({ commentId: { $in: items.map(comm => comm._id.toString()) }, userId: userId })
+
+            likeStatusesDocuments.forEach(doc => {
+                likesMap[doc.commentId] = doc.myStatus
+            })
+        }
+
+        const commentsWithPagination: CommentListPaginatorOutput = mapToCommentListPaginatedOutput(items, meta, likesMap) // Антипаттерн 😒
 
         return commentsWithPagination
     }

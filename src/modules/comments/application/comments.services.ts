@@ -5,7 +5,6 @@ import { CommentsRepository } from "../infrastructure/comments.repository";
 import { injectable, inject } from "inversify";
 import { CommentsType } from "../infrastructure/comments.model";
 import { LikeStatus } from "../infrastructure/likesStatus.model";
-import { PostsRepository } from "../../posts/infrastructure/posts.repository";
 import { UsersRepository } from "../../users/infrastructure/user.repository";
 import { LikesStatusCommentsRepository } from "../infrastructure/likesStatusComments.repository";
 
@@ -33,8 +32,7 @@ export class CommentsService {
             },
             likesInfo : {
                 likesCount: 0,
-                dislikesCount: 0,
-                myStatus: LikeStatus.None
+                dislikesCount: 0
             }
         }
 

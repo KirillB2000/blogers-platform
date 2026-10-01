@@ -3,10 +3,20 @@ import { mapFromCommentDbTypeToViewModel } from "./mapFromCommentDbTypeToViewMod
 import { mapToPaginatedOutput } from "../../../core/mappers/map-to-paginated-output";
 import { PagindatedOutput } from "../../../core/types/paginated.output";
 import { CommentsDocument } from "../infrastructure/comments.model";
+import { LikeStatus } from "../infrastructure/likesStatus.model";
 
 export const mapToCommentListPaginatedOutput = (
     items: CommentsDocument[],
-    meta: PagindatedOutput
+    meta: PagindatedOutput,
+    likesMap: Record<string, LikeStatus>
 ): CommentListPaginatorOutput => {
-    return mapToPaginatedOutput(items, meta, mapFromCommentDbTypeToViewModel)
+    return mapToPaginatedOutput(
+        items, 
+        meta, 
+        (comment) => {
+            const myStatus = likesMap[comment._id.toString()] || LikeStatus.None // параметр функции likesMap доступен благодаря замыканию
+
+            return mapFromCommentDbTypeToViewModel(comment, myStatus)
+        }
+    )
 }
