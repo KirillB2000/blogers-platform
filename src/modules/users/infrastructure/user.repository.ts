@@ -1,14 +1,12 @@
-import { ObjectId, WithId } from "mongodb";
+import { ObjectId } from "mongodb";
 import { injectable } from "inversify";
-import { UsersDocument, UsersModel, UsersType } from "./users.model";
+import { UsersDocument, UsersModel } from "./users.model";
 
 
 @injectable()
 export class UsersRepository {
-    async create (userDomain: UsersType) {
-        const user = await UsersModel.insertOne(userDomain)
-
-        return user.id
+    async save (user: UsersDocument) {
+        await user.save()
     }
 
     async findByLogin(loginDto: string) {
@@ -37,56 +35,12 @@ export class UsersRepository {
         return deletedCount.deletedCount > 0
     }
 
-    async confirmEmail(id: string): Promise<void> {
-        await UsersModel.updateOne(
-            {_id: new ObjectId(id)},
-            { $set: {"emailConfirmation.isConfirmed": true}}
-        )
-    }
-
-    async updateConfirmationCode(
-        userId: string,
-        confirmationCode: string,
-        expirationDate: Date
-    ): Promise<void> {
-        await UsersModel.updateOne(
-            {_id: new ObjectId(userId)},
-            { $set: { "emailConfirmation.confirmationCode": confirmationCode, "emailConfirmation.expirationDate": expirationDate}}
-        )
-    }
-
-    async updateRecoveryPasswordCode(
-        email: string,
-        recoveryCode: string,
-        expirationDate: Date
-    ): Promise<void> {
-        await UsersModel.updateOne(
-            { email: email },
-            { $set: { 'passwordRecovery.recoveryCode': recoveryCode, 'passwordRecovery.expirationDate': expirationDate }}
-        )
-    }
-
     async findByRecoveryCode (
         recoveryCode: string
     ): Promise<UsersDocument | null> {
-        const user = UsersModel.findOne(
+        const user = await UsersModel.findOne(
             { 'passwordRecovery.recoveryCode': recoveryCode }
         )
-
         return user
-    }
-
-    async updatePasswordAndRecoveryPassword (
-        newPassword: string, 
-        userId: string
-    ) {
-        await UsersModel.updateOne(
-            {_id: new ObjectId(userId)},
-            {$set: {
-                password: newPassword,
-                'passwordRecovery.recoveryCode': null,
-                'passwordRecovery.expirationDate': null
-            }}
-        )
     }
 }

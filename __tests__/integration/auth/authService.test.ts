@@ -235,12 +235,18 @@ describe('Integration tests for AuthService', () => {
 
             const existedUser = await usersRepository.findByEmail(userInput.email)
 
+            const oldConfirmationCode = existedUser!.emailConfirmation.confirmationCode
+            const oldExpirationDate = existedUser!.emailConfirmation.expirationDate
+
             await authService.emailResending(existedUser!)
 
             const existedUserAfterResending = await usersRepository.findByEmail(userInput.email)
 
-            expect(existedUserAfterResending!.emailConfirmation.confirmationCode).not.toBe(existedUser!.emailConfirmation.confirmationCode)
-            expect(existedUserAfterResending!.emailConfirmation.expirationDate).not.toBe(existedUser!.emailConfirmation.expirationDate)
+            const newConfirmationCode = existedUserAfterResending!.emailConfirmation.confirmationCode
+            const newExpirationDate = existedUserAfterResending!.emailConfirmation.expirationDate
+
+            expect(oldConfirmationCode).not.toBe(newConfirmationCode)
+            expect(oldExpirationDate).not.toBe(newExpirationDate)
 
             expect(sendEmailMock).toHaveBeenCalledTimes(2)
         })
@@ -433,8 +439,12 @@ describe('Integration tests for AuthService', () => {
 
             const newPassword = '123123123'
             const recoveryCode = user!.passwordRecovery.recoveryCode!
+            const expirationDate = sub(new Date(), { minutes: 5 })
 
-            await usersRepository.updateRecoveryPasswordCode(userInput.email, recoveryCode, sub(new Date(), {minutes: 5}))
+            user!.passwordRecovery.recoveryCode = recoveryCode
+            user!.passwordRecovery.expirationDate = expirationDate
+
+            await usersRepository.save(user!)
 
             await expect (authService.updatePassword(newPassword, recoveryCode as string))
                 .rejects

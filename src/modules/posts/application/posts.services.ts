@@ -6,7 +6,7 @@ import { PostsRepository } from "../infrastructure/posts.repository";
 import { BlogsRepository } from "../../blogs/infrastructure/blogs.repository";
 import { injectable, inject } from "inversify";
 import { BlogsDocument } from "../../blogs/infrastructure/blogs.model";
-import { PostsType } from "../infrastructure/posts.model";
+import { PostsModel, PostsType } from "../infrastructure/posts.model";
 
 @injectable()
 export class PostsService {
@@ -31,9 +31,11 @@ export class PostsService {
             createdAt: new Date()
         }
 
-        const createdPostId = await this.postsRepository.create(newPost)
+        const post = new PostsModel(newPost)
 
-        return createdPostId
+        await this.postsRepository.save(post)
+
+        return post.id
     }
 
     async update(id: string, dto: PostInputModel): Promise<void> {
@@ -43,11 +45,15 @@ export class PostsService {
             throw new BadRequestError([{message: 'Blog should exist', field: 'blogId'}])
         }
 
-        const isUpdated = await this.postsRepository.update(id, dto)
+        const postDoc = await this.postsRepository.findPostById(id)
 
-        if (!isUpdated) {
+        if (!postDoc) {
             throw new NotFoundError('Post not found')
         }
+
+        postDoc.set(dto)
+
+        await this.postsRepository.save(postDoc)
     }
 
     async delete(id: string): Promise<void> {

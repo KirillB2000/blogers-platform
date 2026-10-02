@@ -4,7 +4,7 @@ import { UserInputModel } from "../api/input/dto/userInputModel";
 import { UsersRepository } from "../infrastructure/user.repository";
 import { BcryptService } from "../../auth/adapters/bcrypt.services";
 import { injectable } from "inversify";
-import { UsersType } from "../infrastructure/users.model";
+import { UsersModel, UsersType } from "../infrastructure/users.model";
 
 @injectable()
 export class UsersService {
@@ -32,9 +32,11 @@ export class UsersService {
 
         const dbUser: UsersType = mapUserInputToIDbType(dto, hashedPassword)
 
-        const userId = (await this.usersRepository.create(dbUser)).toString()
+        const user = new UsersModel(dbUser)
 
-        return userId
+        await this.usersRepository.save(user)
+
+        return user.id
     }
 
     async delete(id: string): Promise<void> {

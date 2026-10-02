@@ -3,8 +3,8 @@ import { BadRequestError, NotFoundError } from "../../../core/exceptions/app-err
 import { UserViewModel } from "../../users/api/output/userViewModel";
 import { CommentsRepository } from "../infrastructure/comments.repository";
 import { injectable, inject } from "inversify";
-import { CommentsType } from "../infrastructure/comments.model";
-import { LikeStatus } from "../infrastructure/likesStatus.model";
+import { CommentsModel, CommentsType } from "../infrastructure/comments.model";
+import { LikesStatusModel, LikeStatus } from "../infrastructure/likesStatus.model";
 import { UsersRepository } from "../../users/infrastructure/user.repository";
 import { LikesStatusCommentsRepository } from "../infrastructure/likesStatusComments.repository";
 import { LIKES_MATCH } from "../constants/likesMatch";
@@ -37,9 +37,11 @@ export class CommentsService {
             }
         }
 
-        const commentId = await this.commentsRepository.create(commentDomain)
+        const comment = new CommentsModel(commentDomain)
+        
+        await this.commentsRepository.save(comment)
 
-        return commentId
+        return comment.id
     }
 
     async delete(
@@ -54,13 +56,17 @@ export class CommentsService {
 
     async update(
         commentId: string,
-        content: CommentInputModel
+        userInput: CommentInputModel
     ): Promise<void> {
-        const isUpdated = await this.commentsRepository.update(commentId, content)
+        const commentById = await this.commentsRepository.findById(commentId)
 
-        if (!isUpdated) {
+        if (!commentById) {
             throw new NotFoundError('Comment not found')
         }
+
+        commentById.content = userInput.content
+
+        await this.commentsRepository.save(commentById)
     }
 
     async updateLikeStatus(
@@ -83,17 +89,25 @@ export class CommentsService {
             throw new BadRequestError([{message: 'User must exist', field: 'userId'}])
         }
 
-        const likeStatusDb = await this.likesStatusCommentsRepository.findLikeStatusForSpecificComment(userId, commentId)
+        let likeStatusDocument = await this.likesStatusCommentsRepository.findLikeStatusForSpecificComment(userId, commentId)
 
-        if (!likeStatusDb) {
+        if (!likeStatusDocument) {
             if (likeStatus === LikeStatus.None) return
-            await this.likesStatusCommentsRepository.saveLikeStatus(userId, commentId, likeStatus)
-            likeStatus === LikeStatus.Like ? likesNumber = 1 : dislikesNubmer = 1
 
-            return await this.commentsRepository.updateLikesAndDislikes(likesNumber, dislikesNubmer, commentId)
+            likeStatusDocument = new LikesStatusModel({ userId, commentId })
+
+            likeStatusDocument.myStatus = likeStatus
+
+            await this.likesStatusCommentsRepository.save(likeStatusDocument)
+
+            likeStatus === LikeStatus.Like ? likesNumber = 1 : dislikesNubmer = 1
+            comment.likesInfo.likesCount += likesNumber
+            comment.likesInfo.dislikesCount += dislikesNubmer
+
+            return await this.commentsRepository.save(comment)
         }
 
-        const likeChangingString = (likeStatus + likeStatusDb.myStatus).toLocaleLowerCase()
+        const likeChangingString = (likeStatus + likeStatusDocument.myStatus).toLocaleLowerCase()
 
         if (likeChangingString === LIKES_MATCH.LIKE_TO_LIKE || likeChangingString === LIKES_MATCH.DISLIKE_TO_DISLIKE) {
             return
@@ -109,9 +123,13 @@ export class CommentsService {
 
         if (likeChangingString === LIKES_MATCH.LIKE_TO_NONE) {
             likesNumber = -1; dislikesNubmer = 0
+
+            comment.likesInfo.likesCount += likesNumber
+            comment.likesInfo.dislikesCount += dislikesNubmer
+
             await Promise.all(
                 [
-                    this.commentsRepository.updateLikesAndDislikes(likesNumber, dislikesNubmer, commentId),
+                    this.commentsRepository.save(comment),
                     this.likesStatusCommentsRepository.deleteLikeStatus(userId, commentId)
                 ]
             )
@@ -120,19 +138,27 @@ export class CommentsService {
 
         if (likeChangingString === LIKES_MATCH.DISLIKE_TO_NONE) {
             likesNumber = 0; dislikesNubmer = -1
+
+            comment.likesInfo.likesCount += likesNumber
+            comment.likesInfo.dislikesCount += dislikesNubmer
+            
             await Promise.all(
                 [
-                    this.commentsRepository.updateLikesAndDislikes(likesNumber, dislikesNubmer, commentId),
+                    this.commentsRepository.save(comment),
                     this.likesStatusCommentsRepository.deleteLikeStatus(userId, commentId)
                 ]
             )
             return;
         }
+
+        likeStatusDocument.myStatus = likeStatus
+        comment.likesInfo.likesCount += likesNumber
+        comment.likesInfo.dislikesCount += dislikesNubmer
         
         await Promise.all(
             [
-                this.commentsRepository.updateLikesAndDislikes(likesNumber, dislikesNubmer, commentId),
-                this.likesStatusCommentsRepository.updateLikeStatus(userId, commentId, likeStatus)
+                this.commentsRepository.save(comment),
+                this.likesStatusCommentsRepository.save(likeStatusDocument)
             ]
         )
     }

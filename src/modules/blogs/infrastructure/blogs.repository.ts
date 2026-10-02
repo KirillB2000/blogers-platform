@@ -1,4 +1,3 @@
-import { blogInputModel } from "../api/input/dto/blogInputModel";
 import { ObjectId } from "mongodb";
 import { injectable } from "inversify";
 import { BlogsDocument, BlogsModel, BlogsType } from "./blogs.model";
@@ -7,19 +6,9 @@ import { PostsModel } from "../../posts/infrastructure/posts.model";
 
 @injectable()
 export class BlogsRepository {
-  async create(newBlog: BlogsType): Promise<string> {
-    const createdBlog = await BlogsModel.insertOne(newBlog)
 
-    return createdBlog.id
-  }
-
-  async update(id: string, blog: blogInputModel): Promise<boolean> {
-    const updateResult = await BlogsModel.updateOne(
-      {_id: new ObjectId(id)},
-      {$set: blog}
-    )
-
-    return updateResult.matchedCount > 0
+  async save (blog: BlogsDocument) {
+    await blog.save()
   }
 
   async delete(id: string): Promise<boolean> {

@@ -6,19 +6,8 @@ import { PostsDocument, PostsModel, PostsType } from "./posts.model";
 @injectable()
 export class PostsRepository {
 
-  async create(newPost: PostsType): Promise<string> {
-    const insertResult = await PostsModel.insertOne(newPost)
-
-    return insertResult.id
-  }
-
-  async update(id: string, post: PostInputModel): Promise<boolean> {
-    const updatedResult = await PostsModel.updateOne(
-      {_id: new ObjectId(id)},
-      {$set: post}
-    )
-
-    return updatedResult.matchedCount > 0;
+  async save (post: PostsDocument) {
+    await post.save()
   }
 
   async delete(id: string): Promise<boolean> {
@@ -27,5 +16,13 @@ export class PostsRepository {
     })
 
     return deleteResult.deletedCount > 0;
+  }
+
+  async findPostById (
+    id: string
+  ): Promise<PostsDocument | null> {
+    const postDoc = await PostsModel.findById(id)
+
+    return postDoc
   }
 };

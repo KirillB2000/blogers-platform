@@ -1,4 +1,4 @@
-import { ObjectId, WithId } from "mongodb"
+import { ObjectId } from "mongodb"
 import { PostQueryInput } from "../api/input/post-query.input"
 import { mapToPostViewModel } from "../mappers/map-from-post-db-type-to-view-model"
 import { PostViewModel } from "../api/output/post-data.output"

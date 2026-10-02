@@ -3,7 +3,7 @@ import { NotFoundError } from "../../../core/exceptions/app-errors.exeption"
 import { mapBlogInputDtoToDbType } from "../mappers/map-from-blog-input-dto-to-db-type"
 import { BlogsRepository } from "../infrastructure/blogs.repository"
 import { injectable, inject } from "inversify"
-import { BlogsType } from "../infrastructure/blogs.model"
+import { BlogsModel, BlogsType } from "../infrastructure/blogs.model"
 
 @injectable()
 export class BlogsService {
@@ -18,17 +18,23 @@ export class BlogsService {
             isMembership: false
         }
 
-        const blogsId = await this.blogsRepository.create(newBlog)
+        const blogDoc = new BlogsModel(newBlog)
 
-        return blogsId
+        await this.blogsRepository.save(blogDoc)
+
+        return blogDoc.id
     }
 
     async update(id: string,  dto: blogInputModel): Promise<void> {
-        const isUpdated = await this.blogsRepository.update(id, dto)
 
-        if (!isUpdated) {
+        const blogDoc = await this.blogsRepository.findById(id)
+
+        if (!blogDoc) {
             throw new NotFoundError('Blog not found')
         }
+
+        blogDoc.set(dto)
+        await this.blogsRepository.save(blogDoc)
     }
 
     async delete(id: string): Promise<void> {

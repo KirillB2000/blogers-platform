@@ -1,22 +1,10 @@
 import { injectable } from "inversify";
-import { LikesStatusDocument, LikesStatusModel, LikeStatus } from "./likesStatus.model";
+import { LikesStatusDocument, LikesStatusModel } from "./likesStatus.model";
 
 @injectable()
 export class LikesStatusCommentsRepository {
 
-    async saveLikeStatus(
-        userId: string,
-        commentId: string,
-        likeStatus: LikeStatus
-    ): Promise<void> {
-        let likeStatusD = await LikesStatusModel.findOne({ userId: userId, commentId: commentId })
-
-        if (!likeStatusD) {
-            likeStatusD = new LikesStatusModel({ userId, commentId })
-        }
-
-        likeStatusD.myStatus = likeStatus
-
+    async save (likeStatusD: LikesStatusDocument) {
         await likeStatusD.save()
     }
 
@@ -37,17 +25,6 @@ export class LikesStatusCommentsRepository {
     ): Promise<void> {
         await LikesStatusModel.deleteOne(
             { userId: userId, commentId: commentId }
-        )
-    }
-
-    async updateLikeStatus (
-        userId: string,
-        commentId: string,
-        likeStatus: LikeStatus
-    ): Promise<void> {
-        await LikesStatusModel.updateOne(
-            { userId: userId, commentId: commentId },
-            { $set: { myStatus: likeStatus } }
         )
     }
 }

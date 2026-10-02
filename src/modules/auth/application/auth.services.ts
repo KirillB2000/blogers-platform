@@ -12,8 +12,8 @@ import { AuthServiceHelpers } from "./auth.serviceHelpers";
 import { JwtService } from "../adapters/jwt.services";
 import { UsersRepository } from "../../users/infrastructure/user.repository";
 import { inject, injectable } from "inversify";
-import { UsersDocument } from "../../users/infrastructure/users.model";
-import { AuthSessionsType } from "../infrastructure/sessions.model";
+import { UsersDocument, UsersModel } from "../../users/infrastructure/users.model";
+import { AuthSessionsModel, AuthSessionsType } from "../infrastructure/sessions.model";
 
 @injectable()
 export class AuthService {
@@ -54,8 +54,10 @@ export class AuthService {
             lastActiveDate: issuedAt!,
             ip: ipAddress
         }
-        
-        await this.sessionsRepository.create(sessionForDb)
+
+        const authSessionDoc = new AuthSessionsModel(sessionForDb)
+
+        await this.sessionsRepository.save(authSessionDoc)
 
         return { accessToken, refreshToken }
     }
@@ -78,12 +80,14 @@ export class AuthService {
 
         const dbUser = mapUserInputToIDbType(userDto, passwordHash)
 
-        await this.usersRepository.create(dbUser)
+        const user = new UsersModel(dbUser)
+
+        await this.usersRepository.save(user)
 
         this.nodemailerService
         .sendEmail(
-            dbUser.email,
-            dbUser.emailConfirmation.confirmationCode,
+            user.email,
+            user.emailConfirmation.confirmationCode,
             emailExamples.registrationEmail
         )
         .catch(er => console.error(`Error occured while sending an email: ${er}`))
@@ -102,9 +106,9 @@ export class AuthService {
             throw new BadRequestError([{ message: 'Email already confirmed', field: 'code' }])
         }
 
-        const userId = user._id.toString()
+        user.emailConfirmation.isConfirmed = true
 
-        await this.usersRepository.confirmEmail(userId)
+        await this.usersRepository.save(user)
     }
 
     async emailResending(
@@ -115,11 +119,13 @@ export class AuthService {
             throw new BadRequestError([{message: 'Email already confirned', field: 'email'}])
         }
 
-        const userId = user._id.toString()
         const newCode = randomUUID()
         const newExpirationDate = add(new Date(), {minutes: 5})
 
-        await this.usersRepository.updateConfirmationCode(userId, newCode, newExpirationDate)
+        user.emailConfirmation.confirmationCode = newCode
+        user.emailConfirmation.expirationDate = newExpirationDate
+
+        await this.usersRepository.save(user)
 
         this.nodemailerService
         .sendEmail(
@@ -139,11 +145,16 @@ export class AuthService {
         
         const { expiredAt: expiredAtNew, refreshToken: newRefreshToken, issuedAt: issuedAtNew } = await this.jwtService.createRefreshJWT(userById, deviceId)
 
-        const isUpdatedSession = await this.sessionsRepository.update(issuedAtOld, deviceId, issuedAtNew, expiredAtNew, userId) // Update version of the token (session)
+        const authSessionDoc = await this.sessionsRepository.findSession(issuedAtOld, deviceId, userId)
 
-        if (!isUpdatedSession) {
+        if (!authSessionDoc) {
             throw new UnauthorizedError('Unauthorized')
         }
+
+        authSessionDoc.lastActiveDate = issuedAtNew
+        authSessionDoc.expirationDate = expiredAtNew
+
+        await this.sessionsRepository.save(authSessionDoc) // Update version of the token (session)
 
         const newAccessToken = await this.jwtService.createAccessJWT(userById)
 
@@ -175,7 +186,10 @@ export class AuthService {
         const recoveryCode = randomUUID()
         const expirationDate = add(new Date(), { minutes: 5 })
 
-        await this.usersRepository.updateRecoveryPasswordCode(email, recoveryCode, expirationDate)
+        userByEmail.passwordRecovery.recoveryCode = recoveryCode
+        userByEmail.passwordRecovery.expirationDate = expirationDate
+
+        await this.usersRepository.save(userByEmail)
 
         this.nodemailerService
             .sendEmail(
@@ -201,9 +215,12 @@ export class AuthService {
             throw new BadRequestError([{ message: 'Recovery code is expired', field: 'recoveryCode'}])
         }
 
-        const userId = user._id.toString()
         const newHashedPassword = await this.bcryptService.generateHash(newPassword)
 
-        await this.usersRepository.updatePasswordAndRecoveryPassword(newHashedPassword, userId)
+        user.password = newHashedPassword
+        user.passwordRecovery.recoveryCode = null
+        user.passwordRecovery.expirationDate = null
+
+        await this.usersRepository.save(user)
     }
 }
