@@ -1,4 +1,4 @@
-import { LikeStatus } from "../../infrastructure/likesStatus.model"
+import { LikeStatus } from "../../../../core/types/likeStatus"
 
 export type LikesInfoViewModel = {
     likesCount: number

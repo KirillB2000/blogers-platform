@@ -29,6 +29,7 @@ import { UsersService } from "./modules/users/application/users.services";
 import { UsersQwRepository } from "./modules/users/infrastructure/user.queryRepository";
 import { UsersRepository } from "./modules/users/infrastructure/user.repository";
 import { LikesStatusCommentsRepository } from './modules/comments/infrastructure/likesStatusComments.repository';
+import { PostsLikesStatusRepository } from './modules/posts/infrastructure/postsLikesStatus.repository';
 
 export const container: Container = new Container()
 
@@ -67,6 +68,7 @@ container.bind(PostsController).to(PostsController)
 container.bind(PostsService).to(PostsService)
 container.bind(PostsRepository).to(PostsRepository)
 container.bind(PostsQwRepository).to(PostsQwRepository)
+container.bind(PostsLikesStatusRepository).to(PostsLikesStatusRepository)
 
 // Blogs
 container.bind(BlogsController).to(BlogsController)

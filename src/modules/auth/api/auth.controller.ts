@@ -64,7 +64,7 @@ export class AuthController {
         req: Request, 
         res: Response
     ) {
-        const userId = req.user?.id as string;
+        const userId = req.user?.id
         if (!userId) return res.sendStatus(httpStatuses.Unauthorized)
 
         const me = await this.usersQwRepository.findByIdMe(userId)

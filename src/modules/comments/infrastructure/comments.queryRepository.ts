@@ -7,7 +7,8 @@ import { mapFromCommentDbTypeToViewModel } from "../mappers/mapFromCommentDbType
 import { mapToCommentListPaginatedOutput } from "../mappers/mapFromCommentDomainToPaginatedOutput";
 import { injectable } from "inversify";
 import { CommentsModel } from "./comments.model";
-import { LikesStatusModel, LikeStatus } from "./likesStatus.model";
+import { LikesStatusModel } from "./likesStatus.model";
+import { LikeStatus } from "../../../core/types/likeStatus";
 
 @injectable()
 export class CommentsQwRepository {
@@ -69,7 +70,7 @@ export class CommentsQwRepository {
 
         if (userId) {
             const likeStatusesDocuments = await LikesStatusModel
-                .find({ commentId: { $in: items.map(comm => comm._id.toString()) }, userId: userId })
+                .find({ userId: userId, commentId: { $in: items.map(comm => comm._id.toString()) } })
 
             likeStatusesDocuments.forEach(doc => {
                 likesMap[doc.commentId] = doc.myStatus

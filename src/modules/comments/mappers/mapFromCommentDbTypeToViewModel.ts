@@ -1,6 +1,6 @@
+import { LikeStatus } from "../../../core/types/likeStatus";
 import { CommentViewModel } from "../api/output/commentViewModel";
 import { CommentsDocument } from "../infrastructure/comments.model";
-import { LikeStatus } from "../infrastructure/likesStatus.model";
 
 export const mapFromCommentDbTypeToViewModel = (
     dbComment: CommentsDocument,

@@ -16,6 +16,7 @@ import { PostSortField } from "./input/post-sort-fields";
 import { container } from "../../../compostion-root";
 import { PostsController } from "./posts.controller";
 import { softAuthMiddleware } from "../../../core/middlewares/softAuth.middleware";
+import { likeStatusValidation } from "../../comments/validation/likeStatusInput.validation";
 
 export const postsRouter = Router({});
 
@@ -37,6 +38,7 @@ postsRouter
     POSTS_ROUTES.BY_ID,
     idParamsValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
+    softAuthMiddleware,
     catchAsync(postsController.getPostByIdHandler.bind(postsController)),
   )
 
@@ -83,4 +85,13 @@ postsRouter
     sanitizeQueryParams,
     softAuthMiddleware,
     catchAsync(postsController.getCommentListForSpecificPostHandler.bind(postsController) as unknown as RequestHandler)
+  )
+
+  .put(
+    `${POSTS_ROUTES.ROOT}${POSTS_ROUTES.BY_POST_ID}${POSTS_ROUTES.LIKE_STATUS}`,
+    accessTokenGuardMiddleware,
+    idParamsValidation(PARAMS_IDS.POST_ID),
+    likeStatusValidation,
+    inputValidationResultMiddleware,
+    catchAsync(postsController.updateLikeStatusHandler.bind(postsController))
   )

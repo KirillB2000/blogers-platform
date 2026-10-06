@@ -15,9 +15,9 @@ import { PostsModel } from "../../../src/modules/posts/infrastructure/posts.mode
 import { UsersModel } from "../../../src/modules/users/infrastructure/users.model";
 import { CommentsModel } from "../../../src/modules/comments/infrastructure/comments.model";
 import { LikeInputModel } from "../../../src/modules/comments/api/input/dto/likeInputModel";
-import { LikeStatus } from "../../../src/modules/comments/infrastructure/likesStatus.model";
 import { generateTestAccessJwt } from "../../utils/generateJwt";
 import { CommentViewModel } from "../../../src/modules/comments/api/output/commentViewModel";
+import { LikeStatus } from "../../../src/core/types/likeStatus";
 
 describe("Posts API", () => {
   const app = express();
@@ -60,7 +60,13 @@ describe("Posts API", () => {
       content: "Test content",
       blogId: blog.id,
       blogName: blog.name,
-      createdAt: expect.any(String)
+      createdAt: expect.any(String),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: LikeStatus.None,
+        newestLikes: null
+      }
     });
   });
 
@@ -142,7 +148,13 @@ describe("Posts API", () => {
       content: "Test content",
       blogId: blog.id,
       blogName: blog.name,
-      createdAt: expect.any(String)
+      createdAt: expect.any(String),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: LikeStatus.None,
+        newestLikes: null
+      }
     });
   });
 
@@ -199,7 +211,13 @@ describe("Posts API", () => {
       content: updatedData.content,
       blogId: blog2.id,
       blogName: blog2.name,
-      createdAt: expect.any(String)
+      createdAt: expect.any(String),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: LikeStatus.None,
+        newestLikes: null
+      }
     });
   });
 

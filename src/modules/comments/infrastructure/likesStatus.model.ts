@@ -1,10 +1,5 @@
 import mongoose, { model } from "mongoose"
-
-export enum LikeStatus {
-    None = 'None',
-    Like = 'Like',
-    Dislike = 'Dislike'
-}
+import { LikeStatus } from "../../../core/types/likeStatus"
 
 export type LikesStatusType = {
     commentId: string,

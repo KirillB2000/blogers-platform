@@ -2,7 +2,7 @@ import { Express } from "express";
 import request from "supertest";
 import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths";
-import { PostViewModel } from "../../../src/modules/posts/api/output/post-data.output";
+import { PostViewModel } from "../../../src/modules/posts/api/output/postViewModel";
 
 export const getPostById = async (
   app: Express,

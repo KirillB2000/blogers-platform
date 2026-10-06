@@ -17,7 +17,7 @@ export class CommentsController {
         req: Request<{ commentId: string }>,
         res: Response
     ) {
-        const userId = req.user?.id as string
+        const userId = req.user?.id
         const { commentId } = req.params
 
         if (!userId) return res.sendStatus(httpStatuses.Unauthorized)
@@ -46,7 +46,7 @@ export class CommentsController {
         req: Request<{ commentId: string }, {}, CommentInputModel>,
         res: Response
     ) {
-        const userId = req.user?.id as string
+        const userId = req.user?.id
         const { commentId } = req.params
         const content = req.body
 
@@ -64,7 +64,7 @@ export class CommentsController {
         req: Request<{ commentId: string }, {}, LikeInputModel>,
         res: Response
     ) {
-        const userId = req.user?.id as string
+        const userId = req.user?.id
         if (!userId) return res.sendStatus(httpStatuses.Unauthorized)
         
         const { commentId } = req.params

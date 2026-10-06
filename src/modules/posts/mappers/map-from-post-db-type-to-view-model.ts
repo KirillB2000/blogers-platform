@@ -1,14 +1,26 @@
-import { PostViewModel } from "../api/output/post-data.output"
+import { LikeStatus } from "../../../core/types/likeStatus"
+import { LikeDetailsViewModel } from "../api/output/postLikeDetailsViewModel"
+import { PostViewModel } from "../api/output/postViewModel"
 import { PostsDocument } from "../infrastructure/posts.model"
 
-export const mapToPostViewModel = (post: PostsDocument): PostViewModel => {
+export const mapToPostViewModel = (
+    postDoc: PostsDocument,
+    likeStatus: LikeStatus,
+    newestLikes: LikeDetailsViewModel[]
+): PostViewModel => {
     return {
-        id: post._id.toString(),
-        title: post.title,
-        shortDescription: post.shortDescription,
-        content: post.content,
-        blogId: post.blogId,
-        blogName: post.blogName,
-        createdAt: post.createdAt
+        id: postDoc._id.toString(),
+        title: postDoc.title,
+        shortDescription: postDoc.shortDescription,
+        content: postDoc.content,
+        blogId: postDoc.blogId,
+        blogName: postDoc.blogName,
+        createdAt: postDoc.createdAt,
+        extendedLikesInfo: {
+            likesCount: postDoc.extendedLikesInfo.likesCount,
+            dislikesCount: postDoc.extendedLikesInfo.dislikesCount,
+            myStatus: likeStatus,
+            newestLikes: newestLikes.length === 0 ? null : newestLikes
+        }
     }
 }

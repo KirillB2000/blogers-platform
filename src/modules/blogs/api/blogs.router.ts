@@ -14,6 +14,7 @@ import { blogInputDtoValidation } from "../validation/blog-input.validation.midd
 import { BlogSortField } from "./input/blog-sort-field";
 import { container } from "../../../compostion-root";
 import { BlogsController } from "./blogs.controller";
+import { softAuthMiddleware } from "../../../core/middlewares/softAuth.middleware";
 
 export const blogsRouter = Router({});
 
@@ -30,6 +31,7 @@ blogsRouter
 
   .get(
     `${BLOGS_ROUTES.BY_BLOG_ID}${POSTS_PATH}`,
+    softAuthMiddleware,
     idParamsValidation('blogId'),
     paginationAndSortingValidation(PostSortField),
     inputValidationResultMiddleware,

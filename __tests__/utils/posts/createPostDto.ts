@@ -4,7 +4,7 @@ import { httpStatuses } from "../../../src/core/types/http-statuses";
 import { generateBasicAuthToken } from "../generateBasicAuthToken";
 import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths";
 import { PostInputModel } from "../../../src/modules/posts/api/input/dto/postInputModel";
-import { PostViewModel } from "../../../src/modules/posts/api/output/post-data.output";
+import { PostViewModel } from "../../../src/modules/posts/api/output/postViewModel";
 import { createBlogDto } from "../blogs/createBlogDto";
 import { postDto } from "./postDto";
 

@@ -1,13 +1,14 @@
 import { CommentInputModel } from "../api/input/dto/commentInputModel";
-import { BadRequestError, NotFoundError } from "../../../core/exceptions/app-errors.exeption";
+import { NotFoundError, UnauthorizedError } from "../../../core/exceptions/app-errors.exeption";
 import { UserViewModel } from "../../users/api/output/userViewModel";
 import { CommentsRepository } from "../infrastructure/comments.repository";
 import { injectable, inject } from "inversify";
 import { CommentsModel, CommentsType } from "../infrastructure/comments.model";
-import { LikesStatusModel, LikeStatus } from "../infrastructure/likesStatus.model";
+import { LikesStatusModel } from "../infrastructure/likesStatus.model";
 import { UsersRepository } from "../../users/infrastructure/user.repository";
 import { LikesStatusCommentsRepository } from "../infrastructure/likesStatusComments.repository";
 import { LIKES_MATCH } from "../constants/likesMatch";
+import { LikeStatus } from "../../../core/types/likeStatus";
 
 @injectable()
 export class CommentsService {
@@ -86,7 +87,7 @@ export class CommentsService {
         const userWithLikeStatus = await this.userRepository.findById(userId)
 
         if (!userWithLikeStatus) {
-            throw new BadRequestError([{message: 'User must exist', field: 'userId'}])
+            throw new UnauthorizedError('Unauthorized')
         }
 
         let likeStatusDocument = await this.likesStatusCommentsRepository.findLikeStatusForSpecificComment(userId, commentId)

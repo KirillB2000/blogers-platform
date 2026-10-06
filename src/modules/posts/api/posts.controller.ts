@@ -8,7 +8,7 @@ import { CommentsService } from "../../comments/application/comments.services";
 import { BadRequestError } from "../../../core/exceptions/app-errors.exeption";
 import { BlogViewModel } from "../../blogs/api/output/blog-data.output";
 import { PostInputModel } from "./input/dto/postInputModel";
-import { PostViewModel } from "./output/post-data.output";
+import { PostViewModel } from "./output/postViewModel";
 import { PostsService } from "../application/posts.services";
 import { BlogsQwRepository } from "../../blogs/infrastructure/blogs.queryRepository";
 import { CommentQueryInput } from "../../comments/api/input/commentQueryInput";
@@ -19,6 +19,7 @@ import { mapToPostListPaginatedOutput } from "../mappers/map-from-post-domain-to
 import { PostListPaginatorOutput } from "./output/post-list-paginator.output";
 import { injectable, inject } from "inversify";
 import { PostsDocument } from "../infrastructure/posts.model";
+import { LikeInputModel } from "../../comments/api/input/dto/likeInputModel";
 
 @injectable()
 export class PostsController {
@@ -35,7 +36,7 @@ export class PostsController {
         req: Request<{ postId: string }, {}, CommentInputModel>,
         res: Response
     ) {
-        const userId = req.user?.id as string
+        const userId = req.user?.id
         const { postId } = req.params
         const commentInput = req.body
 
@@ -100,9 +101,11 @@ export class PostsController {
         req: Request<{ id: string }>,
         res: Response
     ) {
+        const userId = req.user?.id || null
+
         const postId = req.params.id
 
-        const postById: PostViewModel = await this.postsQwRepository.findById(postId);
+        const postById: PostViewModel = await this.postsQwRepository.findById(postId, userId);
 
         res.status(httpStatuses.Ok).json(postById);
     }
@@ -112,19 +115,11 @@ export class PostsController {
         res: Response
     ) {
         const queryInput = req.query
-        const posts: { items: PostsDocument[], totalCount: number } = await this.postsQwRepository.findAll(queryInput)
+        const userId = req.user?.id || null
 
-        const pagesCount = Math.ceil(posts.totalCount / queryInput.pageSize)
-        const meta: PagindatedOutput = {
-            pagesCount: pagesCount,
-            page: queryInput.pageNumber,
-            pageSize: queryInput.pageSize,
-            totalCount: posts.totalCount,
-        }
+        const posts = await this.postsQwRepository.findAll(queryInput, userId)
 
-        const postsWithPagination: PostListPaginatorOutput = mapToPostListPaginatedOutput(posts.items, meta)
-
-        res.status(httpStatuses.Ok).json(postsWithPagination)
+        res.status(httpStatuses.Ok).json(posts)
     }
 
     async updatePostByIdHandler (
@@ -134,5 +129,18 @@ export class PostsController {
         await this.postsService.update(req.params.id, req.body);
 
         res.sendStatus(httpStatuses.NoContent);
+    }
+
+    async updateLikeStatusHandler (
+        req: Request<{ postId: string }, {}, LikeInputModel>,
+        res: Response
+    ) {
+        const { likeStatus } = req.body
+        const { postId } = req.params
+        const userId = req.user?.id || null
+
+        await this.postsService.updateLikeStatus(likeStatus, postId, userId)
+
+        res.sendStatus(httpStatuses.NoContent)
     }
 }

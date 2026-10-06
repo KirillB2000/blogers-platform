@@ -14,7 +14,7 @@ import { UsersModel } from '../../../src/modules/users/infrastructure/users.mode
 import { CommentsModel } from '../../../src/modules/comments/infrastructure/comments.model'
 import { generateTestAccessJwt } from '../../utils/generateJwt'
 import { LikeInputModel } from '../../../src/modules/comments/api/input/dto/likeInputModel'
-import { LikeStatus } from '../../../src/modules/comments/infrastructure/likesStatus.model'
+import { LikeStatus } from '../../../src/core/types/likeStatus'
 
 describe('Comments API', () => {
     const app = express()

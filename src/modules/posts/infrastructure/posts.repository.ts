@@ -1,7 +1,6 @@
 import { ObjectId } from "mongodb";
-import { PostInputModel } from "../api/input/dto/postInputModel";
 import { injectable } from "inversify";
-import { PostsDocument, PostsModel, PostsType } from "./posts.model";
+import { PostsDocument, PostsModel } from "./posts.model";
 
 @injectable()
 export class PostsRepository {

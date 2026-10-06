@@ -4,7 +4,7 @@ import { PostsType } from "../infrastructure/posts.model";
 
 export const mapPostInputDtoToDbType = (
     dto: PostInputModel
-): Omit<PostsType, 'createdAt' | 'blogName'> => {
+): Omit<PostsType, 'createdAt' | 'blogName' | 'extendedLikesInfo'> => {
     return {
         title: dto.title,
         shortDescription: dto.shortDescription,

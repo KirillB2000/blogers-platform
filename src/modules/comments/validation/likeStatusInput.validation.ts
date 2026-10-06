@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import { LikeStatus } from "../infrastructure/likesStatus.model";
+import { LikeStatus } from "../../../core/types/likeStatus";
 
 export const likeStatusValidation = body('likeStatus')
     .isString()

@@ -13,7 +13,7 @@ type BlogsModel = mongoose.Model<BlogsType>
 export type BlogsDocument = mongoose.HydratedDocument<BlogsType>
 
 
-const blogsSсhema = new mongoose.Schema<BlogsType>({
+const blogsSchema = new mongoose.Schema<BlogsType>({
     name: { type: String, required: true, max: 100 },
     description: { type: String, required: true, max: 500 },
     websiteUrl: { type: String, required: true, max: 100 },
@@ -21,4 +21,4 @@ const blogsSсhema = new mongoose.Schema<BlogsType>({
     isMembership: { type: Boolean, required: true },
 })
 
-export const BlogsModel = model<BlogsType, BlogsModel>('blogs', blogsSсhema)
+export const BlogsModel = model<BlogsType, BlogsModel>('blogs', blogsSchema)

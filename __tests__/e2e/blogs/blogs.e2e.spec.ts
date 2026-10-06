@@ -14,6 +14,7 @@ import { blogInputModel } from "../../../src/modules/blogs/api/input/dto/blogInp
 import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths";
 import { PostBlogInputModel } from "../../../src/modules/posts/api/input/dto/postBlogInputModel";
 import { runDb, stopDb } from "../../../src/db/mongoose.db";
+import { LikeStatus } from "../../../src/core/types/likeStatus";
 
 describe("Blogs API", () => {
   const app = express();
@@ -215,6 +216,12 @@ describe("Blogs API", () => {
       blogId: blog.id,
       blogName: blog.name,
       createdAt: expect.any(String),
+      extendedLikesInfo: {
+        likesCount: 0,
+        dislikesCount: 0,
+        myStatus: LikeStatus.None,
+        newestLikes: null
+      }
     });
   });
 

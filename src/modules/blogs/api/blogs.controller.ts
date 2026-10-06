@@ -7,7 +7,7 @@ import { BlogsQwRepository } from "../infrastructure/blogs.queryRepository";
 import { PostBlogInputModel } from "../../posts/api/input/dto/postBlogInputModel";
 import { PostInputModel } from "../../posts/api/input/dto/postInputModel";
 import { ObjectId, WithId } from "mongodb";
-import { PostViewModel } from "../../posts/api/output/post-data.output";
+import { PostViewModel } from "../../posts/api/output/postViewModel";
 import { PostsService } from "../../posts/application/posts.services";
 import { PostsQwRepository } from "../../posts/infrastructure/posts.queryRepository";
 import { PagindatedOutput } from "../../../core/types/paginated.output";
@@ -100,25 +100,17 @@ export class BlogsController {
         const queryInput: PostQueryInput = req.query
         const blogId = req.params.blogId
 
+        const userId = req.user?.id || null
+
         const blog: BlogViewModel = await this.blogsQwRepository.findById(blogId)
 
         if (!blog) {
             throw new NotFoundError('Blog not found')
         }
 
-        const posts: { items: PostsDocument[], totalCount: number } = await this.postsQwRepository.findAll(queryInput, blogId)
+        const posts = await this.postsQwRepository.findAll(queryInput, userId , blogId)
 
-        const pagesCount = Math.ceil(posts.totalCount / queryInput.pageSize)
-
-        const meta: PagindatedOutput = {
-            pagesCount: pagesCount,
-            page: queryInput.pageNumber,
-            pageSize: queryInput.pageSize,
-            totalCount: posts.totalCount
-        }
-        const postsWithPagination: PostListPaginatorOutput = mapToPostListPaginatedOutput(posts.items, meta)
-
-        res.status(httpStatuses.Ok).json(postsWithPagination)
+        res.status(httpStatuses.Ok).json(posts)
     }
 
     async updateBlogByIdHandler (

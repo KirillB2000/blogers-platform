@@ -3,7 +3,7 @@ import { mapFromCommentDbTypeToViewModel } from "./mapFromCommentDbTypeToViewMod
 import { mapToPaginatedOutput } from "../../../core/mappers/map-to-paginated-output";
 import { PagindatedOutput } from "../../../core/types/paginated.output";
 import { CommentsDocument } from "../infrastructure/comments.model";
-import { LikeStatus } from "../infrastructure/likesStatus.model";
+import { LikeStatus } from "../../../core/types/likeStatus";
 
 export const mapToCommentListPaginatedOutput = (
     items: CommentsDocument[],
