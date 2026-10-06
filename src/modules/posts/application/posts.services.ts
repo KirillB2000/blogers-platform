@@ -94,7 +94,7 @@ export class PostsService {
             throw new NotFoundError('Post not found')
         }
 
-        let postLikeStatusDoc = await this.postsLikesStatusRepository.findLikeStatusForSpecificPost(postId, userId)
+        let postLikeStatusDoc = await this.postsLikesStatusRepository.findLikeStatusForSpecificPost(userId ,postId)
 
         if (!postLikeStatusDoc) {
             const userSendedLikeStatus = await this.usersRepository.findById(userId)
@@ -120,7 +120,7 @@ export class PostsService {
             return await this.postsRepository.save(post)
         }
 
-        const likeChangingString = (postLikeStatusDoc.myStatus + likeStatus).toLocaleLowerCase()
+        const likeChangingString = (likeStatus + postLikeStatusDoc.myStatus).toLocaleLowerCase()
 
         if (likeChangingString === LIKES_MATCH.LIKE_TO_LIKE || likeChangingString === LIKES_MATCH.DISLIKE_TO_DISLIKE) {
             return

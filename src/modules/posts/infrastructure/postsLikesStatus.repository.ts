@@ -11,7 +11,7 @@ export class PostsLikesStatusRepository {
         userId: string, 
         postId: string
     ): Promise<PostLikesStatusDocument | null> {
-        const postLikeStatusDoc = PostLikesStatusModel.findOne(
+        const postLikeStatusDoc = await PostLikesStatusModel.findOne(
             {userId: userId, postId: postId}
         )
 

@@ -9,7 +9,7 @@ import { createPostDto } from "../../utils/posts/createPostDto";
 import { createUserDto } from "../../utils/users/createUserDto";
 import { createCommentDto } from "../../utils/comments/createCommentDto";
 import { COMMENTS_PATH, COMMENTS_ROUTES } from "../../../src/modules/comments/constants/comments.paths";
-import { POSTS_PATH } from "../../../src/modules/posts/constants/posts.paths";
+import { POSTS_PATH, POSTS_ROUTES } from "../../../src/modules/posts/constants/posts.paths";
 import { runDb, stopDb } from "../../../src/db/mongoose.db";
 import { PostsModel } from "../../../src/modules/posts/infrastructure/posts.model";
 import { UsersModel } from "../../../src/modules/users/infrastructure/users.model";
@@ -317,5 +317,107 @@ describe("Posts API", () => {
     expect(comment3LikeStatus.likesInfo.likesCount).toBe(0)
     expect(comment3LikeStatus.likesInfo.dislikesCount).toBe(0)
     expect(comment3LikeStatus.likesInfo.myStatus).toBe(LikeStatus.None)
+  })
+
+  it('Should update poost like information; PUT /posts/:postId/like-status', async () => {
+    const postToUpdateLikeStatus = await createPostDto(app)
+    const userToLike1 = await createUserDto(app)
+
+    const userTolikeToken1 = generateTestAccessJwt(userToLike1)
+
+    let likeStatus: LikeInputModel = {
+      likeStatus: LikeStatus.Like
+    }
+
+    const postId = postToUpdateLikeStatus.id
+
+    await request(app)
+      .put(`${POSTS_PATH}/${postId}${POSTS_ROUTES.LIKE_STATUS}`)
+      .set('Authorization', `Bearer ${userTolikeToken1}`)
+      .send(likeStatus)
+      .expect(httpStatuses.NoContent)
+
+    const responseAfterLike1 = await request(app)
+      .get(`${POSTS_PATH}/${postId}`)
+      .set('Authorization', `Bearer ${userTolikeToken1}`)
+      .expect(httpStatuses.Ok)
+
+    expect(responseAfterLike1.body.extendedLikesInfo.likesCount).toBe(1)
+    expect(responseAfterLike1.body.extendedLikesInfo.dislikesCount).toBe(0)
+    expect(responseAfterLike1.body.extendedLikesInfo.newestLikes.length).toBe(1)
+
+    likeStatus.likeStatus = LikeStatus.Dislike
+
+    await request(app)
+      .put(`${POSTS_PATH}/${postId}${POSTS_ROUTES.LIKE_STATUS}`)
+      .set('Authorization', `Bearer ${userTolikeToken1}`)
+      .send(likeStatus)
+      .expect(httpStatuses.NoContent)
+
+    const responseAfterDislike1 = await request(app)
+      .get(`${POSTS_PATH}/${postId}`)
+      .set('Authorization', `Bearer ${userTolikeToken1}`)
+      .expect(httpStatuses.Ok)
+    
+    expect(responseAfterDislike1.body.extendedLikesInfo.likesCount).toBe(0)
+    expect(responseAfterDislike1.body.extendedLikesInfo.dislikesCount).toBe(1)
+    expect(responseAfterDislike1.body.extendedLikesInfo.newestLikes).toBeNull()
+
+    likeStatus.likeStatus = LikeStatus.None
+
+    await request(app)
+      .put(`${POSTS_PATH}/${postId}${POSTS_ROUTES.LIKE_STATUS}`)
+      .set('Authorization', `Bearer ${userTolikeToken1}`)
+      .send(likeStatus)
+      .expect(httpStatuses.NoContent)
+
+    const responseAfterNone2 = await request(app)
+      .get(`${POSTS_PATH}/${postId}`)
+      .set('Authorization', `Bearer ${userTolikeToken1}`)
+      .expect(httpStatuses.Ok)
+
+    expect(responseAfterNone2.body.extendedLikesInfo.likesCount).toBe(0)
+    expect(responseAfterNone2.body.extendedLikesInfo.dislikesCount).toBe(0)
+    expect(responseAfterNone2.body.extendedLikesInfo.newestLikes).toBeNull()
+
+    await request(app)
+      .put(`${POSTS_PATH}/${postId}${POSTS_ROUTES.LIKE_STATUS}`)
+      .set('Authorization', `Bearer ${userTolikeToken1}`)
+      .send(likeStatus)
+      .expect(httpStatuses.NoContent)
+
+    const responseAfterNone3 = await request(app)
+      .get(`${POSTS_PATH}/${postId}`)
+      .set('Authorization', `Bearer ${userTolikeToken1}`)
+      .expect(httpStatuses.Ok)
+
+    expect(responseAfterNone3.body.extendedLikesInfo.likesCount).toBe(0)
+    expect(responseAfterNone3.body.extendedLikesInfo.dislikesCount).toBe(0)
+    expect(responseAfterNone3.body.extendedLikesInfo.newestLikes).toBeNull()
+
+    likeStatus.likeStatus = LikeStatus.Like
+
+    await request(app)
+      .put(`${POSTS_PATH}/${postId}${POSTS_ROUTES.LIKE_STATUS}`)
+      .set('Authorization', `Bearer ${userTolikeToken1}`)
+      .send(likeStatus)
+      .expect(httpStatuses.NoContent)
+
+    likeStatus.likeStatus = LikeStatus.None
+
+    await request(app)
+      .put(`${POSTS_PATH}/${postId}${POSTS_ROUTES.LIKE_STATUS}`)
+      .set('Authorization', `Bearer ${userTolikeToken1}`)
+      .send(likeStatus)
+      .expect(httpStatuses.NoContent)
+
+    const responseAfterNone4 = await request(app)
+      .get(`${POSTS_PATH}/${postId}`)
+      .set('Authorization', `Bearer ${userTolikeToken1}`)
+      .expect(httpStatuses.Ok)
+
+    expect(responseAfterNone4.body.extendedLikesInfo.likesCount).toBe(0)
+    expect(responseAfterNone4.body.extendedLikesInfo.dislikesCount).toBe(0)
+    expect(responseAfterNone4.body.extendedLikesInfo.newestLikes).toBeNull()
   })
 });
