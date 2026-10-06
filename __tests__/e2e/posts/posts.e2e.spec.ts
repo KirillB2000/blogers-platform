@@ -65,7 +65,7 @@ describe("Posts API", () => {
         likesCount: 0,
         dislikesCount: 0,
         myStatus: LikeStatus.None,
-        newestLikes: null
+        newestLikes: []
       }
     });
   });
@@ -153,7 +153,7 @@ describe("Posts API", () => {
         likesCount: 0,
         dislikesCount: 0,
         myStatus: LikeStatus.None,
-        newestLikes: null
+        newestLikes: []
       }
     });
   });
@@ -216,7 +216,7 @@ describe("Posts API", () => {
         likesCount: 0,
         dislikesCount: 0,
         myStatus: LikeStatus.None,
-        newestLikes: null
+        newestLikes: []
       }
     });
   });
@@ -361,7 +361,7 @@ describe("Posts API", () => {
     
     expect(responseAfterDislike1.body.extendedLikesInfo.likesCount).toBe(0)
     expect(responseAfterDislike1.body.extendedLikesInfo.dislikesCount).toBe(1)
-    expect(responseAfterDislike1.body.extendedLikesInfo.newestLikes).toBeNull()
+    expect(responseAfterDislike1.body.extendedLikesInfo.newestLikes.length).toBe(0)
 
     likeStatus.likeStatus = LikeStatus.None
 
@@ -378,7 +378,7 @@ describe("Posts API", () => {
 
     expect(responseAfterNone2.body.extendedLikesInfo.likesCount).toBe(0)
     expect(responseAfterNone2.body.extendedLikesInfo.dislikesCount).toBe(0)
-    expect(responseAfterNone2.body.extendedLikesInfo.newestLikes).toBeNull()
+    expect(responseAfterNone2.body.extendedLikesInfo.newestLikes.length).toBe(0)
 
     await request(app)
       .put(`${POSTS_PATH}/${postId}${POSTS_ROUTES.LIKE_STATUS}`)
@@ -393,7 +393,7 @@ describe("Posts API", () => {
 
     expect(responseAfterNone3.body.extendedLikesInfo.likesCount).toBe(0)
     expect(responseAfterNone3.body.extendedLikesInfo.dislikesCount).toBe(0)
-    expect(responseAfterNone3.body.extendedLikesInfo.newestLikes).toBeNull()
+    expect(responseAfterNone3.body.extendedLikesInfo.newestLikes.length).toBe(0)
 
     likeStatus.likeStatus = LikeStatus.Like
 
@@ -418,6 +418,6 @@ describe("Posts API", () => {
 
     expect(responseAfterNone4.body.extendedLikesInfo.likesCount).toBe(0)
     expect(responseAfterNone4.body.extendedLikesInfo.dislikesCount).toBe(0)
-    expect(responseAfterNone4.body.extendedLikesInfo.newestLikes).toBeNull()
+    expect(responseAfterNone4.body.extendedLikesInfo.newestLikes.length).toBe(0)
   })
 });

@@ -31,4 +31,4 @@ export const mapToPostListPaginatedOutput = (
             return mapToPostViewModel(post, myStatus, newestLikes)
         } 
     )
-}
+} 

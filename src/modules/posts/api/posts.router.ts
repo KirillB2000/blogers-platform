@@ -28,6 +28,7 @@ postsRouter
   
   .get(
     POSTS_ROUTES.ROOT,
+    softAuthMiddleware,
     paginationAndSortingValidation(PostSortField),
     inputValidationResultMiddleware,
     sanitizeQueryParams,
@@ -36,9 +37,9 @@ postsRouter
 
   .get(
     POSTS_ROUTES.BY_ID,
+    softAuthMiddleware,
     idParamsValidation(PARAMS_IDS.ID),
     inputValidationResultMiddleware,
-    softAuthMiddleware,
     catchAsync(postsController.getPostByIdHandler.bind(postsController)),
   )
 

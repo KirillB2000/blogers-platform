@@ -20,7 +20,7 @@ export const mapToPostViewModel = (
             likesCount: postDoc.extendedLikesInfo.likesCount,
             dislikesCount: postDoc.extendedLikesInfo.dislikesCount,
             myStatus: likeStatus,
-            newestLikes: newestLikes.length === 0 ? null : newestLikes
+            newestLikes: newestLikes.length === 0 ? [] : newestLikes
         }
     }
 }

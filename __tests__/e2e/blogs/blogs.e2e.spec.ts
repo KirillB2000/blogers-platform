@@ -220,7 +220,7 @@ describe("Blogs API", () => {
         likesCount: 0,
         dislikesCount: 0,
         myStatus: LikeStatus.None,
-        newestLikes: null
+        newestLikes: []
       }
     });
   });
